@@ -80,7 +80,6 @@ import concurrent.futures
 from pytube import YouTube, Playlist
 from sklearn.preprocessing import MinMaxScaler
 import umap
-import hdbscan
 import gc
 import time
 from joblib import dump, load
