@@ -87,12 +87,12 @@ streamlit==1.32.2
 tenacity==8.2.3
 tensorboard==2.16.2
 tensorboard-data-server==0.7.2
-tensorflow==2.16.1
-tensorflow-hub==0.16.1
-tensorflow-intel==2.16.1
-tensorflow-io-gcs-filesystem==0.31.0
+tensorflow
+tensorflow-hub
+tensorflow-intel
+tensorflow-io-gcs-filesystem
 termcolor==2.4.0
-tf_keras==2.16.0
+tf_keras
 toml==0.10.2
 toolz==0.12.1
 tqdm==4.66.2
