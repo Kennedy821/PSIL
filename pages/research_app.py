@@ -659,6 +659,7 @@ if st.button("Recommend me songs"):
 # =============================================================================
                 
                 for image_file in image_files:
+                    st.markdown(image_file))
                     # Define the full path for the original file
                     original_file_path =  image_file
                     # Add the name of the file to an ordered list based on their name
