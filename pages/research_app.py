@@ -627,7 +627,7 @@ if st.button("Recommend me songs"):
 #                 st.markdown(spectograms_paths)
 # =============================================================================
                 st.success('Done!')
-                
+                st.markdown(spectograms_paths)
                 # convert these spectograms to be processed by Efficient Net
                 # Data processing section
                 # Loading section
