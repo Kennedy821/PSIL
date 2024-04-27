@@ -71,7 +71,7 @@ pyparsing==3.1.2
 PyQt5==5.15.10
 PyQtWebEngine==5.15.6
 pytube==15.0.0
-pywin32==305.1
+#pywin32==305.1
 referencing==0.34.0
 requests-oauthlib==2.0.0
 river==0.21.0
