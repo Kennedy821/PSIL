@@ -764,7 +764,20 @@ if st.button("Recommend me songs"):
                 # Convert DataFrame to CSV string.
                 #image_df.to_csv("gs://psil-app-backend/test_upload.csv")
                 def get_storage_client():
-                    creds_dict = json.loads(st.secrets["GOOGLE_CREDENTIALS"])
+                    # Construct the credentials dictionary from the secrets
+                    creds_dict = {
+                        "type": st.secrets["google_credentials"]["type"],
+                        "project_id": st.secrets["google_credentials"]["project_id"],
+                        "private_key_id": st.secrets["google_credentials"]["private_key_id"],
+                        "private_key": st.secrets["google_credentials"]["private_key"],
+                        "client_email": st.secrets["google_credentials"]["client_email"],
+                        "client_id": st.secrets["google_credentials"]["client_id"],
+                        "auth_uri": st.secrets["google_credentials"]["auth_uri"],
+                        "token_uri": st.secrets["google_credentials"]["token_uri"],
+                        "auth_provider_x509_cert_url": st.secrets["google_credentials"]["auth_provider_x509_cert_url"],
+                        "client_x509_cert_url": st.secrets["google_credentials"]["client_x509_cert_url"]
+                    }
+                    # Create a client using the credentials dictionary
                     client = storage.Client.from_service_account_info(creds_dict)
                     return client
 
