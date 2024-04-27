@@ -129,7 +129,6 @@ import umap
 
 from PIL import Image, ImageDraw, ImageSequence, ImageFont
 import textwrap
-import faiss
 from google.cloud import storage
 from io import StringIO
 
