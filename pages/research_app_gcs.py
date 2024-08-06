@@ -125,7 +125,7 @@ def get_top_n_recommendations_gcs_version(n):
         else:
             time.sleep(10)
     end_time = time.time()
-    st.write(f"Downloaded indices in {end_time - start_time} seconds")
+    # st.write(f"Downloaded indices in {end_time - start_time} seconds")
 
 
     total_components_df = database_song_names_df.copy()
@@ -203,7 +203,7 @@ def get_top_n_recommendations_gcs_version(n):
     # this is a check to determine if the core index has sufficient rate of clustering
     # ideally this should at least be close to 50% across all joined songs
     match_rate = recommended_df.counter.sum() / recommended_df.total_components.sum()
-    st.markdown(f"the match rate is: {round(match_rate*100,0)} %" )
+    # st.markdown(f"the match rate is: {round(match_rate*100,0)} %" )
 
     recommended_df["pct_similiar"] = recommended_df["counter"] / recommended_df["total_components"]
     recommended_df["ls_distance"] = recommended_df["uploaded_song_components"]*recommended_df["pct_similiar"]
