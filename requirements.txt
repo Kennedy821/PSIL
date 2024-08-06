@@ -1,10 +1,10 @@
+polars==0.20.31
 streamlit
-numpy
 matplotlib
 pathlib
 pandas
-polars
-seaborn
+numpy
 google-auth
 google-cloud-storage
 st-files-connection
+seaborn
