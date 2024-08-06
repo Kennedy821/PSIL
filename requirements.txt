@@ -2,7 +2,6 @@ streamlit
 numpy
 matplotlib
 pathlib
-tempfile
 Pillow
 pandas
 polars
