@@ -8,7 +8,7 @@ Created on Thu Apr  4 17:43:24 2024
 import streamlit as st
 from PIL import Image
 
-im = Image.open('/Users/tariromashongamhende/Downloads/slug_logo.png')
+im = Image.open('slug_logo.png')
 st.set_page_config(
     page_title="Hello",
     page_icon=im,
