@@ -184,9 +184,18 @@ def get_top_n_recommendations_gcs_version(n):
     # as a song may appear multiple times the more similar it is we want to not double count the total components
     # the initial code below didn't account for this and therefore meant the sing similarity percentage was artificially low for some songs
     # recommended_df = recommended_df.groupby(["origin_song","target_song"]).sum().sort_values("counter", ascending=False).reset_index()
+
     # the version below ensures that the total components value that is kept is the true value
-    recommended_df = pl.from_pandas(recommended_df).groupby(["origin_song","target_song"]).agg(pl.col("counter").sum(),
-                                                                                               pl.col("total_components").median()).to_pandas().sort_values("counter", ascending=False).reset_index()
+    # polars version
+    # recommended_df = pl.from_pandas(recommended_df).groupby(["origin_song","target_song"]).agg(pl.col("counter").sum(),
+    #                                                                                            pl.col("total_components").median()).to_pandas().sort_values("counter", ascending=False).reset_index()
+    
+    # pandas version 
+    recommended_df = (recommended_df.groupby(["origin_song", "target_song"])
+                  .agg(counter=("counter", "sum"),
+                       total_components=("total_components", "median"))
+                  .sort_values("counter", ascending=False)
+                  .reset_index())
 
     recommended_df["origin_song_counter"] = total_uploaded_files
     recommended_df["uploaded_song_components"] = recommended_df["total_components"] / recommended_df["origin_song_counter"]
