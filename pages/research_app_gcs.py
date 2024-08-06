@@ -66,7 +66,7 @@ st.set_page_config(
     page_icon=im,
 )
 
-conn = st.connection('gcs', type=FilesConnection)
+# conn = st.connection('gcs', type=FilesConnection)
 
 
 # Now you can use `index` for searching, etc.
