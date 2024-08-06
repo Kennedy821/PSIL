@@ -2,7 +2,6 @@ streamlit
 numpy
 matplotlib
 pathlib
-Pillow
 pandas
 polars
 seaborn
