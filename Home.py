@@ -6,13 +6,15 @@ Created on Thu Apr  4 17:43:24 2024
 """
 
 import streamlit as st
+from PIL import Image
 
+im = Image.open('/Users/tariromashongamhende/Downloads/slug_logo.png')
 st.set_page_config(
     page_title="Hello",
-    page_icon="👋",
+    page_icon=im,
 )
 
-st.write("# Welcome to Streamlit! 👋")
+st.write(f"# Welcome to PSIL by Slug!")
 
 st.sidebar.success("Select a demo above.")
 

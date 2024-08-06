@@ -12,95 +12,11 @@ import io
 import base64
 import numpy as np
 import matplotlib.pyplot as plt
-from pydub import AudioSegment
-from pytube import YouTube, Playlist
-import os
+# from pydub import AudioSegment
+# from pytube import YouTube, Playlist
 from pathlib import Path
-import streamlit as st
 import librosa
 import librosa.display
-import matplotlib.pyplot as plt
-import numpy as np
-import os
-import tempfile
-from zipfile import ZipFile
-from PIL import Image
-from io import BytesIO
-import pandas as pd
-
-import os
-import librosa
-import librosa.display
-import matplotlib.pyplot as plt
-from pytube import YouTube
-import tempfile
-
-# for loading/processing the images  
-from keras.preprocessing.image import load_img 
-from keras.preprocessing.image import img_to_array 
-from keras.applications.vgg16 import preprocess_input 
-
-# models 
-from keras.applications.vgg16 import VGG16
-from keras.applications.vgg19 import VGG19
-from keras.models import Model
-
-# clustering and dimension reduction
-from sklearn.cluster import KMeans
-from sklearn.decomposition import PCA
-
-# for everything else
-import os
-import numpy as np
-import matplotlib.pyplot as plt
-from random import randint
-import pandas as pd
-import pickle
-import streamlit as st
-
-import librosa
-import librosa.display
-import matplotlib.pyplot as plt
-import numpy as np
-import os
-import tempfile
-from zipfile import ZipFile
-from PIL import Image
-from io import BytesIO
-import pandas as pd
-import io
-from sklearn.cluster import KMeans
-from sklearn.datasets import make_blobs
-from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import silhouette_score
-import base64
-from pathlib import Path
-import polars as pl
-import concurrent.futures
-from pytube import YouTube, Playlist
-from sklearn.preprocessing import MinMaxScaler
-import umap
-import gc
-import time
-from joblib import dump, load
-import joblib
-import streamlit as st
-import os
-import zipfile
-import io
-import base64
-import numpy as np
-import matplotlib.pyplot as plt
-from pydub import AudioSegment
-from pytube import YouTube, Playlist
-import os
-from pathlib import Path
-import streamlit as st
-import librosa
-import librosa.display
-import matplotlib.pyplot as plt
-import numpy as np
-import os
 import tempfile
 from zipfile import ZipFile
 from PIL import Image
@@ -110,23 +26,21 @@ import time
 import soundfile as sf
 import polars as pl
 import concurrent.futures
-import seaborn as sns
-import pandas as pd
-import os
-from river import cluster
-from pathlib import Path
-import numpy as np
+# from sklearn.cluster import KMeans
+# from sklearn.decomposition import PCA
+# from sklearn.datasets import make_blobs
+# from sklearn.preprocessing import StandardScaler, MinMaxScaler
+# from sklearn.metrics import silhouette_score
+# from tensorflow.keras.preprocessing.image import load_img, img_to_array
+# from tensorflow.keras.models import load_model
+# from keras.applications.vgg16 import VGG16
+# from keras.applications.vgg19 import VGG19
+# from keras.models import Model
 from joblib import dump, load
-from river import cluster
-from river import stream
-import numpy as np
-from tensorflow.keras.models import load_model
-from sklearn.preprocessing import StandardScaler
-import umap
-
-
-
-
+# from river import cluster, stream
+import seaborn as sns
+import gc
+import random
 from PIL import Image, ImageDraw, ImageSequence, ImageFont
 import textwrap
 from google.cloud import storage
@@ -137,13 +51,51 @@ from google.oauth2 import service_account
 from google.cloud import storage
 from st_files_connection import FilesConnection
 import gcsfs
+import yt_dlp
+import timm
+import torch
+from PIL import Image
+from torchvision import transforms
+import re
+from fuzzywuzzy import fuzz
+from fuzzywuzzy import process
 
-# Create connection object and retrieve file contents.
-# Specify input format is a csv and to cache the result for 600 seconds.
+def preprocess_input(x):
+    """
+    Preprocesses a numpy array encoding a batch of images for EfficientNet.
+
+    Args:
+    - x (numpy.ndarray): Input image array to preprocess.
+
+    Returns:
+    - numpy.ndarray: Preprocessed image array.
+    """
+    # Ensure the input is a numpy array
+    x = np.array(x, dtype=np.float32)
+    
+    # Scale pixel values to range [-1, 1]
+    x /= 127.5
+    x -= 1.0
+    
+    return x
+
+def load_and_preprocess_image(image_path, target_size=(512, 512)):
+    # Load the image
+    img = Image.open(image_path)
+    # Convert to RGB (if not already in RGB)
+    img = img.convert('RGB')
+    # Resize the image
+    img = img.resize(target_size)
+    
+    # Convert the image to a NumPy array
+    img_array = np.array(img)
+    
+    # Normalize the image
+    img_array = img_array / 255.0
+    
+    return img_array
+
 conn = st.connection('gcs', type=FilesConnection)
-#df = conn.read("psil-app-backend/myfile.csv", input_format="csv", ttl=600)
-#st.dataframe(df)
-
 
 
 # Now you can use `index` for searching, etc.
@@ -176,7 +128,7 @@ def get_top_n_recommendations_gcs_version(list_of_song_components, list_of_featu
             # Download the file to a destination
             blob.download_to_filename(temp_dir+"queried_indices.csv")
             downloaded_indices_df = pd.read_csv(temp_dir+"queried_indices.csv")
-            #st.dataframe(downloaded_indices_df)
+            st.dataframe(downloaded_indices_df)
             break
         else:
             time.sleep(10)
@@ -184,40 +136,88 @@ def get_top_n_recommendations_gcs_version(list_of_song_components, list_of_featu
     #st.write(f"Downloaded indices in {end_time - start_time} seconds")
 
 
-
+    total_components_df = database_song_names_df.copy()
+    total_components_df["target_song"] = total_components_df["song_name"].str.split("_spect").str[0]
+    # total_components_df
+    total_components_df["total_components"] = 1
+    total_components_df = total_components_df[["target_song","total_components"]].groupby(["target_song"]).sum().sort_values("total_components", ascending=False).reset_index()
+    
 
     for i in range(len(filenames_)):
         song= filenames_[i]
         song_components_list.append(song)
+
+
     
     for i in range(len(downloaded_indices_df.columns)):
 
-        I = [x for x in downloaded_indices_df.iloc[:,i].values]
+        # I = [x for x in downloaded_indices_df.iloc[:,i].values]
 
-        total_components_df = database_song_names_df.copy()
-        total_components_df["target_song"] = total_components_df["song_name"].str.split("_spect").str[0]
-        total_components_df["total_components"] = 1
-        total_components_df = total_components_df[["target_song","total_components"]].groupby(["target_song"]).sum().sort_values("total_components", ascending=False).reset_index()
+        # total_components_df = database_song_names_df.copy()
+        # total_components_df["target_song"] = total_components_df["song_name"].str.split("_spect").str[0]
+        # # total_components_df
+        # total_components_df["total_components"] = 1
+        # total_components_df = total_components_df[["target_song","total_components"]].groupby(["target_song"]).sum().sort_values("total_components", ascending=False).reset_index()
         
+        I = downloaded_indices_df.iloc[:, i].values
     
         results_df = database_song_names_df[database_song_names_df.index.isin(I)]
         results_df["origin_song_component"] = song
         results_df["origin_song"] = results_df["origin_song_component"].str.split("_spect").str[0]
         results_df["target_song"] = results_df["song_name"].str.split("_spect").str[0]
         results_df["counter"] =1
+
+
+
         pivoted_df = results_df[["origin_song","target_song","counter"]].groupby(["origin_song","target_song"]).sum().sort_values("counter", ascending=False).reset_index()
         pivoted_df = pivoted_df[pivoted_df.origin_song!=pivoted_df.target_song]
         pivoted_df = pivoted_df.merge(total_components_df, on="target_song")
         song_components_recommendations_list.append(pivoted_df)
-        
-        
+
+
+    # st.markdown("total components df:")
+    # st.dataframe(total_components_df)
+
+    # st.markdown(f"results df: {len(results_df)}")
+    # st.dataframe(results_df.head(40))
+
+    # st.markdown("pivoted df:")
+    # st.dataframe(pivoted_df)
+
     recommended_df = pd.concat(song_components_recommendations_list)
-    recommended_df = recommended_df.groupby(["origin_song","target_song"]).sum().sort_values("counter", ascending=False).reset_index()
+
+    st.markdown("recommended df:")
+    st.dataframe(recommended_df)
+
+    # as a song may appear multiple times the more similar it is we want to not double count the total components
+    # the initial code below didn't account for this and therefore meant the sing similarity percentage was artificially low for some songs
+    # recommended_df = recommended_df.groupby(["origin_song","target_song"]).sum().sort_values("counter", ascending=False).reset_index()
+    # the version below ensures that the total components value that is kept is the true value
+    recommended_df = pl.from_pandas(recommended_df).groupby(["origin_song","target_song"]).agg(pl.col("counter").sum(),
+                                                                                               pl.col("total_components").median()).to_pandas().sort_values("counter", ascending=False).reset_index()
+
+    recommended_df["origin_song_counter"] = total_uploaded_files
+    recommended_df["uploaded_song_components"] = recommended_df["total_components"] / recommended_df["origin_song_counter"]
+    recommended_df.loc[(recommended_df["uploaded_song_components"]<2) & (recommended_df["uploaded_song_components"]>0.5),"appropriate_song"] = "true"
+    recommended_df.loc[recommended_df.appropriate_song.isna(),"appropriate_song"] = "false"
+
+
+
+ 
+
+    recommended_df = recommended_df[(recommended_df.appropriate_song=="true")
+                                    &(recommended_df.counter<=recommended_df.total_components)].reset_index().drop(columns="index")
+
+    # this is a check to determine if the core index has sufficient rate of clustering
+    # ideally this should at least be close to 50% across all joined songs
+    match_rate = recommended_df.counter.sum() / recommended_df.total_components.sum()
+    st.markdown(f"the match rate is: {round(match_rate*100,0)} %" )
+
     recommended_df["pct_similiar"] = recommended_df["counter"] / recommended_df["total_components"]
-    recommended_df["ls_distance"] = recommended_df["counter"]*recommended_df["pct_similiar"]
+    recommended_df["ls_distance"] = recommended_df["uploaded_song_components"]*recommended_df["pct_similiar"]
     recommended_df = recommended_df.rename(columns={"target_song":"song_name"})
-    recommended_df = recommended_df.sort_values("ls_distance", ascending=False).head(n)
-    #recommended_df
+    recommended_df = recommended_df.sort_values("pct_similiar", ascending=False).head(n)
+    recommended_df
     return recommended_df
 
 def get_top_n_recommendations(list_of_song_components, list_of_features, n):
@@ -259,7 +259,7 @@ def get_top_n_recommendations(list_of_song_components, list_of_features, n):
     recommended_df["pct_similiar"] = recommended_df["counter"] / recommended_df["total_components"]
     recommended_df["ls_distance"] = recommended_df["counter"]*recommended_df["pct_similiar"]
     recommended_df = recommended_df.rename(columns={"target_song":"song_name"})
-    recommended_df = recommended_df.sort_values("ls_distance", ascending=False).head(n)
+    recommended_df = recommended_df.sort_values("pct_similiar", ascending=False).head(n)
     #recommended_df
     return recommended_df
 
@@ -484,80 +484,128 @@ def generate_song_spectrogram(song_link):
     return all_spectrograms
 
 def generate_spectrogram(song_link):
+    st.markdown(song_link)
     all_spectrograms = []
-    yt = YouTube(song_link)
-    
-    # Check the length of the video in seconds and convert to minutes
-    video_length_minutes = yt.length / 60
-    
+    # song_file_directory = temp_dir
+
+    try:
+        ydl_opts = {
+            'format': 'bestaudio/best',
+            'outtmpl': f'{temp_dir}/%(title)s.%(ext)s',  # Save to 'downloads' folder with title as filename
+            'postprocessors': [{
+                'key': 'FFmpegExtractAudio',
+                'preferredcodec': 'mp3',  # You can also use 'wav'
+                'preferredquality': '192',
+            }],
+        }
+
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            info_dict = ydl.extract_info(song_link, download=False)
+            # st.markdown(info_dict)
+            video_length_minutes = info_dict.get('duration') / 60
+            # st.markdown(video_length_minutes)
+    except Exception as e:
+        st.markdown(f"{e} could not be processed.")
+        video_length_minutes = 1000
     # Process the song if it's less than 10 minutes
     if video_length_minutes < 10:
         with tempfile.TemporaryDirectory() as temp_song_dir:
             try:
     
-                audio_stream = yt.streams.filter(only_audio=True).first()
-                #st.markdown(f"song name is {yt.title}")
-                
-                
-                audio_path = audio_stream.download(output_path=temp_song_dir)
-                song_name = audio_path.title().split("\\")[-1]
-                mp3_song_name = yt.title.replace('.mp4','.mp3').replace('.Mp4','.mp3').replace('.MP4','.mp3').replace("|","")
-                # this is the working version
-                # song_file_directory = os.getcwd()
-                
                 song_file_directory = temp_song_dir
-    
-                list_of_items_in_temp_dir = [x for x in os.listdir(song_file_directory)]
-                #st.markdown(list_of_items_in_temp_dir)
-                
-                import moviepy.editor as mp
-                import re
-                tgt_folder = temp_song_dir
-                
-                for file in [n for n in os.listdir(tgt_folder) if re.search('mp4',n)]:
-                    full_path = os.path.join(tgt_folder, file)
-                    output_path = os.path.join(tgt_folder, os.path.splitext(file)[0] + '.mp3')
-                    clip = mp.AudioFileClip(full_path).subclip(10,) # disable if do not want any clipping
-                    clip.write_audiofile(output_path)
-                    clip.close()  # Explicitly close the clip to free up resources
-                    os.remove(full_path)  # Delete the original .mp4 file to avoid clutter
-                #st.write(f"{mp3_song_name} has been covnerted to an mp3 file.")
-                for i in os.listdir(song_file_directory):
-                    # if mp3_song_name in i:
-                    st.write(mp3_song_name)
-    
-    
-                    #st.write(f"Beginning to process spectograms for {mp3_song_name}")
-                    # song_file_directory = Path.cwd()
-                    audio_path = os.path.join(song_file_directory, i)
-    # =============================================================================
-    #                 with open(audio_path, 'wb') as f:
-    #                     f.write(audio_file.getvalue())
-    # =============================================================================
-# =============================================================================
-#                     st.markdown(audio_path)
-# =============================================================================
-                    y, sr = librosa.load(audio_path, sr=None)
-                    segment_length_samples = 30 * sr
-                    num_segments = len(y) // segment_length_samples
-        
-                    saved_paths = []
-                    with st.expander(i):
-                        st.audio(audio_path)
-                        for i in range(num_segments):
-                            
-                            start_sample = i * segment_length_samples
-                            end_sample = start_sample + segment_length_samples
-                            segment = y[start_sample:end_sample]
-            
-                            # Generate, save, and display the spectrogram
-                            spectrogram_path = generate_and_display_spectrogram(segment, sr, temp_dir, i, mp3_song_name)
-                            saved_paths.append(spectrogram_path)
-                            all_spectrograms.append(spectrogram_path)
 
-                    return saved_paths
+
+                # ydl_opts = {
+                #     'format': 'bestaudio/best',
+                #     'outtmpl': f'{song_file_directory}/%(title)s.%(ext)s',  # Save to 'downloads' folder with title as filename
+                #     'postprocessors': [{
+                #         'key': 'FFmpegExtractAudio',
+                #         'preferredcodec': 'wav',  # You can also use 'wav'
+                #         'preferredquality': '192',
+                #     }],
+                # }
+
+
+                ydl_opts = {
+                    'format': 'bestaudio/best',
+                    'outtmpl': f'{song_file_directory}/%(title)s.%(ext)s',  # Save to 'downloads' folder with title as filename
+                    'postprocessors': [{
+                        'key': 'FFmpegExtractAudio',
+                        'preferredcodec': 'wav',  # You can also use 'wav'
+                        'preferredquality': '192',
+                    }],
+                    'replace_in_metadata': [('title', r' \|\_', ''),
+                                            # ('title', r'_', '_'),
+                                            ('title', r'\"', '_'),
+                                             ('title', r'\-', ''), ],  # Replace '|' with '-' in the title
+                    'restrictfilenames': True,  # Optional: further sanitize filenames
+                }
+
+                with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                    # ydl.download([song_link])
+                    info_dict = ydl.extract_info(song_link, download=True)
+                    # mp3_song_name = info_dict.get('title', None).replace("\|","-")#.replace('.mp4','.mp3').replace('.Mp4','.mp3').replace('.MP4','.mp3').replace("|","")
+                    mp3_song_name = re.sub(r'\|', '', info_dict.get('title', '')).replace(" ","_").replace("-","_").replace("__","_").replace('\"','')
+                    video_length_minutes = info_dict.get('duration') / 60
+                
+                
+                st.markdown(f"{mp3_song_name}:{video_length_minutes} mins")
+
+                # Function to sanitize filenames
+                def sanitize_filename(filename):
+                    return filename.replace("|","")
+
+                # Function to rename files in the directory
+                def rename_files_in_directory(directory):
+                    for filename in os.listdir(directory):
+                        if '|' in filename:
+                            sanitized_filename = sanitize_filename(filename)
+                            original_path = os.path.join(directory, filename)
+                            sanitized_path = os.path.join(directory, sanitized_filename)
+                            os.rename(original_path, sanitized_path)
+                            print(f'Renamed: {original_path} to {sanitized_path}')
+
+                for i in os.listdir(song_file_directory):
+                    st.markdown(i)
+                    # st.markdown(i.replace(" ","_"))
+
+                for n in os.listdir(song_file_directory)[:]:
+                    # st.markdown(f"song name mp3: {mp3_song_name}")
+                    # st.markdown(n)
+                    ratio = fuzz.ratio(mp3_song_name, n)
+                    st.markdown(ratio)
+
+                    if ratio >0.8:
+                        # st.markdown(n)
+                        # song_file_directory = Path.cwd()
+                        audio_path = os.path.join(song_file_directory, n)
+        # =============================================================================
+        #                 with open(audio_path, 'wb') as f:
+        #                     f.write(audio_file.getvalue())
+        # =============================================================================
+            
+                        y, sr = librosa.load(audio_path, sr=None)
+                        segment_length_samples = 30 * sr
+                        num_segments = len(y) // segment_length_samples
+            
+                        saved_paths = []
+        
+                        with st.expander(n):
+                            st.audio(audio_path)
+                            for i in range(num_segments):
+                                
+                                start_sample = i * segment_length_samples
+                                end_sample = start_sample + segment_length_samples
+                                segment = y[start_sample:end_sample]
+                
+                                # Generate, save, and display the spectrogram
+                                spectrogram_path = generate_and_display_spectrogram(segment, sr, temp_dir, i, mp3_song_name)
+                                saved_paths.append(spectrogram_path)
+                                all_spectrograms.append(spectrogram_path)
+
+                        return saved_paths
             except Exception as e:
-                #st.write(f"An error occurred when processing {mp3_song_name} {str(e)}")
+                st.write(f"An error occurred when processing {mp3_song_name} {str(e)}")
                 pass
 def image_to_base64(pil_image):
     img_byte_arr = io.BytesIO()
@@ -569,7 +617,7 @@ def process_files(temp_dir):
     # Example function to process files in the temporary directory
     # Here you can implement your logic that requires posix.DirEntry objects
     for entry in os.scandir(temp_dir):
-        #st.markdown(entry)
+        # st.markdown(entry)
         if entry.is_file() and entry.name.endswith(('.png', '.jpg', '.jpeg')):
             #st.write(f"Processing file: {entry.name}")
             # Add your processing logic here   
@@ -591,20 +639,85 @@ def extract_features(file, model):
 
 def extract_features_efficient_net(file, model,index_value):
     # load the image as a 224x224 array
-    img = load_img(os.path.join(directory,file), target_size=(512,512))
+    # img = load_img(os.path.join(directory,file), target_size=(512,512))
+    img = load_and_preprocess_image(os.path.join(directory,file))
     img = np.array(img)
     reshaped_img = img.reshape(1,512,512,3)
     imgx = preprocess_input(reshaped_img)
+    st.markdown(imgx)
+    # Run the image through the model
+    with torch.no_grad():
+        features = eff_net_model(imgx)
     # prepare image for model
     # get the feature vector
-    features = eff_net_model.predict(imgx)
+    # features = eff_net_model.predict(imgx)
     print(index_value)
     data[index_value] = features
 
     del img
     del imgx
     del reshaped_img
-    return features.astype(np.float32)   
+    return features.astype(np.float32) 
+
+# Define the image loading and preprocessing function
+def load_and_preprocess_image(image_path, target_size=(512, 512)):
+    """
+    Loads an image from the specified file path and preprocesses it.
+
+    Args:
+    - image_path (str): Path to the image file.
+    - target_size (tuple of int): Desired size (width, height) to resize the image.
+
+    Returns:
+    - torch.Tensor: Preprocessed image tensor.
+    """
+    # Load the image
+    img = Image.open(image_path).convert('RGB')
+    
+    # Define preprocessing transformations
+    preprocess = transforms.Compose([
+        transforms.Resize(target_size),
+        transforms.ToTensor(),  # Convert the image to a tensor with values in [0, 1]
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])  # Normalize the image
+    ])
+    
+    # Apply preprocessing
+    img_tensor = preprocess(img)
+    
+    # Add batch dimension
+    img_tensor = img_tensor.unsqueeze(0)
+    
+    return img_tensor
+
+# Define the feature extraction function
+def extract_features_efficient_net(file, model, index_value):
+    """
+    Extracts features from an image using EfficientNet.
+
+    Args:
+    - file (str): Image file name.
+    - model (torch.nn.Module): Pretrained EfficientNet model.
+    - index_value (int): Index value for data storage.
+    - directory (str): Directory containing the image file.
+
+    Returns:
+    - np.ndarray: Extracted features as a NumPy array.
+    """
+    # Load and preprocess the image
+    img_tensor = load_and_preprocess_image(os.path.join(directory,file))
+    
+    # Run the image through the model
+    with torch.no_grad():
+        features = model(img_tensor)
+    
+    # Convert features to NumPy array
+    features_np = features.numpy()
+    
+    # Store the features in the data dictionary
+    data[index_value] = features_np
+    
+    # Return features as float32
+    return features_np.astype(np.float32)  
 # Set page title and favicon
 #st.set_page_config(page_title="PSIL Basic", page_icon=":musical_note:")
 
@@ -624,10 +737,10 @@ if st.button("Recommend me songs"):
                 # generate the spectorgams
                 spectograms_paths = generate_spectrogram(song_link)
 # =============================================================================
-#                 st.markdown(spectograms_paths)
+                # st.markdown(spectograms_paths)
 # =============================================================================
                 st.success('Done!')
-                st.markdown(spectograms_paths)
+                
                 # convert these spectograms to be processed by Efficient Net
                 # Data processing section
                 # Loading section
@@ -644,7 +757,8 @@ if st.button("Recommend me songs"):
                 
                 
                 total_uploaded_files = len(image_files)
-                print(total_uploaded_files)
+                # st.markdown(total_uploaded_files)
+                # st.markdown(len(names_of_songs_in_upload_order))
                 # Display the progress bar
                 if len(image_files)>1:
                     #progress = len(image_files)
@@ -659,7 +773,6 @@ if st.button("Recommend me songs"):
 # =============================================================================
                 
                 for image_file in image_files:
-                    st.markdown(image_file)
                     # Define the full path for the original file
                     original_file_path =  image_file
                     # Add the name of the file to an ordered list based on their name
@@ -669,19 +782,36 @@ if st.button("Recommend me songs"):
                 chosen_song_name_df = pd.DataFrame(names_of_songs_in_upload_order)
                 chosen_song_name_df.columns = ["song_component"]
                 chosen_song_name_df["song_name"] = chosen_song_name_df.song_component.str.split("spect").str[0].str[:-1]
-                #st.dataframe(chosen_song_name_df)
+                # st.dataframe(chosen_song_name_df)
                 chosen_song_name = chosen_song_name_df["song_name"].value_counts().index[0]
                 #st.markdown(f"{chosen_song_name}")
                 
-                model = VGG19()
-                model = Model(inputs = model.inputs, outputs = model.layers[-2].output)
-                
-                from tensorflow.keras.applications import EfficientNetB0
-                from tensorflow.keras.applications.efficientnet import preprocess_input
+                # model = VGG19()
+                # model = Model(inputs = model.inputs, outputs = model.layers[-2].output)
+                # import os
+                # # os.environ['TF_METAL'] = '1'
+                # from tensorflow.keras import mixed_precision
+
+                # # Set mixed precision policy
+                # policy = mixed_precision.Policy('mixed_float32')
+                # mixed_precision.set_global_policy(policy)
+
+                # from tensorflow.keras.applications import EfficientNetB0
+                # from tensorflow.keras.applications.efficientnet import preprocess_input
+
+
+                # st.write("the VGG Net model is being loaded")
                 
                 # Load EfficientNetB0 model
-                eff_net_model = EfficientNetB0(weights='imagenet', include_top=False, input_shape=(512, 512, 3))
+                # eff_net_model = EfficientNetB0(weights='imagenet', include_top=False, input_shape=(512, 512, 3))
+
+                # Load EfficientNetB0 model
+                eff_net_model = timm.create_model('efficientnet_b0', pretrained=True, num_classes=0, global_pool='')
+                # model.eval()
+
                 
+                # st.write("Success: the VGG Net model has been loaded")
+
                 #chosen_model = "vgg"
                 chosen_model = "EfficientNet" 
                 
@@ -693,10 +823,10 @@ if st.button("Recommend me songs"):
                 features_df = pd.DataFrame()
                 
                 
-                
-                p = r"C:\Users\worldcontroller\Documents\PSIL\rebirth\vectors"
+                # st.markdown(flowers)
+                p = r"/Users/tariromashongamhende/Documents/ml_projects/psil/rebirth/vectors"
 # =============================================================================
-#                 st.write("running image feature extraction with CNN")
+                # st.write("running image feature extraction with CNN")
 # =============================================================================
                 # loop through each image in the dataset
                 
@@ -708,7 +838,7 @@ if st.button("Recommend me songs"):
                 image_df["counter"] = counter
                 image_df["counter"] = image_df["counter"].astype(int)
 # =============================================================================
-#                 st.write(image_df.shape)
+                # st.write(image_df)
 # =============================================================================
                 # can this run on all of it?
                 feat = image_df.apply(lambda x:extract_features_efficient_net(x.image_names,eff_net_model,x.counter),axis=1)
@@ -753,7 +883,7 @@ if st.button("Recommend me songs"):
                 
                     del init_feat
 # =============================================================================
-#                 st.write(feat.shape)
+                # st.write(f"this is the shape of the processed song: {feat.shape}")
 # =============================================================================
                 end_time = time.time()
 
@@ -780,10 +910,10 @@ if st.button("Recommend me songs"):
                     client = storage.Client.from_service_account_info(creds_dict)
                     return client
 
-                #path_to_private_key = 'utility-braid-351906-bde1a70eb39a.json'
-                #client = storage.Client.from_service_account_json(json_credentials_path=path_to_private_key)
+                path_to_private_key = 'utility-braid-351906-bde1a70eb39a.json'
+                client = storage.Client.from_service_account_json(json_credentials_path=path_to_private_key)
 
-                client = get_storage_client()
+                #client = get_storage_client()
 
                 # The bucket on GCS in which to write the CSV file
                 bucket = client.bucket('psil-app-backend-2')
@@ -823,6 +953,8 @@ if st.button("Recommend me songs"):
                 # Upload the data
                 upload_file_to_gcs(bucket_name, source_file_name, destination_blob_name)
 
+                st.markdown(names_of_songs_in_upload_order)
+
                       
                 #st.write("successfully uploaded vector file to google cloud")
                 
@@ -855,8 +987,14 @@ if st.button("Recommend me songs"):
 
                 
                 # load the names of the images in the memmap_array
-                song_names_df_path = Path("full_names_of_songs_in_upload_order.parquet.gzip")
-                saved_songs_names_df = pd.read_parquet(song_names_df_path, engine="pyarrow")#.head(head_filter)
+                # song_names_df_path = Path("/Users/tariromashongamhende/Downloads/psil_crawler_full_names_of_songs_in_upload_order.parquet.gzip")
+
+
+                
+                
+                song_names_df_path = "/Users/tariromashongamhende/Downloads/psil_crawler_song_names_mapped_to_latest_index.parquet.gzip"#.head(5000)
+                saved_songs_names_df = pd.read_parquet(song_names_df_path, engine="pyarrow")#.head(5000)
+
                 database_song_names_df = saved_songs_names_df
 
 
@@ -871,15 +1009,31 @@ if st.button("Recommend me songs"):
                 filtered_selection_n = 5
                 
                 # load the links reference table
-                master_links_filepath = Path("playlist_links_rehoboam_links_master.csv")
+                # playlist_links_path = '/Users/tariromashongamhende/Documents/ml_projects/psil/all_playlist_links/all_playlist_links_letters/'
+                # df_container = []
+                # for file in os.listdir(playlist_links_path):
+                #     if "parquet" in file:
+                #         int_df = pd.read_parquet(f"{playlist_links_path}{file}", engine="pyarrow")
+                #         df_container.append(int_df)
+
+                # links_df = pd.concat(df_container).reset_index().drop(columns="index")
+
+
+                # master_links_filepath = Path("new_playlist_links_a_to_f.csv")
+                # master_links_filepath = Path("new_june_master_playlist_links_rehoboam_links_master.csv")
+
+                master_links_filepath = Path("new_playlist_links_a_to_z.csv")
+
                 links_df = pd.read_csv(master_links_filepath)
                 
-                top_recommendations_df = get_top_n_recommendations_gcs_version(names_of_songs_in_upload_order, feat, 5)
+                top_recommendations_df = get_top_n_recommendations_gcs_version(names_of_songs_in_upload_order, feat, 10)
+
+                # top_recommendations_df
 
                 #top_recommendations_df = get_top_n_recommendations(names_of_songs_in_upload_order, feat, 5)
                 
                 top_recommendations_links_df = top_recommendations_df.merge(links_df[["song_name", "song_links"]], on="song_name", how="left")[["song_name", "song_links"]].reset_index().drop(columns="index").drop_duplicates("song_name")
-                #st.dataframe(top_recommendations_links_df)
+                st.dataframe(top_recommendations_links_df)
                 
                 # Create a dictionary mapping song names to links
                 song_links_map = dict(zip(top_recommendations_links_df['song_name'], top_recommendations_links_df['song_links']))
