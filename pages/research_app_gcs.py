@@ -64,13 +64,7 @@ im = Image.open('slug_logo.png')
 st.set_page_config(
     page_title="PSIL",
     page_icon=im,
-)
-
-# conn = st.connection('gcs', type=FilesConnection)
-
-
-# Now you can use `index` for searching, etc.
-     
+)     
 
 
 def stream_data(word_to_stream):
@@ -78,10 +72,6 @@ def stream_data(word_to_stream):
         yield word + " "
         time.sleep(0.25)
 
-# Load the index as memory-mapped
-#faiss_vector_db_path = "faiss_quantised_testing_100_clusters.index"
-
-#index = faiss.read_index(faiss_vector_db_path)
 
 def get_top_n_recommendations_gcs_version(n):
     while True:
@@ -319,8 +309,7 @@ st.title("PSIL: Research production version")
 
 # Input interface
 st.subheader("Input Songs")
-song_link = st.text_input("Enter the YouTube link of the song or playlist:")
-#generate_playlist = st.checkbox("Generate spectrograms for a playlist")
+song_link = st.text_input("Enter the YouTube link of the song you'd like to get recommendations for:")
 
 if st.button("Recommend me songs"):
     with st.spinner('Processing your file(s)...'):
