@@ -309,7 +309,7 @@ st.title("PSIL: Research production version")
 
 # Input interface
 st.subheader("Input Songs")
-song_link = st.text_input("Enter the YouTube link of the song you'd like to get recommendations for:")
+song_link = st.text_input("Enter the SoundCloud link of the song you'd like to get recommendations for:")
 
 if st.button("Recommend me songs"):
     with st.spinner('Processing your file(s)...'):
