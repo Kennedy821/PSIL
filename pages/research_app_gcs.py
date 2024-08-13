@@ -122,7 +122,7 @@ def get_top_n_recommendations_gcs_version(n):
     total_components_df["target_song"] = total_components_df["song_name"].str.split("_spect").str[0]
     # total_components_df
     total_components_df["total_components"] = 1
-    total_components_df = total_components_df[["target_song","total_components"]].groupby(["target_song"]).sum().sort_values("total_components", ascending=False).reset_index()
+    total_components_df = total_components_df[["target_song","total_components","english"]].groupby(["target_song"]).sum().sort_values("total_components", ascending=False).reset_index()
     
 
     for i in range(len(filenames_)):
@@ -153,7 +153,7 @@ def get_top_n_recommendations_gcs_version(n):
 
         pivoted_df = results_df[["origin_song","target_song","counter"]].groupby(["origin_song","target_song"]).sum().sort_values("counter", ascending=False).reset_index()
         pivoted_df = pivoted_df[pivoted_df.origin_song!=pivoted_df.target_song]
-        pivoted_df = pivoted_df.merge(total_components_df, on="target_song")
+        pivoted_df = pivoted_df.merge(total_components_df, on="target_song").drop(columns=f'{language_option.lower()}')
         song_components_recommendations_list.append(pivoted_df)
 
 
@@ -166,10 +166,17 @@ def get_top_n_recommendations_gcs_version(n):
     # st.markdown("pivoted df:")
     # st.dataframe(pivoted_df)
 
+
+
     recommended_df = pd.concat(song_components_recommendations_list)
+
+
 
     # st.markdown("recommended df:")
     # st.dataframe(recommended_df)
+
+
+
 
     # as a song may appear multiple times the more similar it is we want to not double count the total components
     # the initial code below didn't account for this and therefore meant the sing similarity percentage was artificially low for some songs
@@ -186,6 +193,21 @@ def get_top_n_recommendations_gcs_version(n):
                        total_components=("total_components", "median"))
                   .sort_values("counter", ascending=False)
                   .reset_index())
+    
+    language_df = total_components_df.copy().drop(columns="total_components")
+    language_df.loc[language_df[language_option.lower()]>0,language_option.lower()] = 1
+
+    # st.markdown("this is the language df")
+    # st.dataframe(language_df)
+    recommended_df = recommended_df.merge(language_df, on="target_song")
+
+    # st.markdown("this is the updated recommended df with a language flag")
+    # st.dataframe(recommended_df)
+
+    if language_option=="All":
+        pass
+    else:
+        recommended_df = recommended_df[recommended_df[language_option.lower()]==1]
 
     recommended_df["origin_song_counter"] = total_uploaded_files
     recommended_df["uploaded_song_components"] = recommended_df["total_components"] / recommended_df["origin_song_counter"]
@@ -311,6 +333,19 @@ st.title("PSIL: Research production version")
 st.subheader("Input Songs")
 song_link = st.text_input("Enter the SoundCloud link of the song you'd like to get recommendations for:")
 
+st.write("Select which language you'd like your song results to be in")
+
+language_option = st.selectbox(
+    'Select Language for your recommendations',
+    ('', 'All', 'English')  # Add an empty string as the first option
+)
+
+# Display the selected option
+if language_option:
+    st.write('You selected:', language_option)
+else:
+    st.write('Please select a language.')
+
 if st.button("Recommend me songs"):
     with st.spinner('Processing your file(s)...'):
         if song_link:
@@ -348,8 +383,11 @@ if st.button("Recommend me songs"):
 
                 
                 
-                song_names_df_path = "psil_crawler_song_names_mapped_to_latest_index.parquet.gzip"
+                song_names_df_path = "psil_crawler_song_names_mapped_to_latest_index_w_languages.parquet.gzip"
                 saved_songs_names_df = pd.read_parquet(song_names_df_path, engine="pyarrow")
+                saved_songs_names_df.iloc[:,1:] = saved_songs_names_df.iloc[:,1:].astype(float)
+                # saved_songs_names_df
+
 
                 database_song_names_df = saved_songs_names_df
 
@@ -358,7 +396,7 @@ if st.button("Recommend me songs"):
                 
 
 
-                filtered_selection_n = 5
+                filtered_selection_n = 30
                 
 
                 master_links_filepath = Path("new_playlist_links_a_to_z.csv")
@@ -368,6 +406,8 @@ if st.button("Recommend me songs"):
                 top_recommendations_df = get_top_n_recommendations_gcs_version(filtered_selection_n)
                 
                 top_recommendations_links_df = top_recommendations_df.merge(links_df[["song_name", "song_links"]], on="song_name", how="left")[["song_name", "song_links"]].reset_index().drop(columns="index").drop_duplicates("song_name")
+                
+                
                 # st.dataframe(top_recommendations_links_df)
                 
                 # Create a dictionary mapping song names to links
