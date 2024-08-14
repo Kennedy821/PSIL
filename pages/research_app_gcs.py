@@ -55,6 +55,7 @@ from st_files_connection import FilesConnection
 # import timm
 # import torch
 from PIL import Image
+import os
 # from torchvision import transforms
 # import re
 # from fuzzywuzzy import fuzz
@@ -122,7 +123,7 @@ def get_top_n_recommendations_gcs_version(n):
     total_components_df["target_song"] = total_components_df["song_name"].str.split("_spect").str[0]
     # total_components_df
     total_components_df["total_components"] = 1
-    total_components_df = total_components_df[["target_song","total_components","english"]].groupby(["target_song"]).sum().sort_values("total_components", ascending=False).reset_index()
+    total_components_df = total_components_df[["target_song","total_components",language_option.lower()]].groupby(["target_song"]).sum().sort_values("total_components", ascending=False).reset_index()
     
 
     for i in range(len(filenames_)):
@@ -337,7 +338,7 @@ st.write("Select which language you'd like your song results to be in")
 
 language_option = st.selectbox(
     'Select Language for your recommendations',
-    ('', 'All', 'English')  # Add an empty string as the first option
+    ('', 'All', 'English','French')  # Add an empty string as the first option
 )
 
 # Display the selected option
@@ -383,16 +384,31 @@ if st.button("Recommend me songs"):
 
                 
                 
-                song_names_df_path = "psil_crawler_song_names_mapped_to_latest_index_w_languages.parquet.gzip"
-                saved_songs_names_df = pd.read_parquet(song_names_df_path, engine="pyarrow")
-                saved_songs_names_df.iloc[:,1:] = saved_songs_names_df.iloc[:,1:].astype(float)
+
+                
+                df_container = []
+                for file_ in os.listdir(os.getcwd()):
+                    if "w_languages_" in file_:
+                        int_df = pd.read_parquet(file_, engine="pyarrow")
+                        int_df.iloc[:,1:] = int_df.iloc[:,1:].astype(float)
+                        int_df = int_df.set_index("song_name")
+
+                        df_container.append(int_df)
+
+                database_song_names_df = pd.concat(df_container, axis=1).reset_index()[["song_name",language_option.lower()]]
+                # database_song_names_df
+
+                # song_names_df_path = "psil_crawler_song_names_mapped_to_latest_index_w_languages.parquet.gzip"
+                # saved_songs_names_df = pd.read_parquet(song_names_df_path, engine="pyarrow")
+
+                # saved_songs_names_df.iloc[:,1:] = saved_songs_names_df.iloc[:,1:].astype(float)
                 # saved_songs_names_df
 
 
-                database_song_names_df = saved_songs_names_df
+                # database_song_names_df = saved_songs_names_df
 
 
-                old_song_names_in_order = [x for x in saved_songs_names_df.song_name.values]
+                old_song_names_in_order = [x for x in database_song_names_df.song_name.values]
                 
 
 
