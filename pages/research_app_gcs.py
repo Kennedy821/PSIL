@@ -338,7 +338,7 @@ st.write("Select which language you'd like your song results to be in")
 
 language_option = st.selectbox(
     'Select Language for your recommendations',
-    ('', 'All', 'English','French')  # Add an empty string as the first option
+    ('', 'All', 'English','French','Japanese')  # Add an empty string as the first option
 )
 
 # Display the selected option
