@@ -412,7 +412,7 @@ if st.button("Recommend me songs"):
                 
 
 
-                filtered_selection_n = 30
+                filtered_selection_n = 10
                 
 
                 master_links_filepath = Path("new_playlist_links_a_to_z.csv")
