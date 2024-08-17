@@ -394,8 +394,10 @@ if st.button("Recommend me songs"):
                         int_df = int_df.set_index("song_name")
 
                         df_container.append(int_df)
+                        del int_df
 
                 database_song_names_df = pd.concat(df_container, axis=1).reset_index()[["song_name",language_option.lower()]]
+                del df_container
                 # database_song_names_df
 
                 # song_names_df_path = "psil_crawler_song_names_mapped_to_latest_index_w_languages.parquet.gzip"
