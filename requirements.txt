@@ -8,3 +8,4 @@ google-auth
 google-cloud-storage
 st-files-connection
 seaborn
+streamlit_lottie
