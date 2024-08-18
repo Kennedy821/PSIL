@@ -56,6 +56,8 @@ from st_files_connection import FilesConnection
 # import torch
 from PIL import Image
 import os
+from streamlit_lottie import st_lottie,st_lottie_spinner
+import json
 # from torchvision import transforms
 # import re
 # from fuzzywuzzy import fuzz
@@ -330,6 +332,11 @@ def add_text_to_gif(input_gif_path, full_text, update_interval=0.1):
 
 st.title("PSIL: Research production version")
 
+with open("purple_pink_ball_gradient.json", "r") as f:
+
+
+    lottie_json = json.load(f)
+
 # Input interface
 st.subheader("Input Songs")
 song_link = st.text_input("Enter the SoundCloud link of the song you'd like to get recommendations for:")
@@ -348,7 +355,27 @@ else:
     st.write('Please select a language.')
 
 if st.button("Recommend me songs"):
-    with st.spinner('Processing your file(s)...'):
+    # with st.spinner('Processing your file(s)...'):
+
+    st.write("Processing your link...")
+
+
+
+    with st_lottie_spinner(lottie_json, speed=3, height=750,width=750):
+
+
+    # # Initialize session state for controlling the animation
+    # if "show_animation" not in st.session_state:
+    #     st.session_state.show_animation = True
+
+    # # Display the animation if the state is set to True
+    # if st.session_state.show_animation:
+
+
+            # animation_object = st_lottie(lottie_json,speed=2, height=750, width=750)
+
+            
+
         if song_link:
 
             uploaded_df = pd.DataFrame([song_link])
@@ -373,7 +400,7 @@ if st.button("Recommend me songs"):
             # Upload the CSV string to GCS
             blob.upload_from_string(csv_string, 'text/csv')
 
-            st.markdown("Your song was successfully uploaded.")
+            # st.markdown("Your song was successfully uploaded.")
 
 
 
@@ -425,6 +452,7 @@ if st.button("Recommend me songs"):
                 
                 top_recommendations_links_df = top_recommendations_df.merge(links_df[["song_name", "song_links"]], on="song_name", how="left")[["song_name", "song_links"]].reset_index().drop(columns="index").drop_duplicates("song_name")
                 
+
                 
                 # st.dataframe(top_recommendations_links_df)
                 
@@ -473,6 +501,13 @@ if st.button("Recommend me songs"):
                 markdown_list = "\n".join(markdown_list_items)
                 markdown_list_no_links = "\n".join(markdown_list_items_no_links)
                 
+
+
+
+
+                st.session_state.show_animation = False 
+
+
                 # Display in Streamlit
                 st.header("Here are your recommendations")
                 
