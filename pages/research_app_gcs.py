@@ -463,7 +463,7 @@ if st.button("Recommend me songs"):
                 markdown_list_items_no_links = []
                 for song in top_recommendations_df['song_name']:
                     song_len = len(song)
-                    if song_len > 30:
+                    if song_len > 10000:
                         song_part_1 = ''.join(song.split(" ")[:5])
                         song_part_2 = ''.join(song.split(" ")[5:15])
                         song_part_3 = ''.join(song.split(" ")[15:])
