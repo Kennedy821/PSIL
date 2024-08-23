@@ -355,13 +355,13 @@ else:
     st.write('Please select a language.')
 
 if st.button("Recommend me songs"):
-    # with st.spinner('Processing your file(s)...'):
+    with st.spinner('Processing your file(s)...'):
 
-    st.write("Processing your link...")
+    # st.write("Processing your link...")
 
 
 
-    with st_lottie_spinner(lottie_json, speed=3, height=750,width=750):
+    # with st_lottie_spinner(lottie_json, speed=3, height=750,width=750):
 
 
     # # Initialize session state for controlling the animation
