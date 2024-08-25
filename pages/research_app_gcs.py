@@ -331,7 +331,7 @@ def add_text_to_gif(input_gif_path, full_text, update_interval=0.1):
 
 
 
-st.title("PSIL: Research production version")
+# st.title("PSIL: Research production version")
 
 with open("purple_pink_ball_gradient.json", "r") as f:
 
