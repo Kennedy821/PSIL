@@ -356,7 +356,8 @@ else:
     st.write('Please select a language.')
 
 if st.button("Recommend me songs"):
-    with st.spinner('Processing your file(s)...'):
+    with st.spinner('Processing your file(s)...this usually takes less than 1 minute.'):
+        
 
     # st.write("Processing your link...")
 
