@@ -561,7 +561,14 @@ if st.button(":red[Recommend me songs]"):
                     #ax.axvline(starting_value, color='red', linestyle='--', label='Chosen song')
                     
                     #plt.title('Proximity to Starting Value')
-                    plt.xticks(fontsize=15, rotation=45)
+                    # plt.xticks(fontsize=15, rotation=45)
+
+                    # Remove x-ticks
+                    plt.xticks([])
+
+                    # Remove x-labels
+                    plt.gca().xaxis.set_ticklabels([])
+
                     plt.yticks(fontsize=20)
                     plt.legend()
                     sns.despine()
