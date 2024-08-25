@@ -70,23 +70,22 @@ im = Image.open('slug_logo.png')
 st.set_page_config(
     page_title="PSIL",
     page_icon=im,
-    initial_sidebar_state="collapsed"
-    
+    initial_sidebar_state="collapsed",
     )     
 
 # Custom CSS to ensure dark theme and hide footer
-st.markdown("""
-<style>
-    .stApp {
-        background-color: #0E1117;
-        color: #FAFAFA;
-    }
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    .stActionButton {display: none;}
-    .stDeployButton {display: none;}
-</style>
-""", unsafe_allow_html=True)
+# st.markdown("""
+# <style>
+#     .stApp {
+#         background-color: #0E1117;
+#         color: #FAFAFA;
+#     }
+#     #MainMenu {visibility: hidden;}
+#     footer {visibility: hidden;}
+#     .stActionButton {display: none;}
+#     .stDeployButton {display: none;}
+# </style>
+# """, unsafe_allow_html=True)
 
 def stream_data(word_to_stream):
     for word in word_to_stream.split(" "):
@@ -356,7 +355,7 @@ with open("purple_pink_ball_gradient.json", "r") as f:
     lottie_json = json.load(f)
 
 # Input interface
-st.subheader(":red[Input Songs]")
+st.subheader(":white[Input Songs]")
 song_link = st.text_input(":grey[Enter the SoundCloud link of the song you'd like to get recommendations for:]")
 
 st.write(":grey[Select which language you'd like your song results to be in]")
