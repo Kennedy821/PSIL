@@ -67,6 +67,7 @@ im = Image.open('slug_logo.png')
 st.set_page_config(
     page_title="PSIL",
     page_icon=im,
+    initial_sidebar_state="collapsed"
 )     
 
 
