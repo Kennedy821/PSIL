@@ -79,20 +79,7 @@ st.markdown("""
 <style>
     .stApp {
         background-color: #0E1117;
-    }
-    .stApp, .stApp p, .stApp div, .stApp span, .stApp label, .stApp input, .stApp textarea, .stApp select {
-        color: white !important;
-    }
-    .stMarkdown a {
-        color: #4FCAFF !important;
-    }
-    .stSelectbox div[data-baseweb="select"] > div {
-        background-color: #262730 !important;
-        color: white !important;
-    }
-    .stTextInput input, .stTextArea textarea {
-        background-color: #262730 !important;
-        color: white !important;
+        color: #FAFAFA;
     }
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
