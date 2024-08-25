@@ -369,7 +369,7 @@ with open("purple_pink_ball_gradient.json", "r") as f:
     lottie_json = json.load(f)
 
 # Input interface
-st.subheader("Input Songs")
+st.subheader(":red[Input Songs]")
 song_link = st.text_input("Enter the SoundCloud link of the song you'd like to get recommendations for:")
 
 st.write("Select which language you'd like your song results to be in")
