@@ -63,13 +63,7 @@ import json
 # from fuzzywuzzy import fuzz
 # from fuzzywuzzy import process
 
-hide_streamlit_style = """
-            <style>
-            #MainMenu {visibility: hidden;}
-            footer {visibility: hidden;}
-            </style>
-            """
-st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
 
 im = Image.open('slug_logo.png')
 st.set_page_config(
@@ -77,7 +71,13 @@ st.set_page_config(
     page_icon=im,
     initial_sidebar_state="collapsed"
 )     
-
+hide_streamlit_style = """
+            <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            </style>
+            """
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
 def stream_data(word_to_stream):
     for word in word_to_stream.split(" "):
