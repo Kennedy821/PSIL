@@ -65,19 +65,27 @@ import json
 
 
 
+
 im = Image.open('slug_logo.png')
 st.set_page_config(
     page_title="PSIL",
     page_icon=im,
     initial_sidebar_state="collapsed"
 )     
-hide_streamlit_style = """
-            <style>
-            #MainMenu {visibility: hidden;}
-            footer {visibility: hidden;}
-            </style>
-            """
-st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
+# Custom CSS to ensure dark theme and hide footer
+st.markdown("""
+<style>
+    .stApp {
+        background-color: #0E1117;
+        color: #FAFAFA;
+    }
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    .stActionButton {display: none;}
+    .stDeployButton {display: none;}
+</style>
+""", unsafe_allow_html=True)
 
 def stream_data(word_to_stream):
     for word in word_to_stream.split(" "):
