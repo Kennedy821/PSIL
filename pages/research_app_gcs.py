@@ -74,18 +74,13 @@ st.set_page_config(
     )     
 
 # Custom CSS to ensure dark theme and hide footer
-# st.markdown("""
-# <style>
-#     .stApp {
-#         background-color: #0E1117;
-#         color: #FAFAFA;
-#     }
-#     #MainMenu {visibility: hidden;}
-#     footer {visibility: hidden;}
-#     .stActionButton {display: none;}
-#     .stDeployButton {display: none;}
-# </style>
-# """, unsafe_allow_html=True)
+st.markdown("""
+    <style>
+        .stApp {
+            background-color: black;
+        }
+    </style>
+""", unsafe_allow_html=True)
 
 def stream_data(word_to_stream):
     for word in word_to_stream.split(" "):
