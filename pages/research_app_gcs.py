@@ -62,7 +62,8 @@ import json
 # import re
 # from fuzzywuzzy import fuzz
 # from fuzzywuzzy import process
-
+from streamlit import runtime
+from streamlit.runtime.scriptrunner import get_script_run_ctx
 
 
 
@@ -95,6 +96,8 @@ st.set_page_config(
 #     }
 # </style>
 # """, unsafe_allow_html=True)
+
+
 
 def stream_data(word_to_stream):
     for word in word_to_stream.split(" "):
@@ -356,7 +359,21 @@ def add_text_to_gif(input_gif_path, full_text, update_interval=0.1):
 
 
 
+def get_remote_ip() -> str:
+    """Get remote IP."""
+    try:
+        ctx = get_script_run_ctx()
+        if ctx is None:
+            return None
+        session_info = runtime.get_instance().get_client(ctx.session_id)
+        if session_info is None:
+            return None
+    except Exception:
+        return None
+    return session_info.request.remote_ip
+
 # st.title("PSIL: Research production version")
+st.markdown(f"The remote user is {get_remote_ip()}")
 
 with open("purple_pink_ball_gradient.json", "r") as f:
 
