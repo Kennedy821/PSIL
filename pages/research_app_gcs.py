@@ -414,7 +414,21 @@ if genre_option:
 else:
     st.write('Please select a genre.')
 
-if st.button(":red[Recommend me songs]"):
+st.markdown("""
+<style>
+button {
+    background-color: #E3651D; /* Green */
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+}
+</style>
+""", unsafe_allow_html=True)
+
+if st.button("Recommend me songs"):
     with st.spinner('Processing your recommendations...this usually takes less than 1 minute.'):
         
 
