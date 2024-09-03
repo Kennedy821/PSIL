@@ -449,6 +449,7 @@ if st.button(":red[Recommend me songs]"):
                         int_df = pd.read_parquet(file_, engine="pyarrow")
                         int_df.iloc[:,1:] = int_df.iloc[:,1:].astype(float)
                         int_df = int_df.set_index("song_name")
+                        st.dataframe(int_df.head())
 
                         df_container.append(int_df)
                         del int_df
