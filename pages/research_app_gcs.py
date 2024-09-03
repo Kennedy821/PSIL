@@ -64,6 +64,7 @@ import json
 # from fuzzywuzzy import process
 from streamlit import runtime
 from streamlit.runtime.scriptrunner import get_script_run_ctx
+import toml
 
 
 
@@ -414,20 +415,13 @@ if genre_option:
 else:
     st.write('Please select a genre.')
 
-st.markdown("""
+primaryColor = toml.load(".streamlit/config.toml")['theme']['textColor']
+s = f"""
 <style>
-button {
-    background-color: #E3651D; /* Green */
-    color: white;
-    padding: 14px 20px;
-    margin: 8px 0;
-    border: none;
-    cursor: pointer;
-    width: 100%;
-}
-</style>
-""", unsafe_allow_html=True)
-
+div.stButton > button:first-child {{ border: 5px solid {primaryColor}; border-radius:20px 20px 20px 20px; }}
+<style>
+"""
+st.markdown(s, unsafe_allow_html=True)
 if st.button("Recommend me songs"):
     with st.spinner('Processing your recommendations...this usually takes less than 1 minute.'):
         
