@@ -454,6 +454,7 @@ if st.button(":red[Recommend me songs]"):
                         del int_df
 
                 database_song_names_df = pd.concat(df_container, axis=1).reset_index()[["song_name",language_option.lower()]]
+                st.dataframe(database_song_names_df)
                 del df_container
                 # database_song_names_df
 
