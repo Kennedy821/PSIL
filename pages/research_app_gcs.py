@@ -386,33 +386,33 @@ with open("purple_pink_ball_gradient.json", "r") as f:
 
 # Input interface
 st.subheader("Input Songs")
-song_link = st.text_input(":grey[Enter the SoundCloud link of the song you'd like to get recommendations for:]")
+song_link = st.text_input("Enter the SoundCloud link of the song you'd like to get recommendations for:")
 
-st.write(":grey[Select which language you'd like your song results to be in]")
+st.write("Select which language you'd like your song results to be in")
 
 language_option = st.selectbox(
-    ':grey[Select Language for your recommendations]',
+    'Select Language for your recommendations',
     ('', 'All', 'English','French','Japanese')  # Add an empty string as the first option
 )
 
 # Display the selected option
 if language_option:
-    st.write(':grey[You selected:]', language_option)
+    st.write('You selected:', language_option)
 else:
-    st.write(':grey[Please select a language.]')
+    st.write('Please select a language.')
 
 
 
 genre_option = st.selectbox(
-    ':grey[Select Genre for your recommendations]',
+    'Select Genre for your recommendations',
     ('','All', 'Rock', 'Hip-Hop','Electronic','Folk','Experimental',"Instrumental","Pop")  # Add an empty string as the first option
 )
 
 # Display the selected option
 if genre_option:
-    st.write(':grey[You selected:]', genre_option)
+    st.write('You selected:', genre_option)
 else:
-    st.write(':grey[Please select a genre.]')
+    st.write('Please select a genre.')
 
 if st.button(":red[Recommend me songs]"):
     with st.spinner('Processing your recommendations...this usually takes less than 1 minute.'):
