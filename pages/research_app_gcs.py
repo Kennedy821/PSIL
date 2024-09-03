@@ -241,6 +241,24 @@ def get_top_n_recommendations_gcs_version(n):
     else:
         recommended_df = recommended_df[recommended_df[language_option.lower()]==1]
 
+
+    # st.markdown("this is the updated recommended df with a language flag")
+    # st.dataframe(recommended_df)
+
+    # st.markdown("this is the genre df")
+    # st.dataframe(genre_df)
+
+    recommended_df = recommended_df.merge(genre_df, on="target_song")
+
+
+    if genre_option=="All":
+        pass
+    else:
+        recommended_df = recommended_df[recommended_df["target_song"].isin(in_scope_genre_song_names)]
+
+    # st.markdown("this is the updated recommended df with a genre flag")
+    # st.dataframe(recommended_df)
+
     recommended_df["origin_song_counter"] = total_uploaded_files
     recommended_df["uploaded_song_components"] = recommended_df["total_components"] / recommended_df["origin_song_counter"]
     recommended_df.loc[(recommended_df["uploaded_song_components"]<2) & (recommended_df["uploaded_song_components"]>0.5),"appropriate_song"] = "true"
@@ -383,6 +401,19 @@ if language_option:
 else:
     st.write(':grey[Please select a language.]')
 
+
+
+genre_option = st.selectbox(
+    ':grey[Select Genre for your recommendations]',
+    ('','All', 'Rock', 'Hip-Hop','Electronic','Folk','Experimental',"Instrumental","Pop")  # Add an empty string as the first option
+)
+
+# Display the selected option
+if genre_option:
+    st.write(':grey[You selected:]', genre_option)
+else:
+    st.write(':grey[Please select a genre.]')
+
 if st.button(":red[Recommend me songs]"):
     with st.spinner('Processing your recommendations...this usually takes less than 1 minute.'):
         
@@ -441,6 +472,12 @@ if st.button(":red[Recommend me songs]"):
 
                 
                 
+                genre_df = pd.read_parquet("majority_genre_for_song.parquet.gzip").rename(columns={"song_name":"target_song"})
+                genre_df["target_song"] = genre_df["target_song"].str.split("_spect").str[0]
+                # st.markdown(f"the columns in genre_df are: {genre_df.columns}")
+                genre_df = genre_df[genre_df[genre_option]>0]
+                in_scope_genre_song_names = [x for x in genre_df.target_song.values]
+
 
                 
                 df_container = []
@@ -483,6 +520,7 @@ if st.button(":red[Recommend me songs]"):
                 top_recommendations_df = get_top_n_recommendations_gcs_version(filtered_selection_n)
                 
                 top_recommendations_links_df = top_recommendations_df.merge(links_df[["song_name", "song_links"]], on="song_name", how="left")[["song_name", "song_links"]].reset_index().drop(columns="index").drop_duplicates("song_name")
+
                 
 
                 
