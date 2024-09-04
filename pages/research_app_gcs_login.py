@@ -661,6 +661,10 @@ if 'token' in query_params:
                             # Remove x-labels
                             plt.gca().xaxis.set_ticklabels([])
 
+                            # Set the y-tick labels font to sans-serif
+                            for label in ax.get_yticklabels():
+                                label.set_fontname('sans-serif')
+
                             plt.yticks(fontsize=20)
                             plt.legend()
                             sns.despine()
