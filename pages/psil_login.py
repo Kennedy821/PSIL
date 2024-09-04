@@ -106,7 +106,7 @@ if st.button("Login"):
                 redirect_url = []
                 get_login_credentials_for_valid_user()
                 # st.markdown(redirect_url)
-                redirect_url = redirect_url[0].split(" ")[1]
+                redirect_url = str(redirect_url[0]).split(" ")[1]
                 st.markdown(redirect_url)
 
 
