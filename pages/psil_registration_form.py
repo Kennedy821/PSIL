@@ -29,8 +29,8 @@ def check_if_user_is_existing_user():
             blob.download_to_filename(temp_dir+"error_existing_user.csv")
             login_url = pd.read_csv(temp_dir+"error_existing_user.csv").values[0]
             existing_user_list.append(login_url)
-            st.markdown("it looks like you've already registered with us. We are navigating you to the login page")
-
+            st.error("it looks like you've already registered with us. We are navigating you to the login page")
+            time.sleep(3)
             # Redirect to external site with the token as a query parameter
             redirect_url = f"https://psilproject.streamlit.app/psil_login"
             st.markdown(f"""
@@ -38,7 +38,7 @@ def check_if_user_is_existing_user():
             """, unsafe_allow_html=True)
             
         else:
-            time.sleep(1)
+            time.sleep(3)
             pass
 
 # Hash the password
@@ -84,9 +84,7 @@ if st.button("Register"):
     with st.spinner("Processing your registration..."):
         with tempfile.TemporaryDirectory() as temp_dir:
 
-            # send a verification email to the email address
 
-            existing_user_list = []
 
             # upload registration data to user credentials database
             
@@ -114,6 +112,12 @@ if st.button("Register"):
 
             # Upload the CSV string to GCS
             blob.upload_from_string(csv_string, 'text/csv')
+
+            # check to see if the email address is already registered to the site
+
+            existing_user_list = []
+
+            check_if_user_is_existing_user()
 
 
 
