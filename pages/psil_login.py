@@ -19,7 +19,7 @@ st.set_page_config(
     ) 
 
 def get_login_credentials_for_valid_user():
-    while True:
+    while len(redirect_url)==0:
 
 
         #download the indices from gcs
@@ -29,7 +29,7 @@ def get_login_credentials_for_valid_user():
             # Download the file to a destination
             blob.download_to_filename(temp_dir+"login_url_data.csv")
             login_url = pd.read_csv(temp_dir+"login_url_data.csv").values[0]
-            return login_url
+            redirect_url.append(login_url)
 
             break
         else:
