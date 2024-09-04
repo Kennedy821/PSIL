@@ -344,7 +344,8 @@ def add_text_to_gif(input_gif_path, full_text, update_interval=0.1):
             yield byte_io
             time.sleep(update_interval)
 
-SECRET_KEY = "your_secret_key"
+# Access the secret key from Streamlit's secrets management
+SECRET_KEY = st.secrets["general"]["SECRET_KEY"]
 
 # Decode and verify JWT token
 def verify_token(token):
