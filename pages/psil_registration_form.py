@@ -30,7 +30,7 @@ def generate_token(email):
     return token
 
 # Login form
-st.title("Login")
+st.title("Register form")
 
 email = st.text_input("Email")
 if email:
