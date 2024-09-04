@@ -365,6 +365,7 @@ def verify_token(token):
 
 # Step 1: Retrieve the token from the URL query parameters
 query_params = st.experimental_get_query_params()
+st.markdown(query_params)
 
 if 'token' in query_params:
     token = query_params['token'][0]  # Get the token from the query
