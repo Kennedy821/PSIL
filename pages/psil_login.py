@@ -105,6 +105,7 @@ if st.button("Login"):
                 # wait for the valid url to appear in the bucket
                 redirect_url = []
                 get_login_credentials_for_valid_user()
+                st.markdown(redirect_url)
                 redirect_url = redirect_url[0]
 
 
@@ -119,4 +120,4 @@ if st.button("Login"):
                 <meta http-equiv="refresh" content="0; url={redirect_url}">
                 """, unsafe_allow_html=True)
         except Exception as e:
-            st.error(f"{e}")
+            st.error(f"error: {e}")
