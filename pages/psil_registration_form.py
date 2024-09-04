@@ -6,6 +6,7 @@ from PIL import Image
 from google.cloud import storage
 import jwt  # To generate and decode tokens
 import time
+import tempfile
 
 SECRET_KEY = st.secrets["general"]["SECRET_KEY"]
 
@@ -15,6 +16,30 @@ st.set_page_config(
     page_icon=im,
     initial_sidebar_state="collapsed",
     ) 
+
+def check_if_user_is_existing_user():
+    if len(redirect_url)==0:
+
+
+        #download the indices from gcs
+        blob = bucket.blob("error_existing_user.csv")
+        if blob.exists():
+
+            # Download the file to a destination
+            blob.download_to_filename(temp_dir+"error_existing_user.csv")
+            login_url = pd.read_csv(temp_dir+"error_existing_user.csv").values[0]
+            existing_user_list.append(login_url)
+            st.markdown("it looks like you've already registered with us. We are navigating you to the login page")
+
+            # Redirect to external site with the token as a query parameter
+            redirect_url = f"https://psilproject.streamlit.app/psil_login"
+            st.markdown(f"""
+            <meta http-equiv="refresh" content="0; url={redirect_url}">
+            """, unsafe_allow_html=True)
+            
+        else:
+            time.sleep(1)
+            pass
 
 # Hash the password
 def hash_password(plain_text_password):
@@ -57,46 +82,50 @@ if password and confirm_password:
 
 if st.button("Register"):
     with st.spinner("Processing your registration..."):
-        # send a verification email to the email address
+        with tempfile.TemporaryDirectory() as temp_dir:
 
-        # upload registration data to user credentials database
-        
-        credentials_df = pd.DataFrame([email,password]).T
-        credentials_df.columns = ["email","pw"]
-        credentials_df["hash_pw"] = credentials_df.pw.apply(lambda x: hash_password(x).decode())
-        credentials_df["token"] = credentials_df.email.apply(lambda x: generate_token(x))
+            # send a verification email to the email address
 
-        st.dataframe(credentials_df)
-        credentials_df.drop(columns="pw")
-        # Create credentials object
-        credentials = service_account.Credentials.from_service_account_info(st.secrets["gcp_service_account"])
+            existing_user_list = []
 
-        # Use the credentials to create a client
-        client = storage.Client(credentials=credentials)
+            # upload registration data to user credentials database
+            
+            credentials_df = pd.DataFrame([email,password]).T
+            credentials_df.columns = ["email","pw"]
+            credentials_df["hash_pw"] = credentials_df.pw.apply(lambda x: hash_password(x).decode())
+            credentials_df["token"] = credentials_df.email.apply(lambda x: generate_token(x))
 
+            st.dataframe(credentials_df)
+            credentials_df.drop(columns="pw")
+            # Create credentials object
+            credentials = service_account.Credentials.from_service_account_info(st.secrets["gcp_service_account"])
 
-        # The bucket on GCS in which to write the CSV file
-        bucket = client.bucket('psil-app-backend-2')
-        # The name assigned to the CSV file on GCS
-        blob = bucket.blob('new_psil_user_registration.csv')
-
-        # Convert the DataFrame to a CSV string with a specified encoding
-        csv_string = credentials_df.to_csv(index=False, encoding='utf-8')
-
-        # Upload the CSV string to GCS
-        blob.upload_from_string(csv_string, 'text/csv')
+            # Use the credentials to create a client
+            client = storage.Client(credentials=credentials)
 
 
+            # The bucket on GCS in which to write the CSV file
+            bucket = client.bucket('psil-app-backend-2')
+            # The name assigned to the CSV file on GCS
+            blob = bucket.blob('new_psil_user_registration.csv')
+
+            # Convert the DataFrame to a CSV string with a specified encoding
+            csv_string = credentials_df.to_csv(index=False, encoding='utf-8')
+
+            # Upload the CSV string to GCS
+            blob.upload_from_string(csv_string, 'text/csv')
 
 
-        time.sleep(5)
-        st.success("Registration successful!")
-        st.markdown("...redirecting you to the Log in page")
 
-        # Redirect to external site with the token as a query parameter
-        redirect_url = f"https://psilproject.streamlit.app/psil_login"
-        st.markdown(f"""
-        <meta http-equiv="refresh" content="0; url={redirect_url}">
-        """, unsafe_allow_html=True)
+
+            time.sleep(5)
+            st.success("Registration successful!")
+            st.markdown("...redirecting you to the Log in page")
+
+            # Redirect to external site with the token as a query parameter
+            redirect_url = f"https://psilproject.streamlit.app/psil_login"
+            st.markdown(f"""
+            <meta http-equiv="refresh" content="0; url={redirect_url}">
+            """, unsafe_allow_html=True)
 
 
