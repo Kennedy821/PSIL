@@ -63,7 +63,7 @@ if st.button("Register"):
         
         credentials_df = pd.DataFrame([email,password]).T
         credentials_df.columns = ["email","pw"]
-        credentials_df["hash_pw"] = credentials_df.pw.apply(lambda x: hash_password(x))
+        credentials_df["hash_pw"] = credentials_df.pw.apply(lambda x: hash_password(x).decode())
         credentials_df["token"] = credentials_df.email.apply(lambda x: generate_token(x))
 
         st.dataframe(credentials_df)

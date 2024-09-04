@@ -81,8 +81,7 @@ if st.button("Login"):
 
                 credentials_df = pd.DataFrame([email,password]).T
                 credentials_df.columns = ["email","pw"]
-                credentials_df["hash_pw"] = credentials_df.pw.apply(lambda x: hash_password(x))
-                credentials_df.drop(columns="pw", inplace=True)
+
 
                 # Create credentials object
                 credentials = service_account.Credentials.from_service_account_info(st.secrets["gcp_service_account"])
