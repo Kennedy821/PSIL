@@ -6,6 +6,8 @@ from PIL import Image
 from google.cloud import storage
 import jwt  # To generate and decode tokens
 
+SECRET_KEY = st.secrets["general"]["SECRET_KEY"]
+
 im = Image.open('slug_logo.png')
 st.set_page_config(
     page_title="PSIL",
@@ -60,7 +62,7 @@ if st.button("Register"):
     credentials_df = pd.DataFrame([email,password]).T
     credentials_df.columns = ["email","pw"]
     credentials_df["hash_pw"] = credentials_df.pw.apply(lambda x: hash_password(x))
-    credentials_df["token"] = credentials_df.pw.apply(lambda x: generate_token(x))
+    credentials_df["token"] = credentials_df.email.apply(lambda x: generate_token(x))
 
     st.dataframe(credentials_df)
     # Create credentials object
