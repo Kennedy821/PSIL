@@ -87,15 +87,16 @@ if st.button("Register"):
         blob.upload_from_string(csv_string, 'text/csv')
 
 
+
+
         time.sleep(5)
         st.success("Registration successful!")
-        st.markdown("...redirecting you to the PSIL application")
+        st.markdown("...redirecting you to the Log in page")
 
         # Redirect to external site with the token as a query parameter
-        redirect_url = f"https://psilproject.streamlit.app/research_app_gcs_login?token={credentials_df.token[0]}"
+        redirect_url = f"https://psilproject.streamlit.app/psil_login"
         st.markdown(f"""
         <meta http-equiv="refresh" content="0; url={redirect_url}">
         """, unsafe_allow_html=True)
 
-        # redirect user to the psil application page
 
