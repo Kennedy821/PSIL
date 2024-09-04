@@ -9,4 +9,4 @@ google-cloud-storage
 st-files-connection
 seaborn
 streamlit_lottie
-pyjwt
+pyjwt=2.9.0
