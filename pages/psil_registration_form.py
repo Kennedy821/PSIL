@@ -93,7 +93,6 @@ if st.button("Register"):
             credentials_df["hash_pw"] = credentials_df.pw.apply(lambda x: hash_password(x).decode())
             credentials_df["token"] = credentials_df.email.apply(lambda x: generate_token(x))
 
-            st.dataframe(credentials_df)
             credentials_df.drop(columns="pw")
             # Create credentials object
             credentials = service_account.Credentials.from_service_account_info(st.secrets["gcp_service_account"])
