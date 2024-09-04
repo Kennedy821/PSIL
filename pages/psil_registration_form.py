@@ -29,7 +29,7 @@ def check_if_user_is_existing_user():
             blob.download_to_filename(temp_dir+"error_existing_user.csv")
             login_url = pd.read_csv(temp_dir+"error_existing_user.csv").values[0]
             existing_user_list.append(login_url)
-            st.error("it looks like you've already registered with us. We are navigating you to the login page")
+            st.error(f"{login_url}")
             time.sleep(3)
             # Redirect to external site with the token as a query parameter
             redirect_url = f"https://psilproject.streamlit.app/psil_login"
