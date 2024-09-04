@@ -106,7 +106,7 @@ if st.button("Login"):
                 redirect_url = []
                 get_login_credentials_for_valid_user()
                 # st.markdown(redirect_url)
-                redirect_url = redirect_url[0]
+                redirect_url = redirect_url[0].split(" ")[1]
                 st.markdown(redirect_url)
 
 
@@ -117,8 +117,8 @@ if st.button("Login"):
                 
                 # # Redirect to external site with the token as a query parameter
                 # redirect_url = f"https://psilproject.streamlit.app/research_app_gcs_login?token={token}"
-                # st.markdown(f"""
-                # <meta http-equiv="refresh" content="0; url={redirect_url}">
-                # """, unsafe_allow_html=True)
+                st.markdown(f"""
+                <meta http-equiv="refresh" content="0; url={redirect_url}">
+                """, unsafe_allow_html=True)
         except Exception as e:
             st.error(f"error: {e}")
