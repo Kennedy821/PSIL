@@ -18,7 +18,7 @@ st.set_page_config(
     ) 
 
 def check_if_user_is_existing_user():
-    if len(redirect_url)==0:
+    if len(existing_user_list)==0:
 
 
         #download the indices from gcs
