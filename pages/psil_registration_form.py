@@ -4,6 +4,7 @@ import bcrypt
 from google.oauth2 import service_account
 from PIL import Image
 from google.cloud import storage
+import jwt  # To generate and decode tokens
 
 im = Image.open('slug_logo.png')
 st.set_page_config(
