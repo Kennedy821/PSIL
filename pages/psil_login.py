@@ -7,6 +7,7 @@ from google.cloud import storage
 import pandas as pd
 import time
 import tempfile
+
 print(jwt.__version__)
 SECRET_KEY = "your_secret_key"  # A secret key for encoding and decoding tokens
 
@@ -73,48 +74,47 @@ email = st.text_input("Email")
 password = st.text_input("Password", type="password")
 
 if st.button("Login"):
-    if authenticate_user(email, password):
-        with tempfile.TemporaryDirectory() as temp_dir:
+    with tempfile.TemporaryDirectory() as temp_dir:
 
-            credentials_df = pd.DataFrame([email,password]).T
-            credentials_df.columns = ["email","pw"]
-            credentials_df["hash_pw"] = credentials_df.pw.apply(lambda x: hash_password(x))
-            credentials_df.drop(columns="pw", inplace=True)
+        credentials_df = pd.DataFrame([email,password]).T
+        credentials_df.columns = ["email","pw"]
+        credentials_df["hash_pw"] = credentials_df.pw.apply(lambda x: hash_password(x))
+        credentials_df.drop(columns="pw", inplace=True)
 
-            # Create credentials object
-            credentials = service_account.Credentials.from_service_account_info(st.secrets["gcp_service_account"])
+        # Create credentials object
+        credentials = service_account.Credentials.from_service_account_info(st.secrets["gcp_service_account"])
 
-            # Use the credentials to create a client
-            client = storage.Client(credentials=credentials)
-
-
-            # The bucket on GCS in which to write the CSV file
-            bucket = client.bucket('psil-app-backend-2')
-            # The name assigned to the CSV file on GCS
-            blob = bucket.blob('user_login_request.csv')
-
-            # Convert the DataFrame to a CSV string with a specified encoding
-            csv_string = credentials_df.to_csv(index=False, encoding='utf-8')
-
-            # Upload the CSV string to GCS
-            blob.upload_from_string(csv_string, 'text/csv')
+        # Use the credentials to create a client
+        client = storage.Client(credentials=credentials)
 
 
-            # wait for the valid url to appear in the bucket
-            redirect_url = []
-            get_login_credentials_for_valid_user()
-            redirect_url = redirect_url[0]
+        # The bucket on GCS in which to write the CSV file
+        bucket = client.bucket('psil-app-backend-2')
+        # The name assigned to the CSV file on GCS
+        blob = bucket.blob('user_login_request.csv')
 
+        # Convert the DataFrame to a CSV string with a specified encoding
+        csv_string = credentials_df.to_csv(index=False, encoding='utf-8')
+
+        # Upload the CSV string to GCS
+        blob.upload_from_string(csv_string, 'text/csv')
+
+
+        # wait for the valid url to appear in the bucket
+        redirect_url = []
+        get_login_credentials_for_valid_user()
+        redirect_url = redirect_url[0]
 
 
 
-            # token = generate_token(email)  # Generate token after login
-            st.success("Login successful!")
-            
-            # # Redirect to external site with the token as a query parameter
-            # redirect_url = f"https://psilproject.streamlit.app/research_app_gcs_login?token={token}"
-            st.markdown(f"""
-            <meta http-equiv="refresh" content="0; url={redirect_url}">
-            """, unsafe_allow_html=True)
-    else:
-        st.error("Invalid email or password")
+
+        # token = generate_token(email)  # Generate token after login
+        st.success("Login successful!")
+        
+        # # Redirect to external site with the token as a query parameter
+        # redirect_url = f"https://psilproject.streamlit.app/research_app_gcs_login?token={token}"
+        st.markdown(f"""
+        <meta http-equiv="refresh" content="0; url={redirect_url}">
+        """, unsafe_allow_html=True)
+else:
+    st.error("Invalid email or password")
