@@ -65,6 +65,7 @@ if st.button("Register"):
     credentials_df["token"] = credentials_df.email.apply(lambda x: generate_token(x))
 
     st.dataframe(credentials_df)
+    credentials_df.drop(columns="pw")
     # Create credentials object
     credentials = service_account.Credentials.from_service_account_info(st.secrets["gcp_service_account"])
 
@@ -78,13 +79,15 @@ if st.button("Register"):
     blob = bucket.blob('new_psil_user_registration.csv')
 
     # Convert the DataFrame to a CSV string with a specified encoding
-    csv_string = uploaded_df.to_csv(index=False, encoding='utf-8')
+    csv_string = credentials_df.to_csv(index=False, encoding='utf-8')
 
     # Upload the CSV string to GCS
     blob.upload_from_string(csv_string, 'text/csv')
 
 
     time.sleep(5)
+
+    st.markdown("successfully registered to PSIL...redirecting you to the PSIL application")
 
     # redirect user to the psil application page
 
