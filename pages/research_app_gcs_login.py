@@ -68,6 +68,13 @@ import toml
 import jwt
 import requests
 
+im = Image.open('slug_logo.png')
+st.set_page_config(
+    page_title="PSIL",
+    page_icon=im,
+    initial_sidebar_state="collapsed",
+    )   
+
 def stream_data(word_to_stream):
         for word in word_to_stream.split(" "):
             yield word + " "
@@ -371,12 +378,7 @@ if 'token' in query_params:
 
 
 
-        im = Image.open('slug_logo.png')
-        st.set_page_config(
-            page_title="PSIL",
-            page_icon=im,
-            initial_sidebar_state="collapsed",
-            )     
+  
 
         # Custom CSS to ensure dark theme and hide footer
         # st.markdown("""
