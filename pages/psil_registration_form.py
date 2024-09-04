@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import bcrypt
 from google.oauth2 import service_account
+from PIL import Image
 
 im = Image.open('slug_logo.png')
 st.set_page_config(
