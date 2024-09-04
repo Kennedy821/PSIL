@@ -10,6 +10,12 @@ import tempfile
 print(jwt.__version__)
 SECRET_KEY = "your_secret_key"  # A secret key for encoding and decoding tokens
 
+im = Image.open('slug_logo.png')
+st.set_page_config(
+    page_title="PSIL",
+    page_icon=im,
+    initial_sidebar_state="collapsed",
+    ) 
 
 def get_login_credentials_for_valid_user():
     while True:
