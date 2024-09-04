@@ -634,6 +634,8 @@ if 'token' in query_params:
                         
                             fig, ax = plt.subplots(figsize=(5, 10))
                         
+                            fig.patch.set_facecolor('#2D3250')
+                            ax.set_facecolor('#2D3250')
                             # Plotting each point with a line to the starting value
                             for i, value in enumerate(values):
                                 ax.plot([starting_value, value],[labels[i], labels[i]], 'grey')  # Line
@@ -644,6 +646,14 @@ if 'token' in query_params:
                             
                             #plt.title('Proximity to Starting Value')
                             # plt.xticks(fontsize=15, rotation=45)
+
+                            # Set x and y axis text color
+                            ax.tick_params(axis='x', colors='#F5E8C7')  # Red color for x-axis text
+                            ax.tick_params(axis='y', colors='#F5E8C7')  # Green color for y-axis text
+
+                            # Set axis labels
+                            ax.set_xlabel('X Axis', color='#F5E8C7')  # Red label for x-axis
+                            ax.set_ylabel('Y Axis', color='#F5E8C7')  # Green label for y-axis
 
                             # Remove x-ticks
                             plt.xticks([])
