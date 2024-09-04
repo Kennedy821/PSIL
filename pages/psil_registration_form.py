@@ -3,6 +3,7 @@ import pandas as pd
 import bcrypt
 from google.oauth2 import service_account
 from PIL import Image
+from google.cloud import storage
 
 im = Image.open('slug_logo.png')
 st.set_page_config(
@@ -18,6 +19,11 @@ def hash_password(plain_text_password):
     # Hash the password with the salt
     hashed_password = bcrypt.hashpw(plain_text_password.encode('utf-8'), salt)
     return hashed_password
+
+# Generate JWT token after login
+def generate_token(email):
+    token = jwt.encode({"email": email}, SECRET_KEY, algorithm="HS256")
+    return token
 
 # Login form
 st.title("Login")
@@ -53,6 +59,8 @@ if st.button("Register"):
     credentials_df = pd.DataFrame([email,password]).T
     credentials_df.columns = ["email","pw"]
     credentials_df["hash_pw"] = credentials_df.pw.apply(lambda x: hash_password(x))
+    credentials_df["token"] = credentials_df.pw.apply(lambda x: generate_token(x))
+
     st.dataframe(credentials_df)
     # Create credentials object
     credentials = service_account.Credentials.from_service_account_info(st.secrets["gcp_service_account"])
@@ -74,3 +82,6 @@ if st.button("Register"):
 
 
     time.sleep(5)
+
+    # redirect user to the psil application page
+
