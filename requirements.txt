@@ -10,3 +10,4 @@ st-files-connection
 seaborn
 streamlit_lottie
 pyjwt==2.9.0
+bcrypt
