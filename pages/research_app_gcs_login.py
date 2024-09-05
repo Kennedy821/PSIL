@@ -509,7 +509,7 @@ if 'token' in query_params:
                     # st.markdown("Your song was successfully uploaded.")
 
                     unique_id = uuid.uuid4()
-                    clean_token = str(decoded_token).split("[")[1].split("]")[0].replace("'",'')
+                    clean_token = str(query_params).split("[")[1].split("]")[0].replace("'",'')
 
                     logging_filename = f"{formatted_date}_{clean_token}_{unique_id}"
 
