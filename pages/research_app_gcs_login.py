@@ -67,6 +67,11 @@ from streamlit.runtime.scriptrunner import get_script_run_ctx
 import toml
 import jwt
 import requests
+import uuid
+from datetime import datetime
+
+current_date = datetime.now()
+formatted_date = current_date.strftime("%d_%m_%Y")
 
 im = Image.open('slug_logo.png')
 st.set_page_config(
@@ -502,6 +507,26 @@ if 'token' in query_params:
                     blob.upload_from_string(csv_string, 'text/csv')
 
                     # st.markdown("Your song was successfully uploaded.")
+
+                    unique_id = uuid.uuid4()
+                    clean_token = str(decoded_token).split("[")[1].split("]")[0].replace("'",'')
+
+                    logging_filename = f"{formatted_date}_{clean_token}_{unique_id}"
+
+                    logging_df = pd.DataFrame([decoded_token,song_link]).T
+                    logging_df.columns = ["user","song_link"]
+
+                    
+                    # The bucket on GCS in which to write the CSV file
+                    bucket = client.bucket('psil-app-backend-2')
+                    # The name assigned to the CSV file on GCS
+                    blob = bucket.blob('{logging_filename}.csv')
+
+                    # Convert the DataFrame to a CSV string with a specified encoding
+                    csv_string = uploaded_df.to_csv(index=False, encoding='utf-8')
+
+                    # Upload the CSV string to GCS
+                    blob.upload_from_string(csv_string, 'text/csv')
 
 
 
