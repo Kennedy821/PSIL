@@ -378,7 +378,8 @@ if 'token' in query_params:
     # Step 2: Verify the token
     if decoded_token:
         st.success("Access granted! Welcome, user.")
-        st.write(f"Your account: {str(decoded_token).split(":")[1].replace("'",'')}")
+        user_email = str(decoded_token).split(":")[1].split("'")[1]
+        st.write(f"Your account: {user_email}")
 
 
 
