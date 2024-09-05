@@ -370,7 +370,6 @@ def verify_token(token):
 
 # Step 1: Retrieve the token from the URL query parameters
 query_params = st.experimental_get_query_params()
-st.markdown(query_params)
 
 if 'token' in query_params:
     token = query_params['token'][0]  # Get the token from the query
@@ -379,7 +378,7 @@ if 'token' in query_params:
     # Step 2: Verify the token
     if decoded_token:
         st.success("Access granted! Welcome, user.")
-        st.write(f"Your token info: {decoded_token}")
+        st.write(f"Your account: {str(decoded_token).split(":")[1].replace("'",'')}")
 
 
 
@@ -520,7 +519,7 @@ if 'token' in query_params:
                     # The bucket on GCS in which to write the CSV file
                     bucket = client.bucket('psil-app-backend-2')
                     # The name assigned to the CSV file on GCS
-                    blob = bucket.blob('{logging_filename}.csv')
+                    blob = bucket.blob(f'{logging_filename}.csv')
 
                     # Convert the DataFrame to a CSV string with a specified encoding
                     csv_string = uploaded_df.to_csv(index=False, encoding='utf-8')
