@@ -511,7 +511,7 @@ if 'token' in query_params:
                     unique_id = uuid.uuid4()
                     clean_token = str(query_params).split("[")[1].split("]")[0].replace("'",'')
 
-                    logging_filename = f"{formatted_date}_{clean_token}_{unique_id}"
+                    logging_filename = f"{formatted_date}_psil_site_search_{clean_token}_{unique_id}"
 
                     logging_df = pd.DataFrame([str(decoded_token),song_link]).T
                     logging_df.columns = ["user","song_link"]
