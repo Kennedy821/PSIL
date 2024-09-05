@@ -513,7 +513,7 @@ if 'token' in query_params:
 
                     logging_filename = f"{formatted_date}_{clean_token}_{unique_id}"
 
-                    logging_df = pd.DataFrame([decoded_token,song_link]).T
+                    logging_df = pd.DataFrame([str(decoded_token),song_link]).T
                     logging_df.columns = ["user","song_link"]
 
                     
