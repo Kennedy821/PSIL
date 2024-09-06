@@ -20,12 +20,8 @@ st.set_page_config(
 
 st.markdown("""
 <style>
-.css-1rs6os.edgvbvh3
-{
-    visibility: hidden;
-}
-.css-1rs6os.edgvbvh3:hover {
-    visibility: visible;
+[data-testid="collapsedControl"] {
+    display: none !important;
 }
 </style>
 """, unsafe_allow_html=True)
