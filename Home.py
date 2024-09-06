@@ -14,6 +14,18 @@ st.set_page_config(
     page_icon=im,
 )
 
+st.markdown("""
+<style>
+.css-1rs6os.edgvbvh3
+{
+    visibility: hidden;
+}
+.css-1rs6os.edgvbvh3:hover {
+    visibility: visible;
+}
+</style>
+""", unsafe_allow_html=True)
+
 st.write(f"# Welcome to PSIL by Slug!")
 
 st.sidebar.success("Select a demo above.")
