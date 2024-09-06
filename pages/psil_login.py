@@ -20,12 +20,15 @@ st.set_page_config(
 
 st.markdown("""
 <style>
-[data-testid="collapsedControl"] {
-    display: none
+.css-1rs6os.edgvbvh3
+{
+    visibility: hidden;
+}
+.css-1rs6os.edgvbvh3:hover {
+    visibility: visible;
 }
 </style>
 """, unsafe_allow_html=True)
-
 
 def get_login_credentials_for_valid_user():
     while len(redirect_url)==0:
