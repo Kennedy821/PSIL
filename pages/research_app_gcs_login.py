@@ -259,7 +259,7 @@ def get_top_n_recommendations_gcs_version(n):
     recommended_df["ls_distance"] = recommended_df["uploaded_song_components"]*recommended_df["pct_similiar"]
     recommended_df = recommended_df.rename(columns={"target_song":"song_name"})
     recommended_df = recommended_df.sort_values("pct_similiar", ascending=False).head(n)
-    # recommended_df
+    st.dataframe(recommended_df)
     return recommended_df
 
 def generate_frames_with_text(input_gif_path, full_text):
