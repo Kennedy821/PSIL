@@ -221,8 +221,8 @@ def get_top_n_recommendations_gcs_version(n):
         recommended_df = recommended_df[recommended_df[language_option.lower()]==1]
 
 
-    # st.markdown("this is the updated recommended df with a language flag")
-    # st.dataframe(recommended_df)
+    st.markdown("this is the updated recommended df with a language flag")
+    st.dataframe(recommended_df)
 
     # st.markdown("this is the genre df")
     # st.dataframe(genre_df)
@@ -235,8 +235,8 @@ def get_top_n_recommendations_gcs_version(n):
     else:
         recommended_df = recommended_df[recommended_df["target_song"].isin(in_scope_genre_song_names)]
 
-    # st.markdown("this is the updated recommended df with a genre flag")
-    # st.dataframe(recommended_df)
+    st.markdown("this is the updated recommended df with a genre flag")
+    st.dataframe(recommended_df)
 
     recommended_df["origin_song_counter"] = total_uploaded_files
     recommended_df["uploaded_song_components"] = recommended_df["total_components"] / recommended_df["origin_song_counter"]
