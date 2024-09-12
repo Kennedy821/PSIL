@@ -185,8 +185,8 @@ def get_top_n_recommendations_gcs_version(n):
 
 
 
-    # st.markdown("recommended df:")
-    # st.dataframe(recommended_df)
+    st.markdown("recommended df:")
+    st.dataframe(recommended_df)
 
 
 
@@ -214,8 +214,6 @@ def get_top_n_recommendations_gcs_version(n):
     # st.dataframe(language_df)
     recommended_df = recommended_df.merge(language_df, on="target_song")
 
-    # st.markdown("this is the updated recommended df with a language flag")
-    # st.dataframe(recommended_df)
 
     if language_option=="All":
         pass
@@ -255,7 +253,7 @@ def get_top_n_recommendations_gcs_version(n):
     # this is a check to determine if the core index has sufficient rate of clustering
     # ideally this should at least be close to 50% across all joined songs
     match_rate = recommended_df.counter.sum() / recommended_df.total_components.sum()
-    # st.markdown(f"the match rate is: {round(match_rate*100,0)} %" )
+    st.markdown(f"the match rate is: {round(match_rate*100,0)} %" )
 
     recommended_df["pct_similiar"] = recommended_df["counter"] / recommended_df["total_components"]
     recommended_df["ls_distance"] = recommended_df["uploaded_song_components"]*recommended_df["pct_similiar"]
@@ -557,7 +555,7 @@ if 'token' in query_params:
                                 del int_df
 
                         database_song_names_df = pd.concat(df_container, axis=1).reset_index()[["song_name",language_option.lower()]]
-                        st.dataframe(database_song_names_df)
+                        # st.dataframe(database_song_names_df)
                         del df_container
                         # database_song_names_df
 
