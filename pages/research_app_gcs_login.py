@@ -240,8 +240,12 @@ def get_top_n_recommendations_gcs_version(n):
 
     recommended_df["origin_song_counter"] = total_uploaded_files
     recommended_df["uploaded_song_components"] = recommended_df["total_components"] / recommended_df["origin_song_counter"]
-    recommended_df.loc[(recommended_df["uploaded_song_components"]<2) & (recommended_df["uploaded_song_components"]>0.5),"appropriate_song"] = "true"
-    recommended_df.loc[recommended_df.appropriate_song.isna(),"appropriate_song"] = "false"
+    appropriate_songs_length_check = len(recommended_df[(recommended_df["uploaded_song_components"]<2) & (recommended_df["uploaded_song_components"]>0.5)])
+    if appropriate_songs_length_check>0:
+        recommended_df.loc[(recommended_df["uploaded_song_components"]<2) & (recommended_df["uploaded_song_components"]>0.5),"appropriate_song"] = "true"
+        recommended_df.loc[recommended_df.appropriate_song.isna(),"appropriate_song"] = "false"
+    else:
+        recommended_df["appropriate_song"] = "false"
 
 
 
