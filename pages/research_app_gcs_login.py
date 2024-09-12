@@ -170,14 +170,14 @@ def get_top_n_recommendations_gcs_version(n):
         song_components_recommendations_list.append(pivoted_df)
 
 
-    st.markdown("total components df:")
-    st.dataframe(total_components_df)
+    # st.markdown("total components df:")
+    # st.dataframe(total_components_df)
 
-    st.markdown(f"results df: {len(results_df)}")
-    st.dataframe(results_df.head(40))
+    # st.markdown(f"results df: {len(results_df)}")
+    # st.dataframe(results_df.head(40))
 
-    st.markdown("pivoted df:")
-    st.dataframe(pivoted_df)
+    # st.markdown("pivoted df:")
+    # st.dataframe(pivoted_df)
 
 
 
@@ -185,8 +185,8 @@ def get_top_n_recommendations_gcs_version(n):
 
 
 
-    st.markdown("recommended df:")
-    st.dataframe(recommended_df)
+    # st.markdown("recommended df:")
+    # st.dataframe(recommended_df)
 
 
 
@@ -221,8 +221,8 @@ def get_top_n_recommendations_gcs_version(n):
         recommended_df = recommended_df[recommended_df[language_option.lower()]==1]
 
 
-    st.markdown("this is the updated recommended df with a language flag")
-    st.dataframe(recommended_df)
+    # st.markdown("this is the updated recommended df with a language flag")
+    # st.dataframe(recommended_df)
 
     # st.markdown("this is the genre df")
     # st.dataframe(genre_df)
@@ -235,8 +235,8 @@ def get_top_n_recommendations_gcs_version(n):
     else:
         recommended_df = recommended_df[recommended_df["target_song"].isin(in_scope_genre_song_names)]
 
-    st.markdown("this is the updated recommended df with a genre flag")
-    st.dataframe(recommended_df)
+    # st.markdown("this is the updated recommended df with a genre flag")
+    # st.dataframe(recommended_df)
 
     recommended_df["origin_song_counter"] = total_uploaded_files
     recommended_df["uploaded_song_components"] = recommended_df["total_components"] / recommended_df["origin_song_counter"]
@@ -257,13 +257,13 @@ def get_top_n_recommendations_gcs_version(n):
     # this is a check to determine if the core index has sufficient rate of clustering
     # ideally this should at least be close to 50% across all joined songs
     match_rate = recommended_df.counter.sum() / recommended_df.total_components.sum()
-    st.markdown(f"the match rate is: {round(match_rate*100,0)} %" )
+    # st.markdown(f"the match rate is: {round(match_rate*100,0)} %" )
 
     recommended_df["pct_similiar"] = recommended_df["counter"] / recommended_df["total_components"]
     recommended_df["ls_distance"] = recommended_df["uploaded_song_components"]*recommended_df["pct_similiar"]
     recommended_df = recommended_df.rename(columns={"target_song":"song_name"})
-    recommended_df = recommended_df.sort_values("pct_similiar", ascending=False).head(n)
-    st.dataframe(recommended_df)
+    recommended_df = recommended_df.sort_values("ls_distance", ascending=False).head(n)
+    # st.dataframe(recommended_df)
     return recommended_df
 
 def generate_frames_with_text(input_gif_path, full_text):
