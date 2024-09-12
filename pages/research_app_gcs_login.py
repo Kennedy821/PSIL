@@ -170,14 +170,14 @@ def get_top_n_recommendations_gcs_version(n):
         song_components_recommendations_list.append(pivoted_df)
 
 
-    # st.markdown("total components df:")
-    # st.dataframe(total_components_df)
+    st.markdown("total components df:")
+    st.dataframe(total_components_df)
 
-    # st.markdown(f"results df: {len(results_df)}")
-    # st.dataframe(results_df.head(40))
+    st.markdown(f"results df: {len(results_df)}")
+    st.dataframe(results_df.head(40))
 
-    # st.markdown("pivoted df:")
-    # st.dataframe(pivoted_df)
+    st.markdown("pivoted df:")
+    st.dataframe(pivoted_df)
 
 
 
