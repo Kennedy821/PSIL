@@ -539,7 +539,7 @@ if 'token' in query_params:
                     blob = bucket.blob(full_file_path)
 
                     # Convert the DataFrame to a CSV string with a specified encoding
-                    csv_string = uploaded_df.to_csv(index=False, encoding='utf-8')
+                    csv_string = logging_df.to_csv(index=False, encoding='utf-8')
 
                     # Upload the CSV string to GCS
                     blob.upload_from_string(csv_string, 'text/csv')
