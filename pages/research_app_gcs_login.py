@@ -520,7 +520,7 @@ if 'token' in query_params:
                     full_file_path = f'{user_directory}{logging_filename}'
 
                     # logging_df = pd.DataFrame([str(decoded_token),song_link]).T
-                    logging_df = pd.DataFrame([{'user': decoded_token, 'song_link': song_link}])
+                    logging_df = pd.DataFrame([{'user': decoded_token, 'song_link': song_link}]).reset_index()
                     st.dataframe(logging_df)
 
                     logging_df.columns = ["user","song_link"]
