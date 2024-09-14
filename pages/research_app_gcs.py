@@ -645,10 +645,12 @@ if st.button("Recommend me songs"):
                 
                     fig, ax = plt.subplots(figsize=(5, 10))
                 
+                    fig.patch.set_facecolor('#2D3250')
+                    ax.set_facecolor('#2D3250')
                     # Plotting each point with a line to the starting value
                     for i, value in enumerate(values):
                         ax.plot([starting_value, value],[labels[i], labels[i]], 'grey')  # Line
-                        ax.plot(value, labels[i] , 'o', color='blue')  # Dot
+                        ax.plot(value, labels[i] , 'o', color='#F5E8C7')  # Dot
                     
                     # Highlight the starting value across the chart
                     #ax.axvline(starting_value, color='red', linestyle='--', label='Chosen song')
@@ -656,17 +658,29 @@ if st.button("Recommend me songs"):
                     #plt.title('Proximity to Starting Value')
                     # plt.xticks(fontsize=15, rotation=45)
 
+                    # Set x and y axis text color
+                    ax.tick_params(axis='x', colors='#F5E8C7')  # Red color for x-axis text
+                    ax.tick_params(axis='y', colors='#F5E8C7')  # Green color for y-axis text
+
+                    # Set axis labels
+                    ax.set_xlabel('X Axis', color='#2D3250')  # Red label for x-axis
+                    ax.set_ylabel('Y Axis', color='#2D3250')  # Green label for y-axis
+
                     # Remove x-ticks
                     plt.xticks([])
 
                     # Remove x-labels
                     plt.gca().xaxis.set_ticklabels([])
 
+                    # Set the y-tick labels font to sans-serif
+                    for label in ax.get_yticklabels():
+                        label.set_fontname('sans-serif')
+
                     plt.yticks(fontsize=20)
                     plt.legend()
                     sns.despine()
                     st.pyplot(fig)
-                
+        
                 
             
             
