@@ -101,6 +101,7 @@ st.set_page_config(
 #     }
 # </style>
 # """, unsafe_allow_html=True)
+SECRET_KEY = st.secrets["general"]["SECRET_KEY"]
 
 # Generate JWT token after login
 def generate_token(email):
