@@ -521,7 +521,7 @@ if 'token' in query_params:
 
                     # logging_df = pd.DataFrame([str(decoded_token),song_link]).T
 
-                    logging_df = pd.DataFrame()
+                    logging_df = pd.DataFrame([])
                     logging_df["user"] = str(decoded_token)
                     logging_df["song_link"] = str(song_link)
 
