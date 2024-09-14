@@ -529,7 +529,7 @@ if 'token' in query_params:
                     # logging_df = pd.DataFrame([{'user': decoded_token, 'song_link': song_link}])
 
                     # logging_df.columns = ["user","song_link"]
-                    st.dataframe(logging_df)
+                    # st.dataframe(logging_df)
 
 
                     
