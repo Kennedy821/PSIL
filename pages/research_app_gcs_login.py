@@ -534,7 +534,6 @@ if 'token' in query_params:
                     # Upload the CSV string to GCS
                     blob.upload_from_string(csv_string, 'text/csv')
 
-                    st.markdown(f"Uploading file to: {full_file_path}")
 
 
 
