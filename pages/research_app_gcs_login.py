@@ -86,7 +86,7 @@ def stream_data(word_to_stream):
             time.sleep(0.25)
 
 
-def get_top_n_recommendations_gcs_version(n):
+def get_top_n_recommendations_gcs_version(n,user_hash):
     while True:
 
 
@@ -117,7 +117,7 @@ def get_top_n_recommendations_gcs_version(n):
 
 
         #download the indices from gcs
-        blob = bucket.blob("queried_indices.csv")
+        blob = bucket.blob(f"users/{user_hash}/queried_indices.csv")
         if blob.exists():
 
             # Download the file to a destination
@@ -599,7 +599,7 @@ if 'token' in query_params:
 
                         links_df = pd.read_csv(master_links_filepath)
                         
-                        top_recommendations_df = get_top_n_recommendations_gcs_version(filtered_selection_n)
+                        top_recommendations_df = get_top_n_recommendations_gcs_version(filtered_selection_n, clean_token)
                         
                         top_recommendations_links_df = top_recommendations_df.merge(links_df[["song_name", "song_links"]], on="song_name", how="left")[["song_name", "song_links"]].reset_index().drop(columns="index").drop_duplicates("song_name")
 
