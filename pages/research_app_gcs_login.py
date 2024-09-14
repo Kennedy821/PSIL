@@ -513,7 +513,11 @@ if 'token' in query_params:
                     unique_id = uuid.uuid4()
                     clean_token = str(query_params).split("[")[1].split("]")[0].replace("'",'')
 
-                    logging_filename = f"{formatted_date}_psil_site_search_{clean_token}_{unique_id}"
+                    # this makes sure that requests are segregated by each user
+                    user_directory = f'users/{clean_token}/'
+
+                    logging_filename = f"{formatted_date}_psil_site_search_{clean_token}_{unique_id}.csv"
+                    full_file_path = f'{user_directory}{logging_filename}'
 
                     logging_df = pd.DataFrame([str(decoded_token),song_link]).T
                     logging_df.columns = ["user","song_link"]
@@ -522,13 +526,15 @@ if 'token' in query_params:
                     # The bucket on GCS in which to write the CSV file
                     bucket = client.bucket('psil-app-backend-2')
                     # The name assigned to the CSV file on GCS
-                    blob = bucket.blob(f'{logging_filename}.csv')
+                    blob = bucket.blob(full_file_path)
 
                     # Convert the DataFrame to a CSV string with a specified encoding
                     csv_string = uploaded_df.to_csv(index=False, encoding='utf-8')
 
                     # Upload the CSV string to GCS
                     blob.upload_from_string(csv_string, 'text/csv')
+
+                    st.markdown(f"Uploading file to: {full_file_path}")
 
 
 
