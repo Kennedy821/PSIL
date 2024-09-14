@@ -65,7 +65,11 @@ import json
 from streamlit import runtime
 from streamlit.runtime.scriptrunner import get_script_run_ctx
 import toml
+from datetime import datetime
+import jwt
 
+current_date = datetime.now()
+formatted_date = current_date.strftime("%d_%m_%Y")
 
 
 im = Image.open('slug_logo.png')
@@ -98,7 +102,10 @@ st.set_page_config(
 # </style>
 # """, unsafe_allow_html=True)
 
-
+# Generate JWT token after login
+def generate_token(email):
+    token = jwt.encode({"email": email}, SECRET_KEY, algorithm="HS256")
+    return token
 
 def stream_data(word_to_stream):
     for word in word_to_stream.split(" "):
@@ -106,7 +113,7 @@ def stream_data(word_to_stream):
         time.sleep(0.25)
 
 
-def get_top_n_recommendations_gcs_version(n):
+def get_top_n_recommendations_gcs_version(n, user_hash):
     while True:
 
 
@@ -137,7 +144,7 @@ def get_top_n_recommendations_gcs_version(n):
 
 
         #download the indices from gcs
-        blob = bucket.blob("queried_indices.csv")
+        blob = bucket.blob(f"users/{user_hash}/queried_indices.csv")
         if blob.exists():
 
             # Download the file to a destination
@@ -470,6 +477,40 @@ if st.button("Recommend me songs"):
             blob.upload_from_string(csv_string, 'text/csv')
 
             # st.markdown("Your song was successfully uploaded.")
+            import uuid
+            unique_id = uuid.uuid4()
+            clean_token = generate_token("demo")
+
+            # this makes sure that requests are segregated by each user
+            user_directory = f'users/{clean_token}/'
+
+            logging_filename = f"{formatted_date}_psil_site_search_{clean_token}_{unique_id}.csv"
+            full_file_path = f'{user_directory}{logging_filename}'
+
+            # logging_df = pd.DataFrame([str(decoded_token),song_link]).T
+
+            logging_df = pd.DataFrame([str("demo")])
+            logging_df.columns = ["user"]
+            logging_df["song_link"] = str(song_link)
+
+
+            # logging_df = pd.DataFrame([{'user': decoded_token, 'song_link': song_link}])
+
+            # logging_df.columns = ["user","song_link"]
+            # st.dataframe(logging_df)
+
+
+            
+            # The bucket on GCS in which to write the CSV file
+            bucket = client.bucket('psil-app-backend-2')
+            # The name assigned to the CSV file on GCS
+            blob = bucket.blob(full_file_path)
+
+            # Convert the DataFrame to a CSV string with a specified encoding
+            csv_string = logging_df.to_csv(index=False, encoding='utf-8')
+
+            # Upload the CSV string to GCS
+            blob.upload_from_string(csv_string, 'text/csv')
 
 
 
@@ -518,14 +559,14 @@ if st.button("Recommend me songs"):
                 
 
 
-                filtered_selection_n = 10
+                filtered_selection_n = 5
                 
 
                 master_links_filepath = Path("new_playlist_links_a_to_z.csv")
 
                 links_df = pd.read_csv(master_links_filepath)
                 
-                top_recommendations_df = get_top_n_recommendations_gcs_version(filtered_selection_n)
+                top_recommendations_df = get_top_n_recommendations_gcs_version(filtered_selection_n, clean_token)
                 
                 top_recommendations_links_df = top_recommendations_df.merge(links_df[["song_name", "song_links"]], on="song_name", how="left")[["song_name", "song_links"]].reset_index().drop(columns="index").drop_duplicates("song_name")
 
