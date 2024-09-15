@@ -120,17 +120,27 @@ if st.button("Login"):
                 # st.markdown(redirect_url)
                 redirect_url = str(redirect_url[0]).split(" ")[1]
                 # st.markdown(redirect_url)
+                time.sleep()
+                if redirect_url:
 
 
 
+                    # token = generate_token(email)  # Generate token after login
+                    st.success("Login successful!")
+                    
+                    # # Redirect to external site with the token as a query parameter
+                    # redirect_url = f"https://psilproject.streamlit.app/research_app_gcs_login?token={token}"
+                    st.markdown(f"""
+                    <meta http-equiv="refresh" content="0; url={redirect_url}">
+                    """, unsafe_allow_html=True)
+                else:
+                    st.error("It looks like your login credentials aren't correct or you're either not registered")
+                    st.write("redirecting you to our registration page...")
+                    time.sleep(10)
 
-                # token = generate_token(email)  # Generate token after login
-                st.success("Login successful!")
-                
-                # # Redirect to external site with the token as a query parameter
-                # redirect_url = f"https://psilproject.streamlit.app/research_app_gcs_login?token={token}"
-                st.markdown(f"""
-                <meta http-equiv="refresh" content="0; url={redirect_url}">
-                """, unsafe_allow_html=True)
+                    redirect_url = f"https://psilproject.streamlit.app/psil_registration_form"
+                    st.markdown(f"""
+                    <meta http-equiv="refresh" content="0; url={redirect_url}">
+                    """, unsafe_allow_html=True)
         except Exception as e:
             st.error(f"error: {e}")
