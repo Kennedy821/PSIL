@@ -117,11 +117,12 @@ if st.button("Login"):
                 # wait for the valid url to appear in the bucket
                 redirect_url = []
                 get_login_credentials_for_valid_user()
-                # st.markdown(redirect_url)
-                redirect_url = str(redirect_url[0]).split(" ")[1]
-                # st.markdown(redirect_url)
-                time.sleep()
-                if redirect_url:
+                time.sleep(5)
+                if len(redirect_url)>0:
+                    # st.markdown(redirect_url)
+                    redirect_url = str(redirect_url[0]).split(" ")[1]
+                    # st.markdown(redirect_url)
+
 
 
 
