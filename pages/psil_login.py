@@ -9,7 +9,7 @@ import time
 import tempfile
 
 print(jwt.__version__)
-SECRET_KEY = "your_secret_key"  # A secret key for encoding and decoding tokens
+SECRET_KEY = st.secrets["general"]["SECRET_KEY"]
 
 im = Image.open('slug_logo.png')
 st.set_page_config(
