@@ -107,6 +107,9 @@ def stream_data(word_to_stream):
 def get_top_n_recommendations_gcs_version(n,user_hash):
     while True:
 
+        check_processing_stage_1(user_hash)
+
+        check_processing_stage_2(user_hash)
 
         #download the indices from gcs
         blob = bucket.blob("my_data.csv")
@@ -440,6 +443,70 @@ def get_previous_searches_fast(chosen_user):
     return output_df[["search_date","song_name"]]
 
 
+def check_processing_stage_1(chosen_user):
+    # Create credentials object
+    credentials = service_account.Credentials.from_service_account_info(st.secrets["gcp_service_account"])
+
+    # Use the credentials to create a client
+    client = storage.Client(credentials=credentials)
+
+    # Specify your bucket name
+    bucket_name = "psil-app-backend-2"
+
+    # Get the bucket object
+    bucket = client.bucket(bucket_name)
+
+    # List all blobs in the 'users/' directory
+    blobs = client.list_blobs(bucket_name, prefix=f'users/{chosen_user}')
+
+    # Initialize an empty list to store DataFrames
+    dataframes = []
+
+    # Temporary directory for storing downloaded files (optional)
+    # temp_dir = "/tmp/"  # If needed
+
+    # Iterate over all blobs in the 'users/' directory
+    for blob in blobs:
+        # Check if the blob is not a directory (blob names ending with '/')
+        if not blob.name.endswith('/') and ".dat" in blob.name and chosen_user in blob.name:
+            st.toast("Checkpoint 1 complete")
+            return "Checkpoint 1 complete"
+        else:
+            time.sleep(10)
+
+def check_processing_stage_2(chosen_user):
+    # Create credentials object
+    credentials = service_account.Credentials.from_service_account_info(st.secrets["gcp_service_account"])
+
+    # Use the credentials to create a client
+    client = storage.Client(credentials=credentials)
+
+    # Specify your bucket name
+    bucket_name = "psil-app-backend-2"
+
+    # Get the bucket object
+    bucket = client.bucket(bucket_name)
+
+    # List all blobs in the 'users/' directory
+    blobs = client.list_blobs(bucket_name, prefix=f'users/{chosen_user}')
+
+    # Initialize an empty list to store DataFrames
+    dataframes = []
+
+    # Temporary directory for storing downloaded files (optional)
+    # temp_dir = "/tmp/"  # If needed
+
+    # Iterate over all blobs in the 'users/' directory
+    for blob in blobs:
+        # Check if the blob is not a directory (blob names ending with '/')
+        if not blob.name.endswith('/') and "indices_" in blob.name and chosen_user in blob.name:
+            st.toast("Checkpoint 2 complete")
+
+            return "Checkpoint 2 complete"
+        else:
+            time.sleep(10)
+        
+
 # Step 1: Retrieve the token from the URL query parameters
 query_params = st.experimental_get_query_params()
 
@@ -591,7 +658,7 @@ if 'token' in query_params:
                 # if st.session_state.show_animation:
 
 
-                    animation_object = st_lottie(lottie_json,speed=2, height=750, width=750)
+                    # animation_object = st_lottie(lottie_json,speed=2, height=750, width=750)
 
                         
 
