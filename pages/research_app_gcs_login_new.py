@@ -471,8 +471,8 @@ def check_processing_stage_1(chosen_user):
         if not blob.name.endswith('/') and ".dat" in blob.name and chosen_user in blob.name:
             st.toast("Checkpoint 1 complete")
             return "Checkpoint 1 complete"
-        else:
-            time.sleep(10)
+        # else:
+        #     time.sleep(10)
 
 def check_processing_stage_2(chosen_user):
     # Create credentials object
@@ -503,8 +503,8 @@ def check_processing_stage_2(chosen_user):
             st.toast("Checkpoint 2 complete")
 
             return "Checkpoint 2 complete"
-        else:
-            time.sleep(10)
+        # else:
+        #     time.sleep(10)
         
 
 # Step 1: Retrieve the token from the URL query parameters
