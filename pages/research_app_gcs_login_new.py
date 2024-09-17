@@ -533,7 +533,7 @@ if 'token' in query_params:
 
             # st.title("PSIL: Research production version")
 
-            with open("purple_pink_ball_gradient.json", "r") as f:
+            with open("docs_animation.lottie", "r") as f:
 
 
                 lottie_json = json.load(f)
@@ -592,11 +592,11 @@ if 'token' in query_params:
                 # if "show_animation" not in st.session_state:
                 #     st.session_state.show_animation = True
 
-                # # Display the animation if the state is set to True
+                # Display the animation if the state is set to True
                 # if st.session_state.show_animation:
 
 
-                        # animation_object = st_lottie(lottie_json,speed=2, height=750, width=750)
+                    animation_object = st_lottie(lottie_json,speed=2, height=750, width=750)
 
                         
 
