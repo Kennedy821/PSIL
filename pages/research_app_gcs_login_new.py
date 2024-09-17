@@ -921,8 +921,13 @@ if 'token' in query_params:
             """
 
             # Display the carousel in Streamlit
-            st.components.v1.html(carousel_html, height=275)
-            st.components.v1.html(carousel_html, height=275)
+            # st.components.v1.html(carousel_html, height=275)
+            # st.components.v1.html(carousel_html, height=275)
+
+
+            st.image(album_art_images_1[0], caption="Bon Iver, Bon Iver")
+            st.image(album_art_images_1[1], caption="22, a million")
+            st.image(album_art_images_1[2], caption="Hailaker")
     else:
         st.error("Invalid or expired token.")
 else:
