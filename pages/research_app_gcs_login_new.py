@@ -176,6 +176,9 @@ def get_top_n_recommendations_gcs_version(n,user_hash):
     
         results_df = database_song_names_df[database_song_names_df.index.isin(I)]
         results_df["origin_song_component"] = song
+        # this line removes any non-audio song components                            
+        results_df = results_df.merge(valid_df, on="target_song", how="inner").drop(columns="valid_song")
+
         results_df["origin_song"] = results_df["origin_song_component"].str.split("_spect").str[0]
         results_df["target_song"] = results_df["song_name"].str.split("_spect").str[0]
         results_df["counter"] =1
@@ -661,6 +664,9 @@ if 'token' in query_params:
 
 
                         with tempfile.TemporaryDirectory() as temp_dir:
+
+                            valid_df = pd.read_parquet("psil_crawler_song_names_mapped_as_valid_songs_or_not.parquet.gzip").rename(columns={"song_name":"target_song"})
+                            valid_df = valid_df[valid_df.song_name==1]
 
                             
                             
