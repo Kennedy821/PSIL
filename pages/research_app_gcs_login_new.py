@@ -107,9 +107,9 @@ def stream_data(word_to_stream):
 def get_top_n_recommendations_gcs_version(n,user_hash):
     while True:
 
-        check_processing_stage_1(user_hash)
+        # check_processing_stage_1(user_hash)
 
-        check_processing_stage_2(user_hash)
+        # check_processing_stage_2(user_hash)
 
         #download the indices from gcs
         blob = bucket.blob("my_data.csv")
