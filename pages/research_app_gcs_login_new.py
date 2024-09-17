@@ -667,6 +667,7 @@ if 'token' in query_params:
 
                             valid_df = pd.read_parquet("psil_crawler_song_names_mapped_as_valid_songs_or_not.parquet.gzip").rename(columns={"song_name":"target_song"})
                             valid_df = valid_df[valid_df["valid_song"]=='1']
+                            valid_df
 
                             
                             
