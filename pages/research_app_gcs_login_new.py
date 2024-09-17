@@ -443,7 +443,7 @@ def get_previous_searches_fast(chosen_user):
     return output_df[["search_date","song_name"]]
 
 
-def check_processing_stage_2(chosen_user):
+def check_processing_stage_1(chosen_user):
     # Create credentials object
     credentials = service_account.Credentials.from_service_account_info(st.secrets["gcp_service_account"])
 
