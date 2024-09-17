@@ -491,7 +491,7 @@ def check_processing_stage_2(chosen_user):
     # Iterate over all blobs in the 'users/' directory
     for blob in blobs:
         # Check if the blob is not a directory (blob names ending with '/')
-        if not blob.name.endswith('/') and "queried_" in blob.name and chosen_user in blob.name:
+        if not blob.name.endswith('/') and "indices.csv" in blob.name and chosen_user in blob.name:
             # Notify via Streamlit that checkpoint 2 is complete
             st.success("Checkpoint 2 complete: " + blob.name)
         
