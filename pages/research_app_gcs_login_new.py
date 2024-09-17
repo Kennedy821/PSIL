@@ -51,7 +51,7 @@ from google.oauth2 import service_account
 from google.cloud import storage
 from st_files_connection import FilesConnection
 # import gcsfs
-import yt_dlp
+# import yt_dlp
 # import timm
 # import torch
 from PIL import Image
@@ -392,102 +392,6 @@ def verify_token(token):
 def generate_token(email):
     token = jwt.encode({"email": email}, SECRET_KEY, algorithm="HS256")
     return token
-  
-def get_previous_searches(chosen_user):
-    # Create credentials object
-    credentials = service_account.Credentials.from_service_account_info(st.secrets["gcp_service_account"])
-
-    # Use the credentials to create a client
-    client = storage.Client(credentials=credentials)
-
-    # Specify your bucket name
-    bucket_name = "psil-app-backend-2"
-
-    # Get the bucket object
-    bucket = client.bucket(bucket_name)
-
-    # List all blobs in the 'users/' directory
-    blobs = client.list_blobs(bucket_name, prefix=f'users/{chosen_user}')
-
-    # Initialize an empty list to store DataFrames
-    dataframes = []
-
-    # Temporary directory for storing downloaded files (optional)
-    # temp_dir = "/tmp/"  # If needed
-
-    # Iterate over all blobs in the 'users/' directory
-    for blob in blobs:
-        # Check if the blob is not a directory (blob names ending with '/')
-        if not blob.name.endswith('/') and "psil_site_search" in blob.name and chosen_user in blob.name:
-            # Download the blob's content as a string
-            content = blob.download_as_text()
-
-            # Read the content into a pandas DataFrame
-            df = pd.read_csv(StringIO(content))
-            # st.dataframe(df.head())
-
-            # Optionally, add a column for user identification
-
-            user_id = blob.name.split('/')[1]  # Adjust index if your directory structure is different
-            df['user_id'] = user_id
-            # pull out the date of the searches
-            search_date = blob.name.split('/')[2][:10].replace("_","-")
-            # st.markdown(f"the data is: {search_date}")
-            df["search_date"] = pd.to_datetime(search_date,format="%d-%m-%Y")
-            df["search_date"] = df["search_date"].dt.date
-            dataframes.append(df)
-    output_df = pd.concat(dataframes).reset_index().sort_values("search_date", ascending=False).head(10)
-    output_df["song_name"] = get_song_names(output_df)
-
-    return output_df[["search_date","song_name"]]
-
-
-def get_previous_searches(chosen_user):
-    # Create credentials object
-    credentials = service_account.Credentials.from_service_account_info(st.secrets["gcp_service_account"])
-
-    # Use the credentials to create a client
-    client = storage.Client(credentials=credentials)
-
-    # Specify your bucket name
-    bucket_name = "psil-app-backend-2"
-
-    # List all blobs in the 'users/' directory
-    blobs = client.list_blobs(bucket_name, prefix=f'users/{chosen_user}')
-
-    # Initialize an empty list to store DataFrames
-    dataframes = []
-
-    def process_blob(blob):
-        if not blob.name.endswith('/') and "psil_site_search" in blob.name and chosen_user in blob.name:
-            content = blob.download_as_text()
-            df = pd.read_csv(StringIO(content))
-
-            user_id = blob.name.split('/')[1]
-            df['user_id'] = user_id
-            # df["song_name"] = get_song_names(df)
-
-            search_date = blob.name.split('/')[2][:10].replace("_", "-")
-            df["search_date"] = pd.to_datetime(search_date, format="%d-%m-%Y").date()
-
-            return df
-        return None
-
-    # Use concurrent futures to download and process blobs in parallel
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        futures = [executor.submit(process_blob, blob) for blob in blobs]
-        for future in concurrent.futures.as_completed(futures):
-            result = future.result()
-            if result is not None:
-                dataframes.append(result)
-
-    # Concatenate the resulting DataFrames
-    if dataframes:
-        output_df = pd.concat(dataframes, ignore_index=True).sort_values("search_date", ascending=False).head(10)
-        output_df["song_name"] = get_song_names(output_df)
-        return output_df[["search_date", "song_name"]]
-
-    return pd.DataFrame(columns=["search_date", "song_name"])  # Return an empty DataFrame if no results
 
 
 def get_previous_searches_fast(chosen_user):
@@ -528,34 +432,6 @@ def get_previous_searches_fast(chosen_user):
     
     return output_df[["search_date","song_name"]]
 
-
-def get_song_names(df):
-    song_names = []
-
-    # Initialize yt-dlp
-    ydl_opts = {
-        'format': 'bestaudio/best',
-        'extractaudio': True,
-        'quiet': True,
-        'postprocessors': [{
-            'key': 'FFmpegExtractAudio',
-            'preferredcodec': 'mp3',
-            'preferredquality': '192',
-        }],
-        'noplaylist': True,  # Download only single song
-    }
-
-    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        for link in df['song_link']:
-            try:
-                info_dict = ydl.extract_info(link, download=False)
-                song_name = info_dict.get('title', None)
-                song_names.append(song_name)
-                time.sleep(0.5)
-            except Exception as e:
-                song_names.append(f"Error: {str(e)}")
-
-    return song_names
 
 # Step 1: Retrieve the token from the URL query parameters
 query_params = st.experimental_get_query_params()
