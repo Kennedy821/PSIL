@@ -533,10 +533,16 @@ if 'token' in query_params:
 
             # st.title("PSIL: Research production version")
 
-            with open("docs_animation.lottie", "r") as f:
+            # Load the lottie file
+            def load_lottiefile(filepath: str):
+                with open(filepath, "r") as f:
+                    return json.load(f)
 
+            # Path to your .lottie file
+            lottie_animation = load_lottiefile("docs_animation.lottie")
 
-                lottie_json = json.load(f)
+            # Display the animation
+            st_lottie(lottie_animation, speed=1, loop=True, quality="high", height=400, width=400)
 
             
 
