@@ -666,8 +666,9 @@ if 'token' in query_params:
                         with tempfile.TemporaryDirectory() as temp_dir:
 
                             valid_df = pd.read_parquet("psil_crawler_song_names_mapped_as_valid_songs_or_not.parquet.gzip").rename(columns={"song_name":"target_song"})
-                            valid_df = valid_df.valid_song.astype(float)
-                            valid_df = valid_df[valid_df.valid_song==1]
+                            valid_df
+                            valid_df = valid_df["valid_song"].str.astype(float)
+                            valid_df = valid_df[valid_df["valid_song"]==1]
 
                             
                             
