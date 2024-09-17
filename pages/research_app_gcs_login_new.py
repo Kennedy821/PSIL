@@ -443,7 +443,7 @@ def get_previous_searches_fast(chosen_user):
     return output_df[["search_date","song_name"]]
 
 
-def check_processing_stage_1(chosen_user):
+def check_processing_stage_2(chosen_user):
     # Create credentials object
     credentials = service_account.Credentials.from_service_account_info(st.secrets["gcp_service_account"])
 
@@ -456,23 +456,18 @@ def check_processing_stage_1(chosen_user):
     # Get the bucket object
     bucket = client.bucket(bucket_name)
 
-    # List all blobs in the 'users/' directory
+    # List all blobs in the 'users/' directory for the chosen user
     blobs = client.list_blobs(bucket_name, prefix=f'users/{chosen_user}')
 
     # Initialize an empty list to store DataFrames
     dataframes = []
 
-    # Temporary directory for storing downloaded files (optional)
-    # temp_dir = "/tmp/"  # If needed
-
     # Iterate over all blobs in the 'users/' directory
     for blob in blobs:
         # Check if the blob is not a directory (blob names ending with '/')
         if not blob.name.endswith('/') and ".dat" in blob.name and chosen_user in blob.name:
-            st.toast("Checkpoint 1 complete")
-            return "Checkpoint 1 complete"
-        # else:
-        #     time.sleep(10)
+            # Notify via Streamlit that checkpoint 2 is complete
+            st.success("Checkpoint 1 complete: " + blob.name)
 
 def check_processing_stage_2(chosen_user):
     # Create credentials object
@@ -487,24 +482,18 @@ def check_processing_stage_2(chosen_user):
     # Get the bucket object
     bucket = client.bucket(bucket_name)
 
-    # List all blobs in the 'users/' directory
+    # List all blobs in the 'users/' directory for the chosen user
     blobs = client.list_blobs(bucket_name, prefix=f'users/{chosen_user}')
 
     # Initialize an empty list to store DataFrames
     dataframes = []
 
-    # Temporary directory for storing downloaded files (optional)
-    # temp_dir = "/tmp/"  # If needed
-
     # Iterate over all blobs in the 'users/' directory
     for blob in blobs:
         # Check if the blob is not a directory (blob names ending with '/')
-        if not blob.name.endswith('/') and "indices_" in blob.name and chosen_user in blob.name:
-            st.toast("Checkpoint 2 complete")
-
-            return "Checkpoint 2 complete"
-        # else:
-        #     time.sleep(10)
+        if not blob.name.endswith('/') and "queried_" in blob.name and chosen_user in blob.name:
+            # Notify via Streamlit that checkpoint 2 is complete
+            st.success("Checkpoint 2 complete: " + blob.name)
         
 
 # Step 1: Retrieve the token from the URL query parameters
