@@ -925,9 +925,9 @@ if 'token' in query_params:
             # st.components.v1.html(carousel_html, height=275)
 
 
-            st.image(album_art_images_1[0], caption="Bon Iver, Bon Iver")
-            st.image(album_art_images_1[1], caption="22, a million")
-            st.image(album_art_images_1[2], caption="Hailaker")
+            st.image(album_art_images_1[0], caption="Bon Iver, Bon Iver", height=200)
+            st.image(album_art_images_1[1], caption="22, a million", height=200)
+            st.image(album_art_images_1[2], caption="Hailaker", height=200)
     else:
         st.error("Invalid or expired token.")
 else:
