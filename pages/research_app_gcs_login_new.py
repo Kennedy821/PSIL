@@ -520,33 +520,37 @@ if 'token' in query_params:
             # pull all of the users previous searches
             # user_hash = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImRlbW9AZGVtby5jb20ifQ.GEbL1X-vQq1N-US13CMuBF5kQPxP3aYYnoKMYZHTsYg"
             user_hash = token
-            search_history_df = get_previous_searches_fast(user_hash)
-            
-            # Display the last 10 searches
-            st.subheader("Your Searches:")
-            # for song in search_history_df.song_name:
-            #     st.write(song)
+            try:
+                search_history_df = get_previous_searches_fast(user_hash)
+                
+                # Display the last 10 searches
+                st.subheader("Your Searches:")
+                # for song in search_history_df.song_name:
+                #     st.write(song)
 
-            songs = [x for x in search_history_df.song_name.values]
-            # CSS for card-like structure and hover effect
-            st.markdown("""
-                <style>
-                .song-card {
-                    padding: 10px;
-                    margin-bottom: 10px;
-                    border-radius: 5px;
-                    border: 1px solid #2D3250;
-                    background-color: #7077A1;
-                    transition: background-color 0.3s;
-                }
-                .song-card:hover {
-                    background-color: #424769;
-                }
-                </style>
-                """, unsafe_allow_html=True)
+                songs = [x for x in search_history_df.song_name.values]
+                # CSS for card-like structure and hover effect
+                st.markdown("""
+                    <style>
+                    .song-card {
+                        padding: 10px;
+                        margin-bottom: 10px;
+                        border-radius: 5px;
+                        border: 1px solid #2D3250;
+                        background-color: #7077A1;
+                        transition: background-color 0.3s;
+                    }
+                    .song-card:hover {
+                        background-color: #424769;
+                    }
+                    </style>
+                    """, unsafe_allow_html=True)
 
-            for song in songs:
-                st.markdown(f"<div class='song-card'>{song}</div>", unsafe_allow_html=True)
+                for song in songs:
+                    st.markdown(f"<div class='song-card'>{song}</div>", unsafe_allow_html=True)
+            except Exception as e:
+                st.subheader("Your Searches")
+                st.info("It looks like you haven't used PSIL much yet...")
 
 
 
