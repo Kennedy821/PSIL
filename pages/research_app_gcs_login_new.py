@@ -496,10 +496,11 @@ def check_processing_stage_2(chosen_user):
             st.success("Checkpoint 2 complete: " + blob.name)
         
 def get_url_for_song(song):
-    # chosen_url = search_history_df[search_history_df.song==song].song_link.values[0]
+    chosen_url = search_history_df[search_history_df.song==song].song_link.values[0]
     # Replace this with your actual URL generation logic
     # For example, linking to Spotify search
-    return f"https://open.spotify.com/search/{song.replace(' ', '%20')}"
+    # return f"https://open.spotify.com/search/{song.replace(' ', '%20')}"
+    return chosen_url
 
 def get_image_for_song():
 
