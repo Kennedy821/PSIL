@@ -440,7 +440,7 @@ def get_previous_searches_fast(chosen_user):
 
     output_df = pd.concat(dataframes).drop_duplicates("song_name").reset_index().sort_values("search_date", ascending=True).head(10)
     
-    return output_df[["search_date","song_name"]]
+    return output_df[["search_date","song_name",'song_link']]
 
 
 def check_processing_stage_1(chosen_user):
@@ -495,6 +495,11 @@ def check_processing_stage_2(chosen_user):
             # Notify via Streamlit that checkpoint 2 is complete
             st.success("Checkpoint 2 complete: " + blob.name)
         
+def get_url_for_song(song):
+    # chosen_url = search_history_df[search_history_df.song==song].song_link.values[0]
+    # Replace this with your actual URL generation logic
+    # For example, linking to Spotify search
+    return f"https://open.spotify.com/search/{song.replace(' ', '%20')}"
 
 # Step 1: Retrieve the token from the URL query parameters
 query_params = st.experimental_get_query_params()
@@ -529,6 +534,7 @@ if 'token' in query_params:
                 #     st.write(song)
 
                 songs = [x for x in search_history_df.song_name.values]
+                # song_url = [x for x in search_history_df.song_link.values]
                 # CSS for card-like structure and hover effect
                 st.markdown("""
                     <style>
@@ -546,8 +552,16 @@ if 'token' in query_params:
                     </style>
                     """, unsafe_allow_html=True)
 
+                # for song in songs:
+                #     st.markdown(f"<div class='song-card'>{song}</div>", unsafe_allow_html=True)
                 for song in songs:
-                    st.markdown(f"<div class='song-card'>{song}</div>", unsafe_allow_html=True)
+                    url = get_url_for_song(song)  # Replace with your URL logic
+                    st.markdown(f"""
+                        <div class='song-card'>
+                            <div class='song-title'>{song}</div>
+                            <a href='{url}' target='_blank' class='link-button'>Go to URL</a>
+                        </div>
+                        """, unsafe_allow_html=True)
             except Exception as e:
                 st.subheader("Your Searches")
                 st.info("It looks like you haven't used PSIL much yet...")
