@@ -576,25 +576,28 @@ if 'token' in query_params:
                     #     """, unsafe_allow_html=True)
                     
                     st.markdown(f"""
-                                <div class='song-card'>
-                                    <div class='song-title'>{song}</div>
-                                    <a href='{url}' target='_blank' style="text-decoration:none;">
-                                        <button style="
-                                            background-color: #4CAF50;
-                                            border: none;
-                                            color: white;
-                                            padding: 10px 20px;
-                                            text-align: center;
-                                            text-decoration: none;
-                                            display: inline-block;
-                                            font-size: 16px;
-                                            margin: 4px 2px;
-                                            cursor: pointer;">
-                                            Go to URL
-                                        </button>
-                                    </a>
-                                </div>
-                            """, unsafe_allow_html=True)
+                        <style>
+                            .song-card {{
+                                background-color: #5f6a89;  /* Optional: Customize the background color */
+                                padding: 10px;
+                                border-radius: 8px;
+                                margin-bottom: 10px;
+                            }}
+                            .song-title {{
+                                font-size: 18px;
+                                color: #F5E6CC;
+                                text-decoration: none;
+                            }}
+                            .song-card:hover {{
+                                background-color: #4f5a73; /* Optional: Change background on hover */
+                            }}
+                        </style>
+                        <a href="{url}" target="_blank" style="text-decoration:none;">
+                            <div class='song-card'>
+                                <div class='song-title'>{song}</div>
+                            </div>
+                        </a>
+                    """, unsafe_allow_html=True)
 
 
                     # if image_icon:
