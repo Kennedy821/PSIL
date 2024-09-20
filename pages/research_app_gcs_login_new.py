@@ -574,15 +574,25 @@ if 'token' in query_params:
                     #         <a href='{url}' target='_blank' class='link-button'>Go to URL</a>
                     #     </div>
                     #     """, unsafe_allow_html=True)
-                    st.image(image_icon)
-                    st.markdown(f"""
-                        <div class='song-card'>
-                            <div class='song-title'>{song}</div>
-                            <a href='{url}' target='_blank'>
-                                <img src='{image_icon}' alt='spotify' width='10' height='10'>
+
+
+                    if image_icon:
+                        # Create a clickable image using HTML and Streamlit's markdown
+                        st.markdown(f"""
+                            <a href="{url}" target="_blank">
+                                <img src="{image_icon}" alt="{song}" style="width:10px;height:10px;">
                             </a>
-                        </div>
-                    """, unsafe_allow_html=True)
+                        """, unsafe_allow_html=True
+                        )
+                    # st.image(image_icon)
+                    # st.markdown(f"""
+                    #     <div class='song-card'>
+                    #         <div class='song-title'>{song}</div>
+                    #         <a href='{url}' target='_blank'>
+                    #             <img src='{image_icon}' alt='spotify' width='10' height='10'>
+                    #         </a>
+                    #     </div>
+                    # """, unsafe_allow_html=True)
             except Exception as e:
                 st.subheader("Your Searches")
                 st.info("It looks like you haven't used PSIL much yet...")
