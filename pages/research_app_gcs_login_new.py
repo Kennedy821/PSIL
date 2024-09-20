@@ -507,7 +507,7 @@ def get_image_for_song():
     img_path = f"/spotify_icon.png"
     try:
         img = Image.open(img_path)
-        return img_path
+        return img
     except FileNotFoundError:
         print(f"Image not found for {song_name}")
         return None
@@ -568,18 +568,18 @@ if 'token' in query_params:
                 for song in songs:
                     url = get_url_for_song(song)  # Replace with your URL logic
                     image_icon = get_image_for_song() 
-                    # st.markdown(f"""
-                    #     <div class='song-card'>
-                    #         <div class='song-title'>{song}</div>
-                    #         <a href='{url}' target='_blank' class='link-button'>Go to URL</a>
-                    #     </div>
-                    #     """, unsafe_allow_html=True)
+                    st.markdown(f"""
+                        <div class='song-card'>
+                            <div class='song-title'>{song}</div>
+                            <a href='{url}' target='_blank' class='link-button'>Go to URL</a>
+                        </div>
+                        """, unsafe_allow_html=True)
 
 
-                    if image_icon:
-                    # Display clickable image using st.image wrapped in markdown
-                        st.markdown(f"[![{song}]({image_icon})]({url})")
-                        st.write(song)
+                    # if image_icon:
+                    # # Display clickable image using st.image wrapped in markdown
+                    #     st.markdown(f"[![{song}]({image_icon})]({url})")
+                    #     st.write(song)
 
                     # st.image(image_icon)
                     # st.markdown(f"""
