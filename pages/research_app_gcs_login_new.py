@@ -507,7 +507,7 @@ def get_image_for_song():
     img_path = f"spotify_icon.png"
     try:
         img = Image.open(img_path)
-        return img_path
+        return img
     except FileNotFoundError:
         print(f"Image not found for {song_name}")
         return None
