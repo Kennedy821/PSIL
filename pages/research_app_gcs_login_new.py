@@ -579,7 +579,7 @@ if 'token' in query_params:
                         <div class='song-card'>
                             <div class='song-title'>{song}</div>
                             <a href='{url}' target='_blank'>
-                                <img src='{image_icon}' alt='spotify' width='100' height='100'>
+                                <img src='{image_icon}' alt='spotify' width='10' height='10'>
                             </a>
                         </div>
                     """, unsafe_allow_html=True)
