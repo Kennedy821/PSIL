@@ -580,7 +580,7 @@ if 'token' in query_params:
                         # Create a clickable image using HTML and Streamlit's markdown
                         st.markdown(f"""
                             <a href="{url}" target="_blank">
-                                <img src="{image_icon}" alt="{song}" style="width:10px;height:10px;">
+                                <img src="{image_icon}" alt="{song}" style="width:100px;height:100px;">
                             </a>
                         """, unsafe_allow_html=True
                         )
