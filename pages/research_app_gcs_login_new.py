@@ -504,7 +504,7 @@ def get_url_for_song(song):
 def get_image_for_song():
 
     # Assuming you have images saved locally with filenames based on the song name
-    img_path = f"/spotify_icon.png"
+    img_path = f"spotify_icon.png"
     try:
         img = Image.open(img_path)
         return img
