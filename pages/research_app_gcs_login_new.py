@@ -501,6 +501,17 @@ def get_url_for_song(song):
     # For example, linking to Spotify search
     return f"https://open.spotify.com/search/{song.replace(' ', '%20')}"
 
+def get_image_for_song():
+
+    # Assuming you have images saved locally with filenames based on the song name
+    img_path = f"spotify_icon.png"
+    try:
+        img = Image.open(img_path)
+        return img
+    except FileNotFoundError:
+        print(f"Image not found for {song_name}")
+        return None
+
 # Step 1: Retrieve the token from the URL query parameters
 query_params = st.experimental_get_query_params()
 
@@ -556,12 +567,22 @@ if 'token' in query_params:
                 #     st.markdown(f"<div class='song-card'>{song}</div>", unsafe_allow_html=True)
                 for song in songs:
                     url = get_url_for_song(song)  # Replace with your URL logic
+                    image_icon = get_image_for_song() 
+                    # st.markdown(f"""
+                    #     <div class='song-card'>
+                    #         <div class='song-title'>{song}</div>
+                    #         <a href='{url}' target='_blank' class='link-button'>Go to URL</a>
+                    #     </div>
+                    #     """, unsafe_allow_html=True)
+                    
                     st.markdown(f"""
                         <div class='song-card'>
                             <div class='song-title'>{song}</div>
-                            <a href='{url}' target='_blank' class='link-button'>Go to URL</a>
+                            <a href='{url}' target='_blank'>
+                                <img src='{image_icon}' alt='spotify' width='100' height='100'>
+                            </a>
                         </div>
-                        """, unsafe_allow_html=True)
+                    """, unsafe_allow_html=True)
             except Exception as e:
                 st.subheader("Your Searches")
                 st.info("It looks like you haven't used PSIL much yet...")
