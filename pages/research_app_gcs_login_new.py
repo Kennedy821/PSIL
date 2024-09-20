@@ -574,12 +574,12 @@ if 'token' in query_params:
                     #         <a href='{url}' target='_blank' class='link-button'>Go to URL</a>
                     #     </div>
                     #     """, unsafe_allow_html=True)
-                    
+                    st.image(image_icon)
                     st.markdown(f"""
                         <div class='song-card'>
                             <div class='song-title'>{song}</div>
                             <a href='{url}' target='_blank'>
-                                <img src='{image_icon}' width='10' height='10'>
+                                <img src='{image_icon}' alt='spotify' width='10' height='10'>
                             </a>
                         </div>
                     """, unsafe_allow_html=True)
