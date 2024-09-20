@@ -577,13 +577,10 @@ if 'token' in query_params:
 
 
                     if image_icon:
-                        # Create a clickable image using HTML and Streamlit's markdown
-                        st.markdown(f"""
-                            <a href="{url}" target="_blank">
-                                <img src="{image_icon}" alt="{song}" style="width:100px;height:100px;">
-                            </a>
-                        """, unsafe_allow_html=True
-                        )
+                    # Display clickable image using st.image wrapped in markdown
+                        st.markdown(f"[![{song}]({image_icon})]({url})")
+                        st.write(song)
+
                     # st.image(image_icon)
                     # st.markdown(f"""
                     #     <div class='song-card'>
