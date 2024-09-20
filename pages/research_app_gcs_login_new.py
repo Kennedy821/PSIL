@@ -568,12 +568,33 @@ if 'token' in query_params:
                 for song in songs:
                     url = get_url_for_song(song)  # Replace with your URL logic
                     image_icon = get_image_for_song() 
+                    # st.markdown(f"""
+                    #     <div class='song-card'>
+                    #         <div class='song-title'>{song}</div>
+                    #         <a href='{url}' target='_blank' class='link-button'>Go to URL</a>
+                    #     </div>
+                    #     """, unsafe_allow_html=True)
+                    
                     st.markdown(f"""
-                        <div class='song-card'>
-                            <div class='song-title'>{song}</div>
-                            <a href='{url}' target='_blank' class='link-button'>Go to URL</a>
-                        </div>
-                        """, unsafe_allow_html=True)
+                                <div class='song-card'>
+                                    <div class='song-title'>{song}</div>
+                                    <a href='{url}' target='_blank' style="text-decoration:none;">
+                                        <button style="
+                                            background-color: #4CAF50;
+                                            border: none;
+                                            color: white;
+                                            padding: 10px 20px;
+                                            text-align: center;
+                                            text-decoration: none;
+                                            display: inline-block;
+                                            font-size: 16px;
+                                            margin: 4px 2px;
+                                            cursor: pointer;">
+                                            Go to URL
+                                        </button>
+                                    </a>
+                                </div>
+                            """, unsafe_allow_html=True)
 
 
                     # if image_icon:
