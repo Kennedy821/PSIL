@@ -756,10 +756,10 @@ if 'token' in query_params:
                             # next get the uploaded object ready to be uploaded by renaming it and giving it the correct filepath
                             # what is the filetype of the uploaded file
                             uploaded_file_type = uploaded_file.name.split(".")[-1]
-                            blob = bucket.blob(f'user_input_song.{uploaded_file_type}')
+                            # blob = bucket.blob(f'user_input_song.{uploaded_file_type}')
 
-                            # Upload the file
-                            blob.upload_from_file(uploaded_file, content_type=uploaded_file.type)
+                            # # Upload the file
+                            # blob.upload_from_file(uploaded_file, content_type=uploaded_file.type)
 
                             # st.markdown("Your song was successfully uploaded.")
 
@@ -774,14 +774,19 @@ if 'token' in query_params:
                             # this makes sure that requests are segregated by each user
                             user_directory = f'users/{clean_token}/'
 
-                            logging_filename = f"{formatted_date}_psil_site_search_{clean_token}_{unique_id}.csv"
+                            logging_filename = f"{formatted_date}_psil_site_search_{clean_token}_{unique_id}.mp3"
                             full_file_path = f'{user_directory}{logging_filename}'
 
-                            # logging_df = pd.DataFrame([str(decoded_token),song_link]).T
+                            # # logging_df = pd.DataFrame([str(decoded_token),song_link]).T
 
-                            logging_df = pd.DataFrame([str(decoded_token)])
-                            logging_df.columns = ["user"]
-                            logging_df["song_link"] = str(uploaded_file.name)
+                            # logging_df = pd.DataFrame([str(decoded_token)])
+                            # logging_df.columns = ["user"]
+                            # logging_df["song_link"] = str(uploaded_file.name)
+
+                            # The name assigned to the CSV file on GCS
+                            blob = bucket.blob(full_file_path)
+                            # Upload the file
+                            blob.upload_from_file(uploaded_file, content_type=uploaded_file.type)
 
 
 
