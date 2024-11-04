@@ -660,11 +660,19 @@ if 'token' in query_params:
 
             # st.title("PSIL: Research production version")
 
+            # Offer two options for the user either they can upload their own audio or they can use a link to a video
+            processing_type = st.selectbox("Would you like to upload your own audio file or use a link to a video?", options=["","upload my own audio","use a link from a website"],key='type_of_input')
+
+            if processing_type == "upload my own audio":
+                uploaded_file = st.file_uploader("Choose a file", type=['mp3','wav','m4a'])
+                
+
+            if processing_type == "use a link from a website":
             
 
-            # Input interface
-            st.subheader("Input Songs")
-            song_link = st.text_input("Enter the SoundCloud link of the song you'd like to get recommendations for:")
+                # Input interface
+                st.subheader("Input Songs")
+                song_link = st.text_input("Enter the SoundCloud link of the song you'd like to get recommendations for:")
 
             st.write("Select which language you'd like your song results to be in")
 
@@ -720,9 +728,72 @@ if 'token' in query_params:
 
                     # animation_object = st_lottie(lottie_json,speed=2, height=750, width=750)
 
+                    if processing_type=="upload my own audio" and uploaded_file:
+
+                        # Validate file type (basic validation)
+                        if uploaded_file.type != "audio/mpeg":
+                            st.error("Invalid file type. Please upload a valid MP3 file.")
+                            st.stop()
+                        else:
+
+                            # get the details for where the uploaded file is going to go
+                            #-----------------------------------------------------------------------------------------------------
+
+                            # Create credentials object
+                            credentials = service_account.Credentials.from_service_account_info(st.secrets["gcp_service_account"])
+
+                            # Use the credentials to create a client
+                            client = storage.Client(credentials=credentials)
+
+
+                            # The bucket on GCS in which to write the CSV file
+                            bucket = client.bucket('psil-app-backend-2')
+
+                            
+                            #-----------------------------------------------------------------------------------------------------
+
+
+                            # next get the uploaded object ready to be uploaded by renaming it and giving it the correct filepath
+                            # what is the filetype of the uploaded file
+                            uploaded_file_type = uploaded_file.name.split(".")[-1]
+                            blob = bucket.blob(f'user_input_song.{uploaded_file_type}')
+
+                            # Upload the file
+                            blob.upload_from_file(uploaded_file, content_type=uploaded_file.type)
+
+                            # st.markdown("Your song was successfully uploaded.")
+
+                            #-----------------------------------------------------------------------------------------------------
+
+                            # logging the user's uploaded song info
+
+                            unique_id = uuid.uuid4()
+                            # clean_token = str(query_params).split("[")[1].split("]")[0].replace("'",'')
+
+                            clean_token = user_hash
+                            # this makes sure that requests are segregated by each user
+                            user_directory = f'users/{clean_token}/'
+
+                            logging_filename = f"{formatted_date}_psil_site_search_{clean_token}_{unique_id}.csv"
+                            full_file_path = f'{user_directory}{logging_filename}'
+
+                            # logging_df = pd.DataFrame([str(decoded_token),song_link]).T
+
+                            logging_df = pd.DataFrame([str(decoded_token)])
+                            logging_df.columns = ["user"]
+                            logging_df["song_link"] = str(uploaded_file.name)
+
+
+
+
+
+
+
+
+
                         
 
-                    if song_link:
+                    if processing_type=="use a link from a website" and song_link:
 
                         uploaded_df = pd.DataFrame([song_link])
 
