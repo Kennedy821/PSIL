@@ -105,27 +105,29 @@ def stream_data(word_to_stream):
 
 
 def get_top_n_recommendations_gcs_version_new(n,user_hash):
-    while True:
 
-        # check_processing_stage_1(user_hash)
 
-        # check_processing_stage_2(user_hash)
+    # while True:
 
-        #download the indices from gcs
-        blob = bucket.blob("my_data.csv")
-        if blob.exists():
+    #     # check_processing_stage_1(user_hash)
 
-            # Download the file to a destination
-            blob.download_to_filename(temp_dir+"my_data.csv")
-            song_components_df = pd.read_csv(temp_dir+"my_data.csv")
-            song_components_df = song_components_df[[song_components_df.columns[1]]]
+    #     # check_processing_stage_2(user_hash)
 
-            # st.dataframe(song_components_df)
-            break
-        else:
-            time.sleep(5)
+    #     #download the indices from gcs
+    #     blob = bucket.blob("my_data.csv")
+    #     if blob.exists():
 
-    filenames_ = [x for x in song_components_df.iloc[:,0].values]
+    #         # Download the file to a destination
+    #         blob.download_to_filename(temp_dir+"my_data.csv")
+    #         song_components_df = pd.read_csv(temp_dir+"my_data.csv")
+    #         song_components_df = song_components_df[[song_components_df.columns[1]]]
+
+    #         # st.dataframe(song_components_df)
+    #         break
+    #     else:
+    #         time.sleep(5)
+
+    # filenames_ = [x for x in song_components_df.iloc[:,0].values]
     total_uploaded_files = len(filenames_)
     # feat_ = list_of_features 
     #st.write(f"shape of uploaded array is: {feat.shape}")
@@ -134,21 +136,19 @@ def get_top_n_recommendations_gcs_version_new(n,user_hash):
 
     start_time = time.time()
     
-    # The bucket on GCS in which to write the CSV file
-    results_bucket = client.bucket('snn_psil_backend')
     
     while True:
 
 
 
         #download the indices from gcs
-        blob = results_bucket.blob(f"users/{user_hash}/combined_similarity_results.csv")
+        blob = bucket.blob(f"users/{user_hash}/combined_similarity_results.csv")
         if blob.exists():
 
             # Download the file to a destination
             blob.download_to_filename(temp_dir+"combined_similarity_results.csv")
             downloaded_indices_df = pd.read_csv(temp_dir+"combined_similarity_results.csv")
-            # st.dataframe(downloaded_indices_df)
+            st.dataframe(downloaded_indices_df)
             break
         else:
             time.sleep(10)
