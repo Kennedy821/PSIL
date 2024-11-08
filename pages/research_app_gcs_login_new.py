@@ -154,7 +154,7 @@ def get_top_n_recommendations_gcs_version_new(n,user_hash):
             time.sleep(10)
     end_time = time.time()
     # st.write(f"Downloaded indices in {end_time - start_time} seconds")
-    downloaded_indices_df = downloaded_indices_df.rename(columns={"comp_song":"song_name","predictions_sq":"ls_distance"}, inplace=True).drop(columns="anchor_song")
+    downloaded_indices_df = downloaded_indices_df.rename(columns={"comp_song":"song_name","predictions_sq":"ls_distance"}).drop(columns="anchor_song")
     return downloaded_indices_df
 
 def get_top_n_recommendations_gcs_version(n,user_hash):
