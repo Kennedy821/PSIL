@@ -107,27 +107,27 @@ def stream_data(word_to_stream):
 def get_top_n_recommendations_gcs_version_new(n,user_hash):
 
 
-    # while True:
+    while True:
 
-    #     # check_processing_stage_1(user_hash)
+        # check_processing_stage_1(user_hash)
 
-    #     # check_processing_stage_2(user_hash)
+        # check_processing_stage_2(user_hash)
 
-    #     #download the indices from gcs
-    #     blob = bucket.blob("my_data.csv")
-    #     if blob.exists():
+        #download the indices from gcs
+        blob = bucket.blob("my_data.csv")
+        if blob.exists():
 
-    #         # Download the file to a destination
-    #         blob.download_to_filename(temp_dir+"my_data.csv")
-    #         song_components_df = pd.read_csv(temp_dir+"my_data.csv")
-    #         song_components_df = song_components_df[[song_components_df.columns[1]]]
+            # Download the file to a destination
+            blob.download_to_filename(temp_dir+"my_data.csv")
+            song_components_df = pd.read_csv(temp_dir+"my_data.csv")
+            song_components_df = song_components_df[[song_components_df.columns[1]]]
 
-    #         # st.dataframe(song_components_df)
-    #         break
-    #     else:
-    #         time.sleep(5)
+            # st.dataframe(song_components_df)
+            break
+        else:
+            time.sleep(5)
 
-    # filenames_ = [x for x in song_components_df.iloc[:,0].values]
+    filenames_ = [x for x in song_components_df.iloc[:,0].values]
     total_uploaded_files = len(filenames_)
     # feat_ = list_of_features 
     #st.write(f"shape of uploaded array is: {feat.shape}")
