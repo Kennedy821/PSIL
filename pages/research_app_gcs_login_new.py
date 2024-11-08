@@ -970,8 +970,8 @@ if 'token' in query_params:
                                     
                                     with st.expander("See how much we think you'll like these based on your uploaded song"): 
                                         starting_value = 0  # Your starting/reference value
-                                        values = top_recommendations_df.sort_values("ls_distance", ascending=True).ls_distance  # Individual values to compare
-                                        labels = [x for x in top_recommendations_df.sort_values("ls_distance", ascending=True).song_name.values]
+                                        values = top_recommendations_df.sort_values("ls_distance", ascending=False).ls_distance  # Individual values to compare
+                                        labels = [x for x in top_recommendations_df.sort_values("ls_distance", ascending=False).song_name.values]
                                         #song_names_markdown_list = ""
                                         #st.markdown(labels)
                                     
@@ -1226,8 +1226,8 @@ if 'token' in query_params:
                                 
                                 with st.expander("See how much we think you'll like these based on your uploaded song"): 
                                     starting_value = 0  # Your starting/reference value
-                                    values = top_recommendations_df.sort_values("ls_distance", ascending=True).ls_distance  # Individual values to compare
-                                    labels = [x for x in top_recommendations_df.sort_values("ls_distance", ascending=True).song_name.values]
+                                    values = top_recommendations_df.sort_values("ls_distance", ascending=False).ls_distance  # Individual values to compare
+                                    labels = [x for x in top_recommendations_df.sort_values("ls_distance", ascending=False).song_name.values]
                                     #song_names_markdown_list = ""
                                     #st.markdown(labels)
                                 
