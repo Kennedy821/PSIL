@@ -148,13 +148,13 @@ def get_top_n_recommendations_gcs_version_new(n,user_hash):
             # Download the file to a destination
             blob.download_to_filename(temp_dir+"combined_similarity_results.csv")
             downloaded_indices_df = pd.read_csv(temp_dir+"combined_similarity_results.csv")
-            st.dataframe(downloaded_indices_df)
+            # st.dataframe(downloaded_indices_df)
             break
         else:
             time.sleep(10)
     end_time = time.time()
     # st.write(f"Downloaded indices in {end_time - start_time} seconds")
-    downloaded_indices_df = downloaded_indices_df.rename(columns={"comp_song":"song_name","predictions_sq":"ls_distance"}).drop(columns="anchor_song").sort_values("ls_distance").head(20)
+    downloaded_indices_df = downloaded_indices_df.rename(columns={"comp_song":"song_name","predictions_sq":"ls_distance"}).drop(columns="anchor_song").sort_values("ls_distance").head(20).drop_duplicates("song_name").sort_values("ls_distance").head(10)
     return downloaded_indices_df
 
 def get_top_n_recommendations_gcs_version(n,user_hash):
