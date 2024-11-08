@@ -712,7 +712,8 @@ if 'token' in query_params:
         with col2:
 
             # st.title("PSIL: Research production version")
-
+            # Input interface
+            st.subheader("Input Songs")
             # Offer two options for the user either they can upload their own audio or they can use a link to a video
             processing_type = st.selectbox("Would you like to upload your own audio file or use a link to a video?", options=["","upload my own audio","use a link from a website"],key='type_of_input')
 
@@ -723,9 +724,6 @@ if 'token' in query_params:
 
             if processing_type == "use a link from a website":
             
-
-                # Input interface
-                st.subheader("Input Songs")
                 song_link = st.text_input("Enter the SoundCloud link of the song you'd like to get recommendations for:")
 
             if processing_type:
@@ -896,12 +894,16 @@ if 'token' in query_params:
                                     master_links_filepath = Path("new_playlist_links_a_to_z.csv")
 
                                     links_df = pd.read_csv(master_links_filepath)
+                                                                        
+                                    # this is the old version of the search
+                                    # top_recommendations_df = get_top_n_recommendations_gcs_version(filtered_selection_n, clean_token)
                                     
-                                    top_recommendations_df = get_top_n_recommendations_gcs_version(filtered_selection_n, clean_token)
-                                    
+
+                                    # this is the new version of the search
+                                    top_recommendations_df = get_top_n_recommendations_gcs_version_new(filtered_selection_n, clean_token)
                                     top_recommendations_links_df = top_recommendations_df.merge(links_df[["song_name", "song_links"]], on="song_name", how="left")[["song_name", "song_links"]].reset_index().drop(columns="index").drop_duplicates("song_name")
 
-                                    
+                                        
 
                                     
                                     # st.dataframe(top_recommendations_links_df)
