@@ -104,6 +104,59 @@ def stream_data(word_to_stream):
             time.sleep(0.1)
 
 
+def get_top_n_recommendations_gcs_version_new(n,user_hash):
+    while True:
+
+        # check_processing_stage_1(user_hash)
+
+        # check_processing_stage_2(user_hash)
+
+        #download the indices from gcs
+        blob = bucket.blob("my_data.csv")
+        if blob.exists():
+
+            # Download the file to a destination
+            blob.download_to_filename(temp_dir+"my_data.csv")
+            song_components_df = pd.read_csv(temp_dir+"my_data.csv")
+            song_components_df = song_components_df[[song_components_df.columns[1]]]
+
+            # st.dataframe(song_components_df)
+            break
+        else:
+            time.sleep(5)
+
+    filenames_ = [x for x in song_components_df.iloc[:,0].values]
+    total_uploaded_files = len(filenames_)
+    # feat_ = list_of_features 
+    #st.write(f"shape of uploaded array is: {feat.shape}")
+    song_components_list = []
+    song_components_recommendations_list = []
+
+    start_time = time.time()
+    
+    # The bucket on GCS in which to write the CSV file
+    results_bucket = client.bucket('snn_psil_backend')
+    
+    while True:
+
+
+
+        #download the indices from gcs
+        blob = results_bucket.blob(f"users/{user_hash}/snn_similarity_results.csv")
+        if blob.exists():
+
+            # Download the file to a destination
+            blob.download_to_filename(temp_dir+"snn_similarity_results.csv")
+            downloaded_indices_df = pd.read_csv(temp_dir+"snn_similarity_results.csv")
+            # st.dataframe(downloaded_indices_df)
+            break
+        else:
+            time.sleep(10)
+    end_time = time.time()
+    # st.write(f"Downloaded indices in {end_time - start_time} seconds")
+    downloaded_indices_df = downloaded_indices_df.rename(columns={"comp_song":"song_name","predictions_sq":"ls_distance"}, inplace=True).drop(columns="anchor_song")
+    return downloaded_indices_df
+
 def get_top_n_recommendations_gcs_version(n,user_hash):
     while True:
 
@@ -1096,8 +1149,12 @@ if 'token' in query_params:
 
                                 links_df = pd.read_csv(master_links_filepath)
                                 
-                                top_recommendations_df = get_top_n_recommendations_gcs_version(filtered_selection_n, clean_token)
+                                # this is the old version of the search
+                                # top_recommendations_df = get_top_n_recommendations_gcs_version(filtered_selection_n, clean_token)
                                 
+
+                                # this is the new version of the search
+                                top_recommendations_df = get_top_n_recommendations_gcs_version_new(filtered_selection_n, clean_token)
                                 top_recommendations_links_df = top_recommendations_df.merge(links_df[["song_name", "song_links"]], on="song_name", how="left")[["song_name", "song_links"]].reset_index().drop(columns="index").drop_duplicates("song_name")
 
                                 
