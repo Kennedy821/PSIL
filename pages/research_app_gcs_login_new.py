@@ -148,6 +148,8 @@ def get_top_n_recommendations_gcs_version_new(n,user_hash):
             # Download the file to a destination
             blob.download_to_filename(temp_dir+"combined_similarity_results.csv")
             downloaded_indices_df = pd.read_csv(temp_dir+"combined_similarity_results.csv")
+            downloaded_indices_df["target_song"] = downloaded_indices_df["comp_song"]
+            recommended_df = downloaded_indices_df.copy()
             # st.dataframe(downloaded_indices_df)
             break
         else:
@@ -156,8 +158,48 @@ def get_top_n_recommendations_gcs_version_new(n,user_hash):
     # st.write(f"Downloaded indices in {end_time - start_time} seconds")
 
     st.write(f"this search score was: {downloaded_indices_df.prediction_score.mean()}")
-    downloaded_indices_df = downloaded_indices_df.rename(columns={"comp_song":"song_name","predictions_sq":"ls_distance"}).drop(columns="anchor_song").sort_values("ls_distance").head(20).drop_duplicates("song_name").sort_values("ls_distance").head(10)
-    return downloaded_indices_df
+
+
+    # this is the filtering according to the user's language and genre preferences
+
+    total_components_df = database_song_names_df.copy()
+    total_components_df["target_song"] = total_components_df["song_name"].str.split("_spect").str[0]
+    # total_components_df
+    total_components_df["total_components"] = 1
+    total_components_df = total_components_df[["target_song","total_components",language_option.lower()]].groupby(["target_song"]).sum().sort_values("total_components", ascending=False).reset_index()
+    
+    language_df = total_components_df.copy().drop(columns="total_components")
+    language_df.loc[language_df[language_option.lower()]>0,language_option.lower()] = 1
+
+    st.markdown("this is the language df")
+    st.dataframe(language_df)
+
+    recommended_df = recommended_df.merge(language_df, on="target_song")
+
+
+    if language_option=="All":
+        pass
+    else:
+        recommended_df = recommended_df[recommended_df[language_option.lower()]==1]
+
+
+    st.markdown("this is the updated recommended df with a language flag")
+    st.dataframe(recommended_df)
+
+    st.markdown("this is the genre df")
+    st.dataframe(genre_df)
+
+    recommended_df = recommended_df.merge(genre_df, on="target_song")
+
+
+    if genre_option=="All":
+        pass
+    else:
+        recommended_df = recommended_df[recommended_df["target_song"].isin(in_scope_genre_song_names)]
+
+
+    recommended_df = recommended_df.rename(columns={"comp_song":"song_name","predictions_sq":"ls_distance"}).drop(columns="anchor_song").sort_values("ls_distance").head(20).drop_duplicates("song_name").sort_values("ls_distance").head(10)
+    return recommended_df
 
 def get_top_n_recommendations_gcs_version(n,user_hash):
     while True:
