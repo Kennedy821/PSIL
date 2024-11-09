@@ -171,8 +171,8 @@ def get_top_n_recommendations_gcs_version_new(n,user_hash):
     language_df = total_components_df.copy().drop(columns="total_components")
     language_df.loc[language_df[language_option.lower()]>0,language_option.lower()] = 1
 
-    st.markdown("this is the language df")
-    st.dataframe(language_df)
+    # st.markdown("this is the language df")
+    # st.dataframe(language_df)
 
     recommended_df = recommended_df.merge(language_df, on="target_song")
 
@@ -183,11 +183,11 @@ def get_top_n_recommendations_gcs_version_new(n,user_hash):
         recommended_df = recommended_df[recommended_df[language_option.lower()]==1]
 
 
-    st.markdown("this is the updated recommended df with a language flag")
-    st.dataframe(recommended_df)
+    # st.markdown("this is the updated recommended df with a language flag")
+    # st.dataframe(recommended_df)
 
-    st.markdown("this is the genre df")
-    st.dataframe(genre_df)
+    # st.markdown("this is the genre df")
+    # st.dataframe(genre_df)
 
     recommended_df = recommended_df.merge(genre_df, on="target_song")
 
@@ -204,13 +204,13 @@ def get_top_n_recommendations_gcs_version_new(n,user_hash):
 
     recommended_df = recommended_df.rename(columns={"comp_song":"song_name","predictions_sq":"ls_distance"}).drop(columns="anchor_song")
     valid_results_df = recommended_df.merge(valid_df[["song_name"]], on="song_name", how="inner")
-    st.write("this is the recommended df  after merging with the valid results df")
-    st.dataframe(valid_results_df)
+    # st.write("this is the recommended df  after merging with the valid results df")
+    # st.dataframe(valid_results_df)
     results_df = valid_results_df.sort_values("ls_distance").head(20).drop_duplicates("song_name").sort_values("ls_distance").head(10)
     
     st.write(f"this search score for the top 10 valid results was: {results_df.ls_distance.mean()}")
-    st.dataframe(results_df)
-    return recommended_df
+    # st.dataframe(results_df)
+    return results_df
 
 def get_top_n_recommendations_gcs_version(n,user_hash):
     while True:
