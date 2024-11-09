@@ -197,6 +197,9 @@ def get_top_n_recommendations_gcs_version_new(n,user_hash):
     else:
         recommended_df = recommended_df[recommended_df["target_song"].isin(in_scope_genre_song_names)]
 
+    # this is the valid df
+    st.write("this is the valid df")
+    st.dataframe(valid_df)
 
     recommended_df = recommended_df.rename(columns={"comp_song":"song_name","predictions_sq":"ls_distance"}).drop(columns="anchor_song")
     valid_results_df = recommended_df.merge(valid_df[["song_name"]], on="song_name", how="inner")
