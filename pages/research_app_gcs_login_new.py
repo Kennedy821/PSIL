@@ -158,7 +158,7 @@ def get_top_n_recommendations_gcs_version_new(n,user_hash):
     # st.write(f"Downloaded indices in {end_time - start_time} seconds")
 
     st.write(f"this search score was: {downloaded_indices_df.predictions_sq.mean()}")
-
+    st.write(f"this search score for the top 10 was: {downloaded_indices_df.sort_values("predictions_sq", ascending=True).head(10).predictions_sq.mean()}")
 
     # this is the filtering according to the user's language and genre preferences
 
@@ -805,7 +805,7 @@ if 'token' in query_params:
                 """
                 st.markdown(s, unsafe_allow_html=True)
                 if st.button("Recommend me songs"):
-                    with st.spinner('Processing your recommendations...this usually takes less than 1 minute.'):
+                    with st.spinner('Processing your recommendations...this usually takes less between 2-5 minutes.'):
                         
 
                     # st.write("Processing your link...")
