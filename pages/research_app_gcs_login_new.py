@@ -157,7 +157,7 @@ def get_top_n_recommendations_gcs_version_new(n,user_hash):
     end_time = time.time()
     # st.write(f"Downloaded indices in {end_time - start_time} seconds")
 
-    st.write(f"this search score was: {downloaded_indices_df.prediction_score.mean()}")
+    st.write(f"this search score was: {downloaded_indices_df.predictions_sq.mean()}")
 
 
     # this is the filtering according to the user's language and genre preferences
