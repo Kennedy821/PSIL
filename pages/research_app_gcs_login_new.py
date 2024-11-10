@@ -157,8 +157,8 @@ def get_top_n_recommendations_gcs_version_new(n,user_hash):
     end_time = time.time()
     # st.write(f"Downloaded indices in {end_time - start_time} seconds")
 
-    st.write(f"this search score was: {downloaded_indices_df.predictions_sq.mean()}")
-    st.write(f"this search score for the top 10 was: {downloaded_indices_df.sort_values('predictions_sq', ascending=True).head(10).predictions_sq.mean()}")
+    # st.write(f"this search score was: {downloaded_indices_df.predictions_sq.mean()}")
+    # st.write(f"this search score for the top 10 was: {downloaded_indices_df.sort_values('predictions_sq', ascending=True).head(10).predictions_sq.mean()}")
 
     # this is the filtering according to the user's language and genre preferences
 
@@ -208,7 +208,7 @@ def get_top_n_recommendations_gcs_version_new(n,user_hash):
     # st.dataframe(valid_results_df)
     results_df = valid_results_df.sort_values("ls_distance").drop_duplicates("song_name").head(20).sort_values("ls_distance").head(10)
     
-    st.write(f"this search score for the top 10 valid results was: {results_df.ls_distance.mean()}")
+    # st.write(f"this search score for the top 10 valid results was: {results_df.ls_distance.mean()}")
     # st.dataframe(results_df)
     return results_df
 
