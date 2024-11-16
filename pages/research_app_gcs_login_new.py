@@ -208,7 +208,7 @@ def get_top_n_recommendations_gcs_version_new(n,user_hash):
     valid_results_df = recommended_df#.merge(valid_df[["song_name"]], on="song_name", how="inner")
     # st.write("this is the recommended df  after merging with the valid results df")
     # st.dataframe(valid_results_df)
-    results_df = valid_results_df.sort_values("ls_distance").drop_duplicates("song_name").head(20).sort_values("ls_distance").head(10)
+    results_df = valid_results_df.sort_values("latent_space_distance").drop_duplicates("song_name").head(20).sort_values("latent_space_distance").head(10)
     
     # st.write(f"this search score for the top 10 valid results was: {results_df.ls_distance.mean()}")
     # st.dataframe(results_df)
