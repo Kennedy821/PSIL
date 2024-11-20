@@ -541,7 +541,7 @@ div.stButton > button:first-child {{ border: 5px solid {primaryColor}; border-ra
 """
 st.markdown(s, unsafe_allow_html=True)
 if st.button("Recommend me songs"):
-    with st.spinner('Processing your recommendations...this usually takes less than 1 minute.'):
+    with st.spinner('Processing your recommendations...this usually takes around 5 minutes.'):
         
 
     # st.write("Processing your link...")
@@ -629,6 +629,9 @@ if st.button("Recommend me songs"):
 
 
             with tempfile.TemporaryDirectory() as temp_dir:
+
+                valid_df = pd.read_parquet("psil_crawler_song_names_mapped_as_valid_songs_or_not.parquet.gzip")
+                valid_df = valid_df[valid_df["valid_song"]=='1']
 
                 
                 
