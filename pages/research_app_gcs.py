@@ -103,6 +103,116 @@ st.set_page_config(
 # """, unsafe_allow_html=True)
 SECRET_KEY = st.secrets["general"]["SECRET_KEY"]
 
+
+def get_top_n_recommendations_gcs_version_new(n,user_hash):
+
+
+    while True:
+
+        # check_processing_stage_1(user_hash)
+
+        # check_processing_stage_2(user_hash)
+
+        #download the indices from gcs
+        blob = bucket.blob("my_data.csv")
+        if blob.exists():
+
+            # Download the file to a destination
+            blob.download_to_filename(temp_dir+"my_data.csv")
+            song_components_df = pd.read_csv(temp_dir+"my_data.csv")
+            song_components_df = song_components_df[[song_components_df.columns[1]]]
+
+            # st.dataframe(song_components_df)
+            break
+        else:
+            time.sleep(5)
+
+    filenames_ = [x for x in song_components_df.iloc[:,0].values]
+    total_uploaded_files = len(filenames_)
+    # feat_ = list_of_features 
+    #st.write(f"shape of uploaded array is: {feat.shape}")
+    song_components_list = []
+    song_components_recommendations_list = []
+
+    start_time = time.time()
+    
+    
+    while True:
+
+
+
+        #download the indices from gcs
+        blob = bucket.blob(f"users/{user_hash}/combined_similarity_results.csv")
+        if blob.exists():
+
+            # Download the file to a destination
+            blob.download_to_filename(temp_dir+"combined_similarity_results.csv")
+            downloaded_indices_df = pd.read_csv(temp_dir+"combined_similarity_results.csv")
+            downloaded_indices_df["target_song"] = downloaded_indices_df["comp_song"]
+            recommended_df = downloaded_indices_df.copy()
+            # st.dataframe(downloaded_indices_df)
+            break
+        else:
+            time.sleep(10)
+    end_time = time.time()
+    # st.write(f"Downloaded indices in {end_time - start_time} seconds")
+
+    # st.write(f"this search score was: {downloaded_indices_df.predictions_sq.mean()}")
+    # st.write(f"this search score for the top 10 was: {downloaded_indices_df.sort_values('predictions_sq', ascending=True).head(10).predictions_sq.mean()}")
+
+    # this is the filtering according to the user's language and genre preferences
+
+    total_components_df = database_song_names_df.copy()
+    total_components_df["target_song"] = total_components_df["song_name"].str.split("_spect").str[0]
+    # total_components_df
+    total_components_df["total_components"] = 1
+    total_components_df = total_components_df[["target_song","total_components",language_option.lower()]].groupby(["target_song"]).sum().sort_values("total_components", ascending=False).reset_index()
+    
+    language_df = total_components_df.copy().drop(columns="total_components")
+    language_df.loc[language_df[language_option.lower()]>0,language_option.lower()] = 1
+
+    # st.markdown("this is the language df")
+    # st.dataframe(language_df)
+
+    recommended_df = recommended_df.merge(language_df, on="target_song")
+
+
+    if language_option=="All":
+        pass
+    else:
+        recommended_df = recommended_df[recommended_df[language_option.lower()]==1]
+
+
+    # st.markdown("this is the updated recommended df with a language flag")
+    # st.dataframe(recommended_df)
+
+    # st.markdown("this is the genre df")
+    # st.dataframe(genre_df)
+
+    recommended_df = recommended_df.merge(genre_df, on="target_song")
+
+
+    if genre_option=="All":
+        pass
+    else:
+        recommended_df = recommended_df[recommended_df["target_song"].isin(in_scope_genre_song_names)]
+
+    # this is the valid df
+    # st.write("this is the valid df")
+    # st.dataframe(valid_df)
+    valid_df["song_name"] = valid_df["song_name"].str.split("_spect").str[0]
+
+    recommended_df = recommended_df.rename(columns={"comp_song":"song_name","predictions_sq":"ls_distance"}).drop(columns="anchor_song")
+    # do this merge if you want to filter the results against a pre-made list of valid songs
+    valid_results_df = recommended_df#.merge(valid_df[["song_name"]], on="song_name", how="inner")
+    # st.write("this is the recommended df  after merging with the valid results df")
+    # st.dataframe(valid_results_df)
+    results_df = valid_results_df.sort_values("ls_distance").drop_duplicates("song_name").head(20).sort_values("ls_distance").head(10)
+    
+    # st.write(f"this search score for the top 10 valid results was: {results_df.ls_distance.mean()}")
+    # st.dataframe(results_df)
+    return results_df
+
 # Generate JWT token after login
 def generate_token(email):
     token = jwt.encode({"email": email}, SECRET_KEY, algorithm="HS256")
@@ -567,7 +677,9 @@ if st.button("Recommend me songs"):
 
                 links_df = pd.read_csv(master_links_filepath)
                 
-                top_recommendations_df = get_top_n_recommendations_gcs_version(filtered_selection_n, clean_token)
+                # top_recommendations_df = get_top_n_recommendations_gcs_version(filtered_selection_n, clean_token)
+                top_recommendations_df = get_top_n_recommendations_gcs_version_new(filtered_selection_n, clean_token)
+
                 
                 top_recommendations_links_df = top_recommendations_df.merge(links_df[["song_name", "song_links"]], on="song_name", how="left")[["song_name", "song_links"]].reset_index().drop(columns="index").drop_duplicates("song_name")
 
