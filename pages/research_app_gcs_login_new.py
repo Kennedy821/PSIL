@@ -6,62 +6,24 @@ Created on Mon Apr 15 13:25:27 2024
 """
 
 import streamlit as st
-# import os
-# import zipfile
-# import io
-# import base64
 import numpy as np
 import matplotlib.pyplot as plt
-# from pydub import AudioSegment
-# from pytube import YouTube, Playlist
 from pathlib import Path
-# import librosa
-# import librosa.display
 import tempfile
-# from zipfile import ZipFile
 from PIL import Image
 from io import BytesIO
 import pandas as pd
 import time
-# import soundfile as sf
 import polars as pl
-# import concurrent.futures
-# from sklearn.cluster import KMeans
-# from sklearn.decomposition import PCA
-# from sklearn.datasets import make_blobs
-# from sklearn.preprocessing import StandardScaler, MinMaxScaler
-# from sklearn.metrics import silhouette_score
-# from tensorflow.keras.preprocessing.image import load_img, img_to_array
-# from tensorflow.keras.models import load_model
-# from keras.applications.vgg16 import VGG16
-# from keras.applications.vgg19 import VGG19
-# from keras.models import Model
-# from joblib import dump, load
-# from river import cluster, stream
 import seaborn as sns
-# import gc
-# import random
 from PIL import Image, ImageDraw, ImageSequence, ImageFont
-# import textwrap
-# from google.cloud import storage
-# from io import StringIO
-
-
 from google.oauth2 import service_account
 from google.cloud import storage
 from st_files_connection import FilesConnection
-# import gcsfs
-# import yt_dlp
-# import timm
-# import torch
 from PIL import Image
 import os
 from streamlit_lottie import st_lottie,st_lottie_spinner
 import json
-# from torchvision import transforms
-# import re
-# from fuzzywuzzy import fuzz
-# from fuzzywuzzy import process
 from streamlit import runtime
 from streamlit.runtime.scriptrunner import get_script_run_ctx
 import toml
@@ -85,18 +47,6 @@ st.set_page_config(
     layout="wide"
 
     )   
-
-# pages = os.listdir(os.getcwd()+'/pages/')
-# pages = [x.split(".")[0] for x in pages]
-# st.write(pages)
-
-# # Define a function to hide selected pages
-# def hide_pages(pages_to_hide):
-#     for page in pages_to_hide:
-#         st.sidebar.markdown(f"## {page}")
-#         st.sidebar.markdown("This page is hidden.")
-
-# hide_pages(pages)
        
 def stream_data(word_to_stream):
         for word in word_to_stream.split(" "):
@@ -149,6 +99,8 @@ def get_top_n_recommendations_gcs_version_new(n,user_hash):
             blob.download_to_filename(temp_dir+"combined_similarity_results.csv")
             downloaded_indices_df = pd.read_csv(temp_dir+"combined_similarity_results.csv")
             downloaded_indices_df["target_song"] = downloaded_indices_df["comp_song"]
+            downloaded_indices_df = downloaded_indices_df[~(downloaded_indices_df.comp_song.str.lower().str.contains("review"))
+                                                          &~(downloaded_indices_df.comp_song.str.lower().str.contains("tribute"))]
             recommended_df = downloaded_indices_df.copy()
             # st.dataframe(downloaded_indices_df)
             break
@@ -176,8 +128,7 @@ def get_top_n_recommendations_gcs_version_new(n,user_hash):
 
     recommended_df = recommended_df.merge(language_df, on="target_song")
 
-    
-    
+
     if language_option=="All":
         pass
     else:
@@ -203,7 +154,7 @@ def get_top_n_recommendations_gcs_version_new(n,user_hash):
     # st.dataframe(valid_df)
     valid_df["song_name"] = valid_df["song_name"].str.split("_spect").str[0]
 
-    recommended_df = recommended_df.rename(columns={"comp_song":"song_name","latent_space_distance":"ls_distance"}).drop(columns="anchor_song")
+    recommended_df = recommended_df.rename(columns={"comp_song":"song_name","predictions_sq":"ls_distance"}).drop(columns="anchor_song")
     # do this merge if you want to filter the results against a pre-made list of valid songs
     valid_results_df = recommended_df#.merge(valid_df[["song_name"]], on="song_name", how="inner")
     # st.write("this is the recommended df  after merging with the valid results df")
@@ -646,6 +597,7 @@ if 'token' in query_params:
         with col1:
             # pull all of the users previous searches
             # user_hash = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImRlbW9AZGVtby5jb20ifQ.GEbL1X-vQq1N-US13CMuBF5kQPxP3aYYnoKMYZHTsYg"
+            
             user_hash = token
             try:
                 search_history_df = get_previous_searches_fast(user_hash)
@@ -818,7 +770,7 @@ if 'token' in query_params:
                 """
                 st.markdown(s, unsafe_allow_html=True)
                 if st.button("Recommend me songs"):
-                    with st.spinner('Processing your recommendations...this usually takes less between 2-5 minutes.'):
+                    with st.spinner('Processing your recommendations...this usually takes ~5 minutes.'):
                         
 
                     # st.write("Processing your link...")
