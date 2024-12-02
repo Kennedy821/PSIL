@@ -100,7 +100,9 @@ def get_top_n_recommendations_gcs_version_new(n,user_hash):
             downloaded_indices_df = pd.read_csv(temp_dir+"combined_similarity_results.csv")
             downloaded_indices_df["target_song"] = downloaded_indices_df["comp_song"]
             downloaded_indices_df = downloaded_indices_df[~(downloaded_indices_df.comp_song.str.lower().str.contains("review"))
-                                                          &~(downloaded_indices_df.comp_song.str.lower().str.contains("tribute"))]
+                                                          &~(downloaded_indices_df.comp_song.str.lower().str.contains("tribute"))
+                                                          &~(downloaded_indices_df.comp_song.str.lower().str.contains("react"))
+                                                          &(downloaded_indices_df.comp_song.str.lower().str.contains("-"))]
             recommended_df = downloaded_indices_df.copy()
             # st.dataframe(downloaded_indices_df)
             break
