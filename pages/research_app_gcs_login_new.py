@@ -734,7 +734,7 @@ if 'token' in query_params:
                 # for song in search_history_df.song_name:
                 #     st.write(song)
 
-                songs = [x for x in recommendations_history_df.anchor_song.values]
+                songs = [x for x in recommendations_history_df.anchor_song.value_counts().index]
                 # song_url = [x for x in search_history_df.song_link.values]
                 # CSS for card-like structure and hover effect
                 st.markdown("""
@@ -756,10 +756,11 @@ if 'token' in query_params:
                 # for song in songs:
                 #     st.markdown(f"<div class='song-card'>{song}</div>", unsafe_allow_html=True)
                 for song in songs:
-                    filtered_df = recommendations_history_df[recommendations_history_df.anchor_song==song]
-                    recommendation_song_list = [x for x in filtered_df.comp_song.values]
-                    for recommended_song in recommendation_song_list:
-                        st.write(recommended_song)
+                    with st.expander(f"Recommendations for {song}"):
+                        filtered_df = recommendations_history_df[recommendations_history_df.anchor_song==song]
+                        recommendation_song_list = [x for x in filtered_df.comp_song.values]
+                        for recommended_song in recommendation_song_list:
+                            st.write(recommended_song)
                     # url = get_url_for_song(song)  # Replace with your URL logic
                     # image_icon = get_image_for_song() 
                     # # st.markdown(f"""
