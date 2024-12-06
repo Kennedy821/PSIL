@@ -729,12 +729,12 @@ if 'token' in query_params:
             try:
                 recommendations_history_df = get_previous_recommendations_fast(user_hash)
                 
-                # Display the last 10 searches
+                # Display the last 5 recommendations
                 st.subheader("Your Recommendations:")
                 # for song in search_history_df.song_name:
                 #     st.write(song)
 
-                songs = [x for x in recommendations_history_df.anchor_song.value_counts().index]
+                songs = [x for x in recommendations_history_df.anchor_song.value_counts().index][:5]
                 # song_url = [x for x in search_history_df.song_link.values]
                 # CSS for card-like structure and hover effect
                 st.markdown("""
@@ -755,12 +755,30 @@ if 'token' in query_params:
 
                 # for song in songs:
                 #     st.markdown(f"<div class='song-card'>{song}</div>", unsafe_allow_html=True)
+
+                # Custom CSS for the st.expander component
+                st.markdown(
+                    '''
+                    <style>
+                    .streamlit-expanderHeader {
+                        background-color: #7077A1;
+                        color: black; # Adjust this for expander header color
+                    }
+                    .streamlit-expanderContent {
+                        background-color: #424769;
+                        color: black; # Expander content color
+                    }
+                    </style>
+                    ''',
+                    unsafe_allow_html=True
+                )
+
                 for song in songs:
-                    with st.expander(f"Recommendations for {song}"):
+                    with st.expander(f"{song}"):
                         filtered_df = recommendations_history_df[recommendations_history_df.anchor_song==song]
                         recommendation_song_list = [x for x in filtered_df.comp_song.values]
                         for recommended_song in recommendation_song_list:
-                            st.write(recommended_song)
+                            st.write_stream(f" * {recommended_song}")
                     # url = get_url_for_song(song)  # Replace with your URL logic
                     # image_icon = get_image_for_song() 
                     # # st.markdown(f"""
