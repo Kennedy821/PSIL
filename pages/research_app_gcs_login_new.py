@@ -536,13 +536,16 @@ def get_previous_recommendations_fast(chosen_user):
             # Download the blob's content as a string
             content = blob.download_as_text()
 
+            recommendation_date = blob.name.split("/")[-1].split("_psil")[0]
+
             # Read the content into a pandas DataFrame
             df = pd.read_csv(StringIO(content))
+            df["recommendation_date"] = recommendation_date
             # df["search_date"] = pd.to_datetime(df["search_date"])
             dataframes.append(df)
 
-    output_df = pd.concat(dataframes).reset_index()[["anchor_song","comp_song","latent_space_distance"]].sort_values("latent_space_distance", ascending=True).head(10)
-    
+    output_df = pd.concat(dataframes).reset_index()[["anchor_song","comp_song","latent_space_distance","recommendation_date"]].sort_values(["recommendation_date","anchor_song","latent_space_distance"], ascending=True).head(10)
+    output_df
     return output_df
 
 
