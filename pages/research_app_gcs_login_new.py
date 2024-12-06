@@ -735,28 +735,6 @@ if 'token' in query_params:
                 #     st.write(song)
 
                 songs = [x for x in recommendations_history_df.anchor_song.value_counts().index][:5]
-                # song_url = [x for x in search_history_df.song_link.values]
-                # CSS for card-like structure and hover effect
-                st.markdown("""
-                    <style>
-                    .song-card {
-                        padding: 10px;
-                        margin-bottom: 10px;
-                        border-radius: 5px;
-                        border: 1px solid #2D3250;
-                        background-color: #7077A1;
-                        transition: background-color 0.3s;
-                    }
-                    .song-card:hover {
-                        background-color: #424769;
-                    }
-                    </style>
-                    """, unsafe_allow_html=True)
-
-                # for song in songs:
-                #     st.markdown(f"<div class='song-card'>{song}</div>", unsafe_allow_html=True)
-
-
 
                 for song in songs:
                                     # Custom CSS for the st.expander component
