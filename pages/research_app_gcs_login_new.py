@@ -771,7 +771,10 @@ if 'token' in query_params:
                     # st.text_input(label)
                     # change_label_style(label, '20px')
 
-                    st.markdown("""
+
+
+                    with st.expander(f"{song}"):
+                        st.markdown("""
                                 <style>
                                     /* Streamlit class name of the div that holds the expander's title*/
                                     .css-q8sbsg p {
@@ -785,8 +788,6 @@ if 'token' in query_params:
                                     }
                                 </style>
                                 """, unsafe_allow_html=True)
-
-                    with st.expander(f"{song}"):
                         # change_label_style(song, '15px')
                         filtered_df = recommendations_history_df[recommendations_history_df.anchor_song==song]
                         recommendation_song_list = [x for x in filtered_df.comp_song.values]
