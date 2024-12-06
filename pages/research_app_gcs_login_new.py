@@ -771,8 +771,8 @@ if 'token' in query_params:
                     # st.text_input(label)
                     # change_label_style(label, '20px')
 
-                    with st.expander(f"{song}"):
-                        change_label_style(song, '20px')
+                    with st.expander(f"{change_label_style(song,'15px')}"):
+                        # change_label_style(song, '15px')
                         filtered_df = recommendations_history_df[recommendations_history_df.anchor_song==song]
                         recommendation_song_list = [x for x in filtered_df.comp_song.values]
                         for recommended_song in recommendation_song_list:
