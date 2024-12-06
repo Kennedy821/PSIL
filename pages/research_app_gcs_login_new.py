@@ -542,9 +542,10 @@ def get_previous_recommendations_fast(chosen_user):
             df = pd.read_csv(StringIO(content))
             df["recommendation_date"] = recommendation_date
             # df["search_date"] = pd.to_datetime(df["search_date"])
+            df = df.reset_index()[["anchor_song","comp_song","latent_space_distance","recommendation_date"]].sort_values(["recommendation_date","anchor_song","latent_space_distance"], ascending=True).head(10)
             dataframes.append(df)
 
-    output_df = pd.concat(dataframes).reset_index()[["anchor_song","comp_song","latent_space_distance","recommendation_date"]].sort_values(["recommendation_date","anchor_song","latent_space_distance"], ascending=True)
+    output_df = pd.concat(dataframes)
     
     return output_df
 
