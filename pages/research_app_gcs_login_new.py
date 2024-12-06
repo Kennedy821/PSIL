@@ -740,38 +740,53 @@ if 'token' in query_params:
                 songs = [x for x in recommendations_history_df.anchor_song.value_counts().index][:5]
 
                 for song in songs:
-                                    # Custom CSS for the st.expander component
-                    st.markdown(
-                        '''
-                        <style>
-                        .streamlit-expanderHeader {
-                            background-color: #7077A1;
-                            color: black; # Adjust this for expander header color
-                        }
-                        .streamlit-expanderContent {
-                            background-color: #7077A1;
-                            color: black; # Expander content color
-                        }
-                        </style>
-                        ''',
-                        unsafe_allow_html=True
-                    )
+                    #                 # Custom CSS for the st.expander component
+                    # st.markdown(
+                    #     '''
+                    #     <style>
+                    #     .streamlit-expanderHeader {
+                    #         background-color: #7077A1;
+                    #         color: black; # Adjust this for expander header color
+                    #     }
+                    #     .streamlit-expanderContent {
+                    #         background-color: #7077A1;
+                    #         color: black; # Expander content color
+                    #     }
+                    #     </style>
+                    #     ''',
+                    #     unsafe_allow_html=True
+                    # )
 
-                    def change_label_style(label, font_size='12px'):
-                        html = f"""
-                        <script>
-                            var elems = window.parent.document.querySelectorAll('p');
-                            var elem = Array.from(elems).find(x => x.innerText == '{label}');
-                            elem.style.fontSize = '{font_size}';
-                        </script>
-                        """
-                        st.components.v1.html(html)
+                    # def change_label_style(label, font_size='12px'):
+                    #     html = f"""
+                    #     <script>
+                    #         var elems = window.parent.document.querySelectorAll('p');
+                    #         var elem = Array.from(elems).find(x => x.innerText == '{label}');
+                    #         elem.style.fontSize = '{font_size}';
+                    #     </script>
+                    #     """
+                    #     st.components.v1.html(html)
 
                     # label = "My text here"
                     # st.text_input(label)
                     # change_label_style(label, '20px')
 
-                    with st.expander(f"{change_label_style(song,'15px')}"):
+                    st.markdown("""
+                                <style>
+                                    /* Streamlit class name of the div that holds the expander's title*/
+                                    .css-q8sbsg p {
+                                    font-size: 18px;
+                                    color: #F5E6CC;
+                                    }
+                                    
+                                    /* Streamlit class name of the div that holds the expander's text*/
+                                    .css-nahz7x p {
+                                    font-size: 12px;
+                                    }
+                                </style>
+                                """, unsafe_allow_html=True)
+
+                    with st.expander(f"{song}"):
                         # change_label_style(song, '15px')
                         filtered_df = recommendations_history_df[recommendations_history_df.anchor_song==song]
                         recommendation_song_list = [x for x in filtered_df.comp_song.values]
