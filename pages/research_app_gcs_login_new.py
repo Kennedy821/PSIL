@@ -505,6 +505,46 @@ def get_previous_searches_fast(chosen_user):
     
     return output_df[["search_date","song_name",'song_link']]
 
+# minor comment
+ 
+def get_previous_recommendations_fast(chosen_user):
+    # Create credentials object
+    credentials = service_account.Credentials.from_service_account_info(st.secrets["gcp_service_account"])
+
+    # Use the credentials to create a client
+    client = storage.Client(credentials=credentials)
+
+    # Specify your bucket name
+    bucket_name = "psil-app-backend-2"
+
+    # Get the bucket object
+    bucket = client.bucket(bucket_name)
+
+    # List all blobs in the 'users/' directory
+    blobs = client.list_blobs(bucket_name, prefix=f'historic_recommendations/{chosen_user}')
+
+    # Initialize an empty list to store DataFrames
+    dataframes = []
+
+    # Temporary directory for storing downloaded files (optional)
+    # temp_dir = "/tmp/"  # If needed
+
+    # Iterate over all blobs in the 'users/' directory
+    for blob in blobs:
+        # Check if the blob is not a directory (blob names ending with '/')
+        if not blob.name.endswith('/') and ".csv" in blob.name and chosen_user in blob.name:
+            # Download the blob's content as a string
+            content = blob.download_as_text()
+
+            # Read the content into a pandas DataFrame
+            df = pd.read_csv(StringIO(content))
+            # df["search_date"] = pd.to_datetime(df["search_date"])
+            dataframes.append(df)
+
+    output_df = pd.concat(dataframes).reset_index()[["anchor_song","comp_song","latent_space_distance"]].sort_values("latent_space_distance", ascending=True).head(10)
+    
+    return output_df
+
 
 def check_processing_stage_1(chosen_user):
     # Create credentials object
@@ -682,6 +722,95 @@ if 'token' in query_params:
             except Exception as e:
                 st.subheader("Your Searches")
                 st.info("It looks like you haven't used PSIL much yet...")
+
+            # ---------------------------------------------------------------------------
+            # Next we're now going to add in a code block to allow the user to be able to see some of their historic searches
+            # ---------------------------------------------------------------------------
+            try:
+                recommendations_history_df = get_previous_recommendations_fast(user_hash)
+                
+                # Display the last 10 searches
+                st.subheader("Your Recommendations:")
+                # for song in search_history_df.song_name:
+                #     st.write(song)
+
+                songs = [x for x in recommendations_history_df.anchor_song.values]
+                # song_url = [x for x in search_history_df.song_link.values]
+                # CSS for card-like structure and hover effect
+                st.markdown("""
+                    <style>
+                    .song-card {
+                        padding: 10px;
+                        margin-bottom: 10px;
+                        border-radius: 5px;
+                        border: 1px solid #2D3250;
+                        background-color: #7077A1;
+                        transition: background-color 0.3s;
+                    }
+                    .song-card:hover {
+                        background-color: #424769;
+                    }
+                    </style>
+                    """, unsafe_allow_html=True)
+
+                # for song in songs:
+                #     st.markdown(f"<div class='song-card'>{song}</div>", unsafe_allow_html=True)
+                for song in songs:
+                    filtered_df = recommendations_history_df[recommendations_history_df.anchor_song==song]
+                    recommendation_song_list = [x for x in filtered_df.comp_song.values]
+                    for recommended_song in recommendation_song_list:
+                        st.write(recommended_song)
+                    # url = get_url_for_song(song)  # Replace with your URL logic
+                    # image_icon = get_image_for_song() 
+                    # # st.markdown(f"""
+                    # #     <div class='song-card'>
+                    # #         <div class='song-title'>{song}</div>
+                    # #         <a href='{url}' target='_blank' class='link-button'>Go to URL</a>
+                    # #     </div>
+                    # #     """, unsafe_allow_html=True)
+                    
+                    # st.markdown(f"""
+                    #     <style>
+                    #         .song-card {{
+                    #             background-color: #5f6a89;  /* Optional: Customize the background color */
+                    #             padding: 10px;
+                    #             border-radius: 8px;
+                    #             margin-bottom: 10px;
+                    #         }}
+                    #         .song-title {{
+                    #             font-size: 18px;
+                    #             color: #F5E6CC;
+                    #             text-decoration: none;
+                    #         }}
+                    #         .song-card:hover {{
+                    #             background-color: #4f5a73; /* Optional: Change background on hover */
+                    #         }}
+                    #     </style>
+                    #     <a href="{url}" target="_blank" style="text-decoration:none;">
+                    #         <div class='song-card'>
+                    #             <div class='song-title'>{song}</div>
+                    #         </div>
+                    #     </a>
+                    # """, unsafe_allow_html=True)
+
+
+                    # if image_icon:
+                    # # Display clickable image using st.image wrapped in markdown
+                    #     st.markdown(f"[![{song}]({image_icon})]({url})")
+                    #     st.write(song)
+
+                    # st.image(image_icon)
+                    # st.markdown(f"""
+                    #     <div class='song-card'>
+                    #         <div class='song-title'>{song}</div>
+                    #         <a href='{url}' target='_blank'>
+                    #             <img src='{image_icon}' alt='spotify' width='10' height='10'>
+                    #         </a>
+                    #     </div>
+                    # """, unsafe_allow_html=True)
+            except Exception as e:
+                st.subheader("Your Recommendations")
+                st.info("It looks like you haven't used PSIL much yet...")               
 
 
 
