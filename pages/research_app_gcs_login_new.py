@@ -756,24 +756,25 @@ if 'token' in query_params:
                 # for song in songs:
                 #     st.markdown(f"<div class='song-card'>{song}</div>", unsafe_allow_html=True)
 
-                # Custom CSS for the st.expander component
-                st.markdown(
-                    '''
-                    <style>
-                    .streamlit-expanderHeader {
-                        background-color: #7077A1;
-                        color: black; # Adjust this for expander header color
-                    }
-                    .streamlit-expanderContent {
-                        background-color: #424769;
-                        color: black; # Expander content color
-                    }
-                    </style>
-                    ''',
-                    unsafe_allow_html=True
-                )
+
 
                 for song in songs:
+                                    # Custom CSS for the st.expander component
+                    st.markdown(
+                        '''
+                        <style>
+                        .streamlit-expanderHeader {
+                            background-color: #7077A1;
+                            color: black; # Adjust this for expander header color
+                        }
+                        .streamlit-expanderContent {
+                            background-color: #7077A1;
+                            color: black; # Expander content color
+                        }
+                        </style>
+                        ''',
+                        unsafe_allow_html=True
+                    )
                     with st.expander(f"{song}"):
                         filtered_df = recommendations_history_df[recommendations_history_df.anchor_song==song]
                         recommendation_song_list = [x for x in filtered_df.comp_song.values]
