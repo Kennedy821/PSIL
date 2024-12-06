@@ -778,7 +778,7 @@ if 'token' in query_params:
                         filtered_df = recommendations_history_df[recommendations_history_df.anchor_song==song]
                         recommendation_song_list = [x for x in filtered_df.comp_song.values]
                         for recommended_song in recommendation_song_list:
-                            st.write_stream(f" * {recommended_song}")
+                            st.write(f" * {recommended_song}")
                     # url = get_url_for_song(song)  # Replace with your URL logic
                     # image_icon = get_image_for_song() 
                     # # st.markdown(f"""
