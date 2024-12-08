@@ -143,13 +143,19 @@ def get_top_n_recommendations_gcs_version_new(n,user_hash):
     # st.markdown("this is the genre df")
     # st.dataframe(genre_df)
 
-    recommended_df = recommended_df.merge(genre_df, on="target_song")
+    # this is being disabled as genre filtering has been moved to the backend 
+    # ---------------------------------------------------------------------------
 
 
-    if genre_option=="All":
-        pass
-    else:
-        recommended_df = recommended_df[recommended_df["target_song"].isin(in_scope_genre_song_names)]
+    # recommended_df = recommended_df.merge(genre_df, on="target_song")
+
+
+    # if genre_option=="All":
+    #     pass
+    # else:
+    #     recommended_df = recommended_df[recommended_df["target_song"].isin(in_scope_genre_song_names)]
+
+    # ---------------------------------------------------------------------------
 
     # this is the valid df
     # st.write("this is the valid df")
@@ -915,18 +921,18 @@ if 'token' in query_params:
                 else:
                     st.write('Please select a language.')
 
+                if processing_type != "upload my own audio":
 
+                    genre_option = st.selectbox(
+                        'Select Genre for your recommendations',
+                        ('','All', 'Rock', 'Hip-Hop','Electronic','Folk','Experimental',"Instrumental","Pop")  # Add an empty string as the first option
+                    )
 
-                genre_option = st.selectbox(
-                    'Select Genre for your recommendations',
-                    ('','All', 'Rock', 'Hip-Hop','Electronic','Folk','Experimental',"Instrumental","Pop")  # Add an empty string as the first option
-                )
-
-                # Display the selected option
-                if genre_option:
-                    st.write('You selected:', genre_option)
-                else:
-                    st.write('Please select a genre.')
+                    # Display the selected option
+                    if genre_option:
+                        st.write('You selected:', genre_option)
+                    else:
+                        st.write('Please select a genre.')
 
                 primaryColor = toml.load(".streamlit/config.toml")['theme']['textColor']
                 s = f"""
