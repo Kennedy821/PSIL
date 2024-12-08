@@ -1222,7 +1222,7 @@ if 'token' in query_params:
                             # The bucket on GCS in which to write the CSV file
                             bucket = client.bucket('psil-app-backend-2')
                             # The name assigned to the CSV file on GCS
-                            blob = bucket.blob('user_input_song.csv')
+                            blob = bucket.blob(f'user_input_song_{genre_option}.csv')
 
                             # Convert the DataFrame to a CSV string with a specified encoding
                             csv_string = uploaded_df.to_csv(index=False, encoding='utf-8')
