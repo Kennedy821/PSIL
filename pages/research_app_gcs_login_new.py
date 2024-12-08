@@ -549,7 +549,7 @@ def get_previous_recommendations_fast(chosen_user):
             df["recommendation_date"] = recommendation_date
             # df["search_date"] = pd.to_datetime(df["search_date"])
             df = df.rename(columns={"predictions_sq":"ls_distance"})
-            df = df.reset_index()[["anchor_song","comp_song","ls_distance","recommendation_date"]].sort_values(["recommendation_date","anchor_song","ls_distance"], ascending=True).head(10)
+            df = df.reset_index()[["anchor_song","comp_song","ls_distance","recommendation_date"]].sort_values(["recommendation_date","ls_distance"], ascending=[False, True]).head(10)
             dataframes.append(df)
     
 
