@@ -551,9 +551,10 @@ def get_previous_recommendations_fast(chosen_user):
             df = df.rename(columns={"predictions_sq":"ls_distance"})
             df = df.reset_index()[["anchor_song","comp_song","ls_distance","recommendation_date"]].sort_values(["recommendation_date","anchor_song","ls_distance"], ascending=True).head(10)
             dataframes.append(df)
+    
 
     output_df = pd.concat(dataframes)
-    
+    output_df
     return output_df
 
 
