@@ -628,6 +628,21 @@ def get_image_for_song():
         print(f"Image not found for {song_name}")
         return None
 
+
+# create some cached versions of the functions that may reload repeatedly
+
+@st.cache_data(show_spinner=False)
+def get_previous_searches_fast_cached(chosen_user):
+    return get_previous_searches_fast(chosen_user)
+
+@st.cache_data(show_spinner=False)
+def get_previous_recommendations_fast_cached(chosen_user):
+    return get_previous_recommendations_fast(chosen_user)
+
+
+
+
+
 # Step 1: Retrieve the token from the URL query parameters
 # query_params = st.experimental_get_query_params()
 
@@ -678,7 +693,9 @@ if token:
             
             user_hash = token
             try:
-                search_history_df = get_previous_searches_fast(user_hash)
+                # search_history_df = get_previous_searches_fast(user_hash)
+                # new version that uses the cached version of the function
+                search_history_df = get_previous_searches_fast_cached(user_hash)
                 
                 # Display the last 10 searches
                 st.subheader("Your Searches:")
@@ -763,7 +780,9 @@ if token:
             # Next we're now going to add in a code block to allow the user to be able to see some of their historic searches
             # ---------------------------------------------------------------------------
             try:
-                recommendations_history_df = get_previous_recommendations_fast(user_hash)
+                # recommendations_history_df = get_previous_recommendations_fast(user_hash)
+                # here is the cached version of the function
+                recommendations_history_df = get_previous_recommendations_fast_cached(user_hash)
                 
                 # Display the last 5 recommendations
                 st.subheader("Your Recommendations:")
