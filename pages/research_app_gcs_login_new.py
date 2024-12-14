@@ -1577,9 +1577,9 @@ if token:
             # st.components.v1.html(carousel_html, height=275)
 
 
-            st.image(album_art_images_1[0], caption="Bon Iver, Bon Iver",use_column_width='always')
-            st.image(album_art_images_1[1], caption="22, a million",use_column_width='always')
-            st.image(album_art_images_1[2], caption="Hailaker",use_column_width='always')
+            st.image(album_art_images_1[0], caption="Bon Iver, Bon Iver",use_container_width=True)
+            st.image(album_art_images_1[1], caption="22, a million",use_container_width=True)
+            st.image(album_art_images_1[2], caption="Hailaker",use_container_width=True)
     else:
         st.error("Invalid or expired token.")
 else:
