@@ -636,7 +636,6 @@ def get_image_for_song():
 # Here is the new code to get the query parameters
 
 query_params = st.query_params.get("token")
-st.write(st.query_params.token)
 
 token = st.query_params.token
 if token:
