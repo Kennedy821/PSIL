@@ -629,19 +629,37 @@ def get_image_for_song():
         return None
 
 # Step 1: Retrieve the token from the URL query parameters
-query_params = st.experimental_get_query_params()
+# query_params = st.experimental_get_query_params()
+
+# need to change from using st.experimental_get_query_params() to st.query_params()
+
+# Here is the new code to get the query parameters
+
+query_params = st.query_params
 
 if 'token' in query_params:
-    token = query_params['token'][0]  # Get the token from the query
+    token = query_params.get('token')[0]  # Get the token from the query
     decoded_token = verify_token(token)
 
-    # decoded_token = "{'email':'demo@demo.com'}"
-
-    # Step 2: Verify the token
     if decoded_token:
         st.success("Access granted! Welcome, user.")
         user_email = str(decoded_token).split(":")[1].split("'")[1]
         st.write(f"Your account: {user_email}")
+
+
+# this is the code that was previously used to get the token
+# ---------------------------------------------------------------------------
+# if 'token' in query_params:
+#     token = query_params['token'][0]  # Get the token from the query
+#     decoded_token = verify_token(token)
+
+#     # decoded_token = "{'email':'demo@demo.com'}"
+
+#     # Step 2: Verify the token
+#     if decoded_token:
+#         st.success("Access granted! Welcome, user.")
+#         user_email = str(decoded_token).split(":")[1].split("'")[1]
+#         st.write(f"Your account: {user_email}")
 
     #---------------------------------------------------------------------------    
     # create the sidebar with the users previous searches  
