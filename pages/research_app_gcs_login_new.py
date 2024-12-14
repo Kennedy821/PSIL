@@ -647,7 +647,19 @@ def get_album_art_images():
         "https://f4.bcbits.com/img/0028797410_10.jpg",
     ]
 
+# along the same lines we're going to cache the user selected variables as the sometimes the page reloads and the user has to reselect the language and genre
 
+# Initialize session state variables
+if 'processing_type' not in st.session_state:
+    st.session_state.processing_type = ""
+
+if 'language_option' not in st.session_state:
+    st.session_state.language_option = ""
+
+if 'genre_option' not in st.session_state:
+    st.session_state.genre_option = ""
+if 'uploaded_file' not in st.session_state:
+    st.session_state.uploaded_file = None
 
 # Step 1: Retrieve the token from the URL query parameters
 # query_params = st.experimental_get_query_params()
@@ -946,24 +958,44 @@ if token:
             # Input interface
             st.subheader("Input Songs")
             # Offer two options for the user either they can upload their own audio or they can use a link to a video
-            processing_type = st.selectbox("Would you like to upload your own audio file or use a link to a video?", options=["","upload my own audio","use a link from a website"],key='type_of_input')
+            # processing_type = st.selectbox("Would you like to upload your own audio file or use a link to a video?", options=["","upload my own audio","use a link from a website"],key='type_of_input')
 
+            # this is the new version 
+            st.session_state.processing_type = st.selectbox("Would you like to upload your own audio file or use a link to a video?", options=["","upload my own audio","use a link from a website"],key='type_of_input')
+            processing_type = st.session_state.processing_type
             
             if processing_type == "upload my own audio":
-                uploaded_file = st.file_uploader("Choose a file", type=['mp3','wav','m4a'])
+
+                # uploaded_file = st.file_uploader("Choose a file", type=['mp3','wav','m4a'])
+
+                # here is the new version
+                st.session_state.uploaded_file = st.file_uploader("Choose a file", type=['mp3','wav','m4a'])
+                uploaded_file = st.session_state.uploaded_file
+
                 
 
             if processing_type == "use a link from a website":
             
-                song_link = st.text_input("Enter the SoundCloud link of the song you'd like to get recommendations for:")
+                # song_link = st.text_input("Enter the SoundCloud link of the song you'd like to get recommendations for:")
+
+                # here is the new version 
+                st.session_state.song_link = st.text_input("Enter the SoundCloud link of the song you'd like to get recommendations for:")
+                song_link = st.session_state.song_link
 
             if processing_type:
                 st.write("Select which language you'd like your song results to be in")
 
-                language_option = st.selectbox(
+                # language_option = st.selectbox(
+                #     'Select Language for your recommendations',
+                #     ('', 'All', 'English','French','Japanese')  # Add an empty string as the first option
+                # )
+
+                # here is the new version 
+                st.session_state.language_option = st.selectbox(
                     'Select Language for your recommendations',
                     ('', 'All', 'English','French','Japanese')  # Add an empty string as the first option
                 )
+                language_option = st.session_state.language_option
 
                 # Display the selected option
                 if language_option:
@@ -973,10 +1005,18 @@ if token:
 
                 if processing_type != "upload my own audio":
 
-                    genre_option = st.selectbox(
+                    # genre_option = st.selectbox(
+                    #     'Select Genre for your recommendations',
+                    #     ('','All', 'Rock', 'Hip-Hop','Electronic','Folk','Experimental',"Instrumental","Pop")  # Add an empty string as the first option
+                    # )
+
+                    # here is the new version
+                    st.session_state.genre_option = st.selectbox(
                         'Select Genre for your recommendations',
                         ('','All', 'Rock', 'Hip-Hop','Electronic','Folk','Experimental',"Instrumental","Pop")  # Add an empty string as the first option
                     )
+
+                    genre_option = st.session_state.genre_option
 
                     # Display the selected option
                     if genre_option:
