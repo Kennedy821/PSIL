@@ -648,8 +648,9 @@ if token:
     decoded_token = verify_token(token)
 
     if decoded_token:
-        st.success("Access granted! Welcome, user.")
         user_email = str(decoded_token).split(":")[1].split("'")[1]
+        
+        st.success(f"Access granted! Welcome, {user_email}.")
         st.write(f"Your account: {user_email}")
 
 
