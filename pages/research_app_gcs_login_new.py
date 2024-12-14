@@ -639,7 +639,13 @@ def get_previous_searches_fast_cached(chosen_user):
 def get_previous_recommendations_fast_cached(chosen_user):
     return get_previous_recommendations_fast(chosen_user)
 
-
+@st.cache_data(show_spinner=False)
+def get_album_art_images():
+    return [
+        "https://upload.wikimedia.org/wikipedia/en/5/5f/Bon_iver.jpg",
+        "https://media.pitchfork.com/photos/5935a1014fc0406ca110ccc9/master/pass/fd8402f9.jpg",
+        "https://f4.bcbits.com/img/0028797410_10.jpg",
+    ]
 
 
 
@@ -1508,11 +1514,7 @@ if token:
 
 
             # List of trending album art images for each container (replace with actual image URLs)
-            album_art_images_1 = [
-                "https://upload.wikimedia.org/wikipedia/en/5/5f/Bon_iver.jpg",
-                "https://media.pitchfork.com/photos/5935a1014fc0406ca110ccc9/master/pass/fd8402f9.jpg",
-                "https://f4.bcbits.com/img/0028797410_10.jpg",
-            ]
+            album_art_images_1 = get_album_art_images() 
 
             album_art_images_2 = [
                 "https://upload.wikimedia.org/wikipedia/en/5/5f/Bon_iver.jpg",
