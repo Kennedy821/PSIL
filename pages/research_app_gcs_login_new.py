@@ -566,7 +566,13 @@ def get_previous_recommendations_fast(chosen_user):
     max_date_minus_1 = max_date - datetime.timedelta(days=1)
     output_df = output_df[(output_df["recommendation_date"]==max_date) | 
                         (output_df["recommendation_date"]==max_date_minus_1)]
-    output_df = output_df.groupby(["anchor_song","comp_song"]).min()[["ls_distance"]].head(10).reset_index()
+    output_df_container = []
+    for i in range(len(output_df.anchor_song.value_counts().index)):
+        output_int_df = output_df[output_df.anchor==i].sort_values(["recommendation_date","ls_distance"], ascending=[False, True])
+        output_df_container.append(output_int_df)
+        del output_int_df
+    output_df = pd.concat(output_df_container)
+
     output_df
     
     return output_df
