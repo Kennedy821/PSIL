@@ -625,8 +625,42 @@ def get_image_for_song():
         img = Image.open(img_path)
         return img
     except FileNotFoundError:
-        print(f"Image not found for {song_name}")
+        print(f"Image not found")
         return None
+
+
+# here is the function to be used to check the checkpoints.
+def wait_for_checkpoint(checkpoint_function, chosen_user, checkpoint_name, max_attempts=60, delay=5):
+    """
+    Waits for a specific checkpoint to complete.
+
+    Args:
+        checkpoint_function (function): The function to check the checkpoint status.
+        chosen_user (str): The user's identifier.
+        checkpoint_name (str): The name of the checkpoint (for logging purposes).
+        max_attempts (int): Maximum number of attempts before timing out.
+        delay (int): Delay (in seconds) between each check.
+
+    Returns:
+        bool: True if the checkpoint is completed within the max_attempts, False otherwise.
+    """
+    attempts = 0
+    while attempts < max_attempts:
+        try:
+            checkpoint_function(chosen_user)  # Check if the checkpoint is complete
+            st.success(f"{checkpoint_name} completed.")
+            return True  # If successful, return
+        except Exception as e:
+            # Log error (optional) and retry after delay
+            st.warning(f"Waiting for {checkpoint_name} to complete. Attempt {attempts + 1}/{max_attempts}...")
+            time.sleep(delay)
+            attempts += 1
+
+    st.error(f"{checkpoint_name} not completed within the timeout period.")
+    return False  # Return False if checkpoint not completed
+
+
+
 
 
 # create some cached versions of the functions that may reload repeatedly
@@ -1168,7 +1202,23 @@ if token:
                                                                         
                                     # this is the old version of the search
                                     # top_recommendations_df = get_top_n_recommendations_gcs_version(filtered_selection_n, clean_token)
+
+                                    # ---------------------------------------------------------------------------------------------------------------------
+                                    # new code block to introduce checkpoints so the user gets some indication of when their recommendations will be ready
+
+                                    # Wait for the first checkpoint
+                                    checkpoint_1_completed = wait_for_checkpoint(check_processing_stage_1, clean_token, "Checkpoint 1")
+                                    if not checkpoint_1_completed:
+                                        st.error("Failed to complete Checkpoint 1. Stopping process.")
+                                        st.stop()
+
+                                    # Wait for the second checkpoint
+                                    checkpoint_2_completed = wait_for_checkpoint(check_processing_stage_2, clean_token, "Checkpoint 2")
+                                    if not checkpoint_2_completed:
+                                        st.error("Failed to complete Checkpoint 2. Stopping process.")
+                                        st.stop()
                                     
+                                    # ---------------------------------------------------------------------------------------------------------------------
 
                                     # this is the new version of the search
                                     top_recommendations_df = get_top_n_recommendations_gcs_version_new(filtered_selection_n, clean_token)
@@ -1425,6 +1475,22 @@ if token:
                                 # this is the old version of the search
                                 # top_recommendations_df = get_top_n_recommendations_gcs_version(filtered_selection_n, clean_token)
                                 
+                                # ---------------------------------------------------------------------------------------------------------------------
+                                # new code block to introduce checkpoints so the user gets some indication of when their recommendations will be ready
+
+                                # Wait for the first checkpoint
+                                checkpoint_1_completed = wait_for_checkpoint(check_processing_stage_1, clean_token, "Checkpoint 1")
+                                if not checkpoint_1_completed:
+                                    st.error("Failed to complete Checkpoint 1. Stopping process.")
+                                    st.stop()
+
+                                # Wait for the second checkpoint
+                                checkpoint_2_completed = wait_for_checkpoint(check_processing_stage_2, clean_token, "Checkpoint 2")
+                                if not checkpoint_2_completed:
+                                    st.error("Failed to complete Checkpoint 2. Stopping process.")
+                                    st.stop()
+                                
+                                # ---------------------------------------------------------------------------------------------------------------------
 
                                 # this is the new version of the search
                                 top_recommendations_df = get_top_n_recommendations_gcs_version_new(filtered_selection_n, clean_token)
