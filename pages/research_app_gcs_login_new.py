@@ -545,7 +545,7 @@ def get_previous_recommendations_fast(chosen_user):
             # Extract and parse the recommendation date from the file name
             recommendation_date_str = blob.name.split("/")[-1].split("_psil")[0]
             try:
-                recommendation_date = pd.to_datetime(recommendation_date_str, format="%Y-%m-%d")
+                recommendation_date = pd.to_datetime(recommendation_date_str)
             except ValueError:
                 recommendation_date = None  # Handle parsing errors if necessary
 
