@@ -544,6 +544,7 @@ def get_previous_recommendations_fast(chosen_user):
 
             # Extract and parse the recommendation date from the file name
             recommendation_date_str = blob.name.split("/")[-1].split("_psil")[0]
+            st.write(recommendation_date_str)
             try:
                 recommendation_date = pd.to_datetime(recommendation_date_str)
             except ValueError:
@@ -590,10 +591,13 @@ def check_processing_stage_1(chosen_user):
     for blob in blobs:
         # Check if the blob is not a directory (blob names ending with '/')
         if not blob.name.endswith('/') and ".png_final" in blob.name and chosen_user in blob.name:
+            st.write(f"{blob.name} found")
+
             # Notify via Streamlit that checkpoint 2 is complete
             st.success("Checkpoint 1 complete: " + blob.name)
 
 def check_processing_stage_2(chosen_user):
+    time.sleep(20)
     
     # Create credentials object
     credentials = service_account.Credentials.from_service_account_info(st.secrets["gcp_service_account"])
@@ -617,6 +621,7 @@ def check_processing_stage_2(chosen_user):
     for blob in blobs:
         # Check if the blob is not a directory (blob names ending with '/')
         if not blob.name.endswith('/') and "search_list.csv" in blob.name and chosen_user in blob.name:
+            st.write(f"{blob.name} found")
             # Notify via Streamlit that checkpoint 2 is complete
             st.success("Checkpoint 2 complete: " + blob.name)
         
