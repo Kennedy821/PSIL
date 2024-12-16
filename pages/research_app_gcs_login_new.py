@@ -561,7 +561,7 @@ def get_previous_recommendations_fast(chosen_user):
             dataframes.append(df)
     
 
-    output_df = pd.concat(dataframes).sort_values(["recommendation_date","ls_distance"], ascending=[False, True])
+    output_df = pd.concat(dataframes).sort_values(["recommendation_date","ls_distance"], ascending=[False, True]).drop_duplicates(["anchor_song","comp_song"])
     max_date_list = sorted(output_df.recommendation_date.unique(), reverse=True)[:2]
     # st.write(f"the values in the date list are : {max_date_list}")
     output_df = output_df[output_df["recommendation_date"].isin(max_date_list)]
