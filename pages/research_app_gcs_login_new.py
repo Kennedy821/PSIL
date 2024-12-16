@@ -565,7 +565,7 @@ def get_previous_recommendations_fast(chosen_user):
     # max_date_list = sorted(output_df.recommendation_date.unique(), reverse=True)
     # output_df = output_df[output_df["recommendation_date"].isin(max_date_list)]
     output_df_container = []
-    for i in range(len(output_df.anchor_song.value_counts().index)):
+    for i in output_df.anchor_song.value_counts().index:
         output_int_df = output_df[output_df.anchor_song==i].sort_values(["recommendation_date","ls_distance"], ascending=[False, True]).head(10)
         output_df_container.append(output_int_df)
         del output_int_df
