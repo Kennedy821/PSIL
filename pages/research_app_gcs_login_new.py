@@ -562,13 +562,11 @@ def get_previous_recommendations_fast(chosen_user):
     
 
     output_df = pd.concat(dataframes).sort_values(["recommendation_date","ls_distance"], ascending=[False, True])
-    max_date = output_df.recommendation_date.max()
-    max_date_minus_1 = max_date - 1
-    output_df = output_df[(output_df["recommendation_date"]==max_date) | 
-                        (output_df["recommendation_date"]==max_date_minus_1)]
+    max_date_list = sorted(output_df.recommendation_date.unique(), reverse=True)
+    output_df = output_df[output_df["recommendation_date"].isin(max_date_list)]
     output_df_container = []
     for i in range(len(output_df.anchor_song.value_counts().index)):
-        output_int_df = output_df[output_df.anchor==i].sort_values(["recommendation_date","ls_distance"], ascending=[False, True])
+        output_int_df = output_df[output_df.anchor_song==i].sort_values(["recommendation_date","ls_distance"], ascending=[False, True])
         output_df_container.append(output_int_df)
         del output_int_df
     output_df = pd.concat(output_df_container)
