@@ -542,7 +542,14 @@ def get_previous_recommendations_fast(chosen_user):
             # Download the blob's content as a string
             content = blob.download_as_text()
 
-            recommendation_date = blob.name.split("/")[-1].split("_psil")[0]
+            # Extract and parse the recommendation date from the file name
+            recommendation_date_str = blob.name.split("/")[-1].split("_psil")[0]
+            try:
+                recommendation_date = pd.to_datetime(recommendation_date_str, format="%Y-%m-%d")
+            except ValueError:
+                recommendation_date = None  # Handle parsing errors if necessary
+
+            # recommendation_date = blob.name.split("/")[-1].split("_psil")[0]
 
             # Read the content into a pandas DataFrame
             df = pd.read_csv(StringIO(content))
@@ -559,6 +566,7 @@ def get_previous_recommendations_fast(chosen_user):
 
 
 def check_processing_stage_1(chosen_user):
+    time.sleep(20)
     # Create credentials object
     credentials = service_account.Credentials.from_service_account_info(st.secrets["gcp_service_account"])
 
@@ -580,11 +588,12 @@ def check_processing_stage_1(chosen_user):
     # Iterate over all blobs in the 'users/' directory
     for blob in blobs:
         # Check if the blob is not a directory (blob names ending with '/')
-        if not blob.name.endswith('/') and ".dat" in blob.name and chosen_user in blob.name:
+        if not blob.name.endswith('/') and ".png_final" in blob.name and chosen_user in blob.name:
             # Notify via Streamlit that checkpoint 2 is complete
             st.success("Checkpoint 1 complete: " + blob.name)
 
 def check_processing_stage_2(chosen_user):
+    
     # Create credentials object
     credentials = service_account.Credentials.from_service_account_info(st.secrets["gcp_service_account"])
 
@@ -606,7 +615,7 @@ def check_processing_stage_2(chosen_user):
     # Iterate over all blobs in the 'users/' directory
     for blob in blobs:
         # Check if the blob is not a directory (blob names ending with '/')
-        if not blob.name.endswith('/') and "indices.csv" in blob.name and chosen_user in blob.name:
+        if not blob.name.endswith('/') and "search_list.csv" in blob.name and chosen_user in blob.name:
             # Notify via Streamlit that checkpoint 2 is complete
             st.success("Checkpoint 2 complete: " + blob.name)
         
