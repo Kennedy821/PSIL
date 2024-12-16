@@ -680,7 +680,7 @@ def get_previous_searches_fast_cached(chosen_user):
     return get_previous_searches_fast(chosen_user)
 
 @st.cache_data(show_spinner=False)
-def get_previous_recommendations_fast_cached(chosen_user):
+def get_previous_recommendations_fast_cached(chosen_user, last_modified_time):
     return get_previous_recommendations_fast(chosen_user)
 
 @st.cache_data(show_spinner=False)
@@ -843,8 +843,18 @@ if token:
             # ---------------------------------------------------------------------------
             try:
                 # recommendations_history_df = get_previous_recommendations_fast(user_hash)
+                
+                # Create credentials object
+                credentials = service_account.Credentials.from_service_account_info(st.secrets["gcp_service_account"])
+
+                # Use the credentials to create a client
+                client = storage.Client(credentials=credentials)
+                bucket = client.bucket("psil-app-backend-2")
+                blob = bucket.blob(f'historic_recommendations/{user_hash}')
+                last_modified_time = blob.updated
+
                 # here is the cached version of the function
-                recommendations_history_df = get_previous_recommendations_fast_cached(user_hash)
+                recommendations_history_df = get_previous_recommendations_fast_cached(user_hash, last_modified_time)
                 
                 # Display the last 5 recommendations
                 st.subheader("Your Recommendations:")
