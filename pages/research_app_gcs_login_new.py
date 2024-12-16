@@ -561,6 +561,7 @@ def get_previous_recommendations_fast(chosen_user):
     
 
     output_df = pd.concat(dataframes).sort_values(["recommendation_date","ls_distance"], ascending=[False, True])
+    output_df
     
     return output_df
 
