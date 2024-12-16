@@ -600,10 +600,10 @@ def check_processing_stage_1(chosen_user):
     for blob in blobs:
         # Check if the blob is not a directory (blob names ending with '/')
         if not blob.name.endswith('/') and ".png_final" in blob.name and chosen_user in blob.name:
-            st.write(f"{blob.name} found")
+            # st.write(f"{blob.name} found")
 
             # Notify via Streamlit that checkpoint 2 is complete
-            st.write("Checkpoint 1 complete: " + blob.name)
+            st.write("Checkpoint 1 complete")
 
 def check_processing_stage_2(chosen_user):
     
@@ -629,9 +629,9 @@ def check_processing_stage_2(chosen_user):
     for blob in blobs:
         # Check if the blob is not a directory (blob names ending with '/')
         if not blob.name.endswith('/') and "search_list.csv" in blob.name and chosen_user in blob.name:
-            st.write(f"{blob.name} found")
+            # st.write(f"{blob.name} found")
             # Notify via Streamlit that checkpoint 2 is complete
-            st.write("Checkpoint 2 complete: " + blob.name)
+            st.write("Checkpoint 2 complete")
         
 def get_url_for_song(song):
     chosen_url = search_history_df[search_history_df.song_name==song].song_link.values[0]
@@ -1245,6 +1245,7 @@ if token:
                                         st.error("Failed to complete Checkpoint 1. Stopping process.")
                                         st.stop()
 
+                                    time.sleep(30)
                                     # Wait for the second checkpoint
                                     checkpoint_2_completed = wait_for_checkpoint(check_processing_stage_2, clean_token, "Checkpoint 2")
                                     if not checkpoint_2_completed:
