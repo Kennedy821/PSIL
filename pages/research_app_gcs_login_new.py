@@ -562,6 +562,9 @@ def get_previous_recommendations_fast(chosen_user):
     
 
     output_df = pd.concat(dataframes).sort_values(["recommendation_date","ls_distance"], ascending=[False, True])
+    max_date = output_df.recommendation_date.max()
+    output_df = output_df[output_df["recommendation_date"]==max_date]
+    output_df = output_df.groupby(["anchor_song"]).min()[["ls_distance"]].head(10).reset_index()
     output_df
     
     return output_df
