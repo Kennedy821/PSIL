@@ -1180,7 +1180,7 @@ if token:
                                 # this makes sure that requests are segregated by each user
                                 user_directory = f'users/{clean_token}/'
 
-                                logging_filename = f"{formatted_date}_psil_site_search_{clean_token}_{unique_id}.mp3"
+                                logging_filename = f"{formatted_date}_psil_site_search_{clean_token}_{unique_id}_{search_type_option.replace(" ","_").lower()}.mp3"
                                 full_file_path = f'{user_directory}{logging_filename}'
 
                                 # # logging_df = pd.DataFrame([str(decoded_token),song_link]).T
@@ -1417,7 +1417,7 @@ if token:
                             # The bucket on GCS in which to write the CSV file
                             bucket = client.bucket('psil-app-backend-2')
                             # The name assigned to the CSV file on GCS
-                            blob = bucket.blob(f'user_input_song_{genre_option}_{search_type_option.replace(" ","_").lower()}.csv')
+                            blob = bucket.blob(f'user_input_song_{genre_option}.csv')
 
                             # Convert the DataFrame to a CSV string with a specified encoding
                             csv_string = uploaded_df.to_csv(index=False, encoding='utf-8')
@@ -1434,7 +1434,7 @@ if token:
                             # this makes sure that requests are segregated by each user
                             user_directory = f'users/{clean_token}/'
 
-                            logging_filename = f"{formatted_date}_psil_site_search_{clean_token}_{unique_id}.csv"
+                            logging_filename = f"{formatted_date}_psil_site_search_{clean_token}_{unique_id}_{search_type_option.replace(" ","_").lower()}.csv"
                             full_file_path = f'{user_directory}{logging_filename}'
 
                             # logging_df = pd.DataFrame([str(decoded_token),song_link]).T
