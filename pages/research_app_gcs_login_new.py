@@ -554,6 +554,13 @@ def get_previous_recommendations_fast(chosen_user):
 
             # Read the content into a pandas DataFrame
             df = pd.read_csv(StringIO(content))
+            # do a check to see if this was using fast search or deep search
+            dummy_song_check = [x for x in df["anchor_song"] if "dummy" in x]
+            if len(dummy_song_check)>0:
+                df = df[df["anchor_song"].str.contains("dummy")]
+                df["anchor_song"] = "fast_search"
+            else:
+                pass
             df["recommendation_date"] = recommendation_date
             # df["search_date"] = pd.to_datetime(df["search_date"])
             df = df.rename(columns={"predictions_sq":"ls_distance"})
@@ -717,7 +724,8 @@ if 'genre_option' not in st.session_state:
     st.session_state.genre_option = ""
 if 'uploaded_file' not in st.session_state:
     st.session_state.uploaded_file = None
-
+if 'search_type_option' not in st.session_state:
+    st.session_state.genre_option = ""
 # Step 1: Retrieve the token from the URL query parameters
 # query_params = st.experimental_get_query_params()
 
@@ -1091,6 +1099,13 @@ if token:
                     else:
                         st.write('Please select a genre.')
 
+                # here is the new version 
+                st.session_state.search_type_option = st.selectbox(
+                    'What kind of search do you want to do?',
+                    ('', 'Fast Search', 'Deep Search','French','Japanese')  # Add an empty string as the first option
+                )
+                search_type_option = st.session_state.search_type_option
+
                 primaryColor = toml.load(".streamlit/config.toml")['theme']['textColor']
                 s = f"""
                 <style>
@@ -1402,7 +1417,7 @@ if token:
                             # The bucket on GCS in which to write the CSV file
                             bucket = client.bucket('psil-app-backend-2')
                             # The name assigned to the CSV file on GCS
-                            blob = bucket.blob(f'user_input_song_{genre_option}.csv')
+                            blob = bucket.blob(f'user_input_song_{genre_option}_{search_type_option.replace(" ","_").lower()}.csv')
 
                             # Convert the DataFrame to a CSV string with a specified encoding
                             csv_string = uploaded_df.to_csv(index=False, encoding='utf-8')
