@@ -1102,7 +1102,7 @@ if token:
                 # here is the new version 
                 st.session_state.search_type_option = st.selectbox(
                     'What kind of search do you want to do?',
-                    ('', 'Fast Search', 'Deep Search','French','Japanese')  # Add an empty string as the first option
+                    ('', 'Fast Search', 'Deep Search')  # Add an empty string as the first option
                 )
                 search_type_option = st.session_state.search_type_option
 
