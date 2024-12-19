@@ -1169,12 +1169,15 @@ if token:
                                 blob = bucket.blob(f'user_input_song_{genre_option}.{uploaded_file_type}')
 
                                 # Upload the file
-                                blob.upload_from_file(uploaded_file, content_type=uploaded_file.type)
+                                # blob.upload_from_file(uploaded_file, content_type=uploaded_file.type)
+                                blob.upload_from_file(uploaded_file, content_type=".mp3")
+
 
                                 st.markdown("Your song was successfully uploaded.")
 
                                 #-----------------------------------------------------------------------------------------------------
-
+                                # Reset the file pointer to the beginning
+                                uploaded_file.seek(0)
                                 # logging the user's uploaded song info
 
                                 unique_id = uuid.uuid4()
