@@ -722,8 +722,8 @@ if 'language_option' not in st.session_state:
 
 if 'genre_option' not in st.session_state:
     st.session_state.genre_option = ""
-if 'uploaded_file' not in st.session_state:
-    st.session_state.uploaded_file = None
+# if 'uploaded_file' not in st.session_state:
+#     st.session_state.uploaded_file = None
 if 'search_type_option' not in st.session_state:
     st.session_state.genre_option = ""
 # Step 1: Retrieve the token from the URL query parameters
@@ -1041,11 +1041,11 @@ if token:
             
             if processing_type == "upload my own audio":
 
-                # uploaded_file = st.file_uploader("Choose a file", type=['mp3','wav','m4a'])
+                uploaded_file = st.file_uploader("Choose a file", type=['mp3'])
 
-                # here is the new version
-                st.session_state.uploaded_file = st.file_uploader("Choose a file", type=['mp3','wav','m4a'])
-                uploaded_file = st.session_state.uploaded_file
+                # # here is the new version
+                # st.session_state.uploaded_file = st.file_uploader("Choose a file", type=['mp3','wav','m4a'])
+                # uploaded_file = st.session_state.uploaded_file
 
                 
 
