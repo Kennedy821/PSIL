@@ -1141,8 +1141,11 @@ if token:
                             if uploaded_file.type != "audio/mpeg":
                                 st.error("Invalid file type. Please upload a valid MP3 file.")
                                 st.stop()
-                            else:
 
+
+                            else:
+                                # Reset file pointer to the beginning
+                                uploaded_file.seek(0)
                                 # get the details for where the uploaded file is going to go
                                 #-----------------------------------------------------------------------------------------------------
 
