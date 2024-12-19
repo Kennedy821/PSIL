@@ -1078,26 +1078,27 @@ if token:
                 else:
                     st.write('Please select a language.')
 
-                if processing_type != "upload my own audio":
+                # if processing_type != "upload my own audio":
 
-                    genre_option = st.selectbox(
-                        'Select Genre for your recommendations',
-                        ('','All', 'Rock', 'Hip-Hop','Electronic','Folk','Experimental',"Instrumental","Pop")  # Add an empty string as the first option
-                    )
+                    # genre_option = st.selectbox(
+                    #     'Select Genre for your recommendations',
+                    #     ('','All', 'Rock', 'Hip-Hop','Electronic','Folk','Experimental',"Instrumental","Pop")  # Add an empty string as the first option
+                    # )
+                st.write("Select the genre your recommendations should be similar to")
 
-                    # here is the new version
-                    st.session_state.genre_option = st.selectbox(
-                        'Select Genre for your recommendations',
-                        ('','All', 'Rock', 'Hip-Hop','Electronic','Folk','Experimental',"Instrumental","Pop")  # Add an empty string as the first option
-                    )
+                # here is the new version
+                st.session_state.genre_option = st.selectbox(
+                    'Select Genre for your recommendations',
+                    ('','All', 'Rock', 'Hip-Hop','Electronic','Folk','Experimental','Instrumental','Pop')  # Add an empty string as the first option
+                )
 
-                    genre_option = st.session_state.genre_option
+                genre_option = st.session_state.genre_option
 
-                    # Display the selected option
-                    if genre_option:
-                        st.write('You selected:', genre_option)
-                    else:
-                        st.write('Please select a genre.')
+                # Display the selected option
+                if genre_option:
+                    st.write('You selected:', genre_option)
+                else:
+                    st.write('Please select a genre.')
 
                 # here is the new version 
                 st.session_state.search_type_option = st.selectbox(
