@@ -1080,10 +1080,10 @@ if token:
 
                 if processing_type != "upload my own audio":
 
-                    # genre_option = st.selectbox(
-                    #     'Select Genre for your recommendations',
-                    #     ('','All', 'Rock', 'Hip-Hop','Electronic','Folk','Experimental',"Instrumental","Pop")  # Add an empty string as the first option
-                    # )
+                    genre_option = st.selectbox(
+                        'Select Genre for your recommendations',
+                        ('','All', 'Rock', 'Hip-Hop','Electronic','Folk','Experimental',"Instrumental","Pop")  # Add an empty string as the first option
+                    )
 
                     # here is the new version
                     st.session_state.genre_option = st.selectbox(
@@ -1162,12 +1162,12 @@ if token:
                                 # next get the uploaded object ready to be uploaded by renaming it and giving it the correct filepath
                                 # what is the filetype of the uploaded file
                                 uploaded_file_type = uploaded_file.name.split(".")[-1]
-                                # blob = bucket.blob(f'user_input_song.{uploaded_file_type}')
+                                blob = bucket.blob(f'user_input_song_{genre_option}.{uploaded_file_type}')
 
-                                # # Upload the file
-                                # blob.upload_from_file(uploaded_file, content_type=uploaded_file.type)
+                                # Upload the file
+                                blob.upload_from_file(uploaded_file, content_type=uploaded_file.type)
 
-                                # st.markdown("Your song was successfully uploaded.")
+                                st.markdown("Your song was successfully uploaded.")
 
                                 #-----------------------------------------------------------------------------------------------------
 
