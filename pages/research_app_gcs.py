@@ -595,7 +595,7 @@ if st.button("Recommend me songs"):
             # this makes sure that requests are segregated by each user
             user_directory = f'users/{clean_token}/'
 
-            logging_filename = f"{formatted_date}_psil_site_search_{clean_token}_{unique_id}.csv"
+            logging_filename = f"{formatted_date}_psil_site_search_{clean_token}_{unique_id}_fast_search.csv"
             full_file_path = f'{user_directory}{logging_filename}'
 
             # logging_df = pd.DataFrame([str(decoded_token),song_link]).T
