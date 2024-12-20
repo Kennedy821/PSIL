@@ -149,6 +149,10 @@ def get_top_n_recommendations_gcs_version_new(n,user_hash):
             blob.download_to_filename(temp_dir+"combined_similarity_results.csv")
             downloaded_indices_df = pd.read_csv(temp_dir+"combined_similarity_results.csv")
             downloaded_indices_df["target_song"] = downloaded_indices_df["comp_song"]
+            downloaded_indices_df = downloaded_indices_df[~(downloaded_indices_df.comp_song.str.lower().str.contains("review"))
+                                                          &~(downloaded_indices_df.comp_song.str.lower().str.contains("tribute"))
+                                                          &~(downloaded_indices_df.comp_song.str.lower().str.contains("react"))
+                                                          &(downloaded_indices_df.comp_song.str.lower().str.contains("-"))]
             recommended_df = downloaded_indices_df.copy()
             # st.dataframe(downloaded_indices_df)
             break
@@ -189,13 +193,19 @@ def get_top_n_recommendations_gcs_version_new(n,user_hash):
     # st.markdown("this is the genre df")
     # st.dataframe(genre_df)
 
-    recommended_df = recommended_df.merge(genre_df, on="target_song")
+    # this is being disabled as genre filtering has been moved to the backend 
+    # ---------------------------------------------------------------------------
 
 
-    if genre_option=="All":
-        pass
-    else:
-        recommended_df = recommended_df[recommended_df["target_song"].isin(in_scope_genre_song_names)]
+    # recommended_df = recommended_df.merge(genre_df, on="target_song")
+
+
+    # if genre_option=="All":
+    #     pass
+    # else:
+    #     recommended_df = recommended_df[recommended_df["target_song"].isin(in_scope_genre_song_names)]
+
+    # ---------------------------------------------------------------------------
 
     # this is the valid df
     # st.write("this is the valid df")
