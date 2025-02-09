@@ -47,7 +47,9 @@ st.set_page_config(
     layout="wide"
 
     )   
-       
+# clear the cache on first load
+st.runtime.legacy_caching.clear_cache(),
+
 def stream_data(word_to_stream):
         for word in word_to_stream.split(" "):
             yield word + " "
