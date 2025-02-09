@@ -48,7 +48,8 @@ st.set_page_config(
 
     )   
 # clear the cache on first load
-st.runtime.legacy_caching.clear_cache(),
+# st.runtime.legacy_caching.clear_cache()
+st.cache_resource.clear()
 
 def stream_data(word_to_stream):
         for word in word_to_stream.split(" "):
