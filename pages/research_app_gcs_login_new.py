@@ -897,7 +897,8 @@ if token:
 
                 # Ensure recommendations_history_df is initialized in session_state
                 if 'recommendations_history_df' not in st.session_state:
-                    st.session_state.recommendations_history_df = get_previous_recommendations_fast(user_hash)
+                    recommendations_history_df = get_previous_recommendations_fast_cached(user_hash, last_modified_time)
+                    st.session_state.recommendations_history_df = recommendations_history_df
                     st.write("Loaded recommendations from GCS (First run)")
                 else:
                     st.write("Using cached recommendations")
