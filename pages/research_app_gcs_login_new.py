@@ -902,6 +902,8 @@ if token:
                     st.write("Loaded recommendations from GCS (First run)")
                 else:
                     st.write("Using cached recommendations")
+                    recommendations_history_df = st.session_state.recommendations_history_df  # Assign from session_state
+
 
                 # recommendations_history_df = get_previous_recommendations_fast(user_hash)
                 
