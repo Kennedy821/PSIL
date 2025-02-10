@@ -890,7 +890,11 @@ if token:
                 st.write("Last modified time: ", last_modified_time)
 
                 # here is the cached version of the function
-                recommendations_history_df = get_previous_recommendations_fast_cached(user_hash, last_modified_time)
+
+                if 'recommendations_history' not in st.session_state:
+                    st.session_state.recommendations_history = get_previous_recommendations_fast_cached(user_hash, last_modified_time)
+
+
                 # recommendations_history_df = get_previous_recommendations_fast(user_hash)
                 
                 # Display the last 5 recommendations
