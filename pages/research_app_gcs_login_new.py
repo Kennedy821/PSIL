@@ -878,9 +878,15 @@ if token:
                 blob = bucket.blob(f'historic_recommendations/{user_hash}')
                 
                 
-                blob.reload()
+                from datetime import datetime, timedelta
 
-                last_modified_time = blob.updated
+                # Calculate today's date minus 7 days
+                seven_days_ago = datetime.utcnow() - timedelta(days=7)
+
+                # Print in the specified format
+                print(seven_days_ago.strftime("%Y-%m-%d %H:%M:%S.%f+00:00"))
+
+                last_modified_time = seven_days_ago.strftime("%Y-%m-%d %H:%M:%S.%f+00:00")
                 st.write("Last modified time: ", last_modified_time)
 
                 # here is the cached version of the function
