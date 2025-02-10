@@ -876,6 +876,10 @@ if token:
                 client = storage.Client(credentials=credentials)
                 bucket = client.bucket("psil-app-backend-2")
                 blob = bucket.blob(f'historic_recommendations/{user_hash}')
+                
+                
+                blob.reload()
+
                 last_modified_time = blob.updated
                 st.write("Last modified time: ", last_modified_time)
 
