@@ -877,10 +877,11 @@ if token:
                 bucket = client.bucket("psil-app-backend-2")
                 blob = bucket.blob(f'historic_recommendations/{user_hash}')
                 last_modified_time = blob.updated
+                st.write("Last modified time: ", last_modified_time)
 
                 # here is the cached version of the function
-                # recommendations_history_df = get_previous_recommendations_fast_cached(user_hash, last_modified_time)
-                recommendations_history_df = get_previous_recommendations_fast(user_hash)
+                recommendations_history_df = get_previous_recommendations_fast_cached(user_hash, last_modified_time)
+                # recommendations_history_df = get_previous_recommendations_fast(user_hash)
                 
                 # Display the last 5 recommendations
                 st.subheader("Your Recommendations:")
