@@ -12,6 +12,7 @@ from pathlib import Path
 import tempfile
 from PIL import Image
 from io import BytesIO
+import io
 import pandas as pd
 import time
 import polars as pl
