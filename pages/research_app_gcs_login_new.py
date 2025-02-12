@@ -1719,8 +1719,13 @@ if token:
                             st.warning("Please enter the either add your own audio or provide link of the song you'd like to get recommendations for.")
 
                 if stateful_button('"Get my last search"', key="get_most_recent_recommendation_button"):
+                    
+                    master_links_filepath = Path("new_playlist_links_a_to_z.csv")
+
+                    links_df = pd.read_csv(master_links_filepath)
                     # collect the historic recommendations for the user from GCP
                     # get the user's token  
+
                     bucket_name_backend = "psil-app-backend-2"
                     
                     clean_token = user_hash
