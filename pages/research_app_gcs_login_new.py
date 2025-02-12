@@ -1161,7 +1161,7 @@ if token:
                     return st.session_state[key]
                 button_columns_1, button_columns_2 = st.columns(2)
                 with button_columns_1:
-                    if stateful_button('"Recommend me songs"', key="recommendation_button"):
+                    if stateful_button('Recommend me songs', key="recommendation_button"):
                         pass
                 # if st.button("Recommend me songs"):
                 with st.spinner('Processing your recommendations...this usually takes ~5 minutes.', show_time=True):
@@ -1721,7 +1721,7 @@ if token:
                         st.warning("Please enter the either add your own audio or provide link of the song you'd like to get recommendations for.")
 
                 with button_columns_2:
-                    if stateful_button('"Get my last search"', key="get_most_recent_recommendation_button"):
+                    if stateful_button('Get my last search', key="get_most_recent_recommendation_button"):
                         pass
                     
                 master_links_filepath = Path("new_playlist_links_a_to_z.csv")
