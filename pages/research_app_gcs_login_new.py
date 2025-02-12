@@ -1145,7 +1145,7 @@ if token:
                 """
                 st.markdown(s, unsafe_allow_html=True)
                 if st.button("Recommend me songs"):
-                    with st.spinner('Processing your recommendations...this usually takes ~5 minutes.'):
+                    with st.spinner('Processing your recommendations...this usually takes ~5 minutes.', show_elapsed=True):
                         
 
                     # st.write("Processing your link...")
