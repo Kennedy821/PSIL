@@ -1144,7 +1144,23 @@ if token:
                 <style>
                 """
                 st.markdown(s, unsafe_allow_html=True)
-                if st.button("Recommend me songs"):
+
+
+                # here is an attempt to add in two buttons that will allow the user to either search for the song or to get their most recent search result if their connection broke
+                def stateful_button(*args, key=None, **kwargs):
+                    if key is None:
+                        raise ValueError("Must pass key")
+
+                    if key not in st.session_state:
+                        st.session_state[key] = False
+
+                    if st.button(*args, **kwargs):
+                        st.session_state[key] = not st.session_state[key]
+
+                    return st.session_state[key]
+                
+                if stateful_button('"Recommend me songs"', key="recommendation_button"):
+                # if st.button("Recommend me songs"):
                     with st.spinner('Processing your recommendations...this usually takes ~5 minutes.', show_time=True):
                         
 
@@ -1700,6 +1716,33 @@ if token:
                             
                         elif processing_type is None:
                             st.warning("Please enter the either add your own audio or provide link of the song you'd like to get recommendations for.")
+
+                if stateful_button('"Get my last search"', key="get_most_recent_recommendation_button"):
+                    # collect the historic recommendations for the user from GCP
+                    # get the user's token  
+                    bucket_name_backend = st.secrets["gcp_bucket"]
+                    
+                    clean_token = user_hash
+                    # this makes sure that requests are segregated by each user
+                    historic_recommendations_dir = f'historic_recommendations/{clean_token}/'
+
+                    blobs = client.list_blobs(bucket_name_backend, prefix=f'{historic_recommendations_dir}')
+
+                    latest_blob = None
+                    # Loop through each blob
+                    for blob in blobs:
+                        # Check if the blob is a CSV file
+                        if not blob.name.endswith('.csv'):
+                            continue
+                        # If this is the first CSV or if this CSV is newer than the current latest, update latest_blob
+                        if latest_blob is None or blob.updated > latest_blob.updated:
+                            latest_blob = blob
+                            # Download the CSV file as text.
+                            csv_content = latest_blob.download_as_text(encoding='utf-8')
+                            # Use io.StringIO to create a file-like object for pandas.
+                            last_search_df = pd.read_csv(io.StringIO(csv_content))
+                    st.dataframe(last_search_df)
+
 
 
         with col3:
