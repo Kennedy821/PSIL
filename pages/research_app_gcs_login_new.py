@@ -1723,146 +1723,146 @@ if token:
                     if stateful_button('"Get my last search"', key="get_most_recent_recommendation_button"):
                         pass
                     
-                    master_links_filepath = Path("new_playlist_links_a_to_z.csv")
+                master_links_filepath = Path("new_playlist_links_a_to_z.csv")
 
-                    links_df = pd.read_csv(master_links_filepath)
-                    # collect the historic recommendations for the user from GCP
-                    # get the user's token  
+                links_df = pd.read_csv(master_links_filepath)
+                # collect the historic recommendations for the user from GCP
+                # get the user's token  
 
-                    bucket_name_backend = "psil-app-backend-2"
-                    
-                    clean_token = user_hash
-                    # this makes sure that requests are segregated by each user
-                    historic_recommendations_dir = f'historic_recommendations/{clean_token}/'
+                bucket_name_backend = "psil-app-backend-2"
+                
+                clean_token = user_hash
+                # this makes sure that requests are segregated by each user
+                historic_recommendations_dir = f'historic_recommendations/{clean_token}/'
 
-                    blobs = client.list_blobs(bucket_name_backend, prefix=f'{historic_recommendations_dir}')
+                blobs = client.list_blobs(bucket_name_backend, prefix=f'{historic_recommendations_dir}')
 
-                    latest_blob = None
-                    # Loop through each blob
-                    for blob in blobs:
-                        # Check if the blob is a CSV file
-                        if not blob.name.endswith('.csv'):
-                            continue
-                        # If this is the first CSV or if this CSV is newer than the current latest, update latest_blob
-                        if latest_blob is None or blob.updated > latest_blob.updated:
-                            latest_blob = blob
-                            # Download the CSV file as text.
-                            csv_content = latest_blob.download_as_text(encoding='utf-8')
-                            # Use io.StringIO to create a file-like object for pandas.
-                            top_recommendations_df = pd.read_csv(io.StringIO(csv_content)).head(15).rename(columns={"comp_song":"song_name","latent_space_distance":"ls_distance"})
+                latest_blob = None
+                # Loop through each blob
+                for blob in blobs:
+                    # Check if the blob is a CSV file
+                    if not blob.name.endswith('.csv'):
+                        continue
+                    # If this is the first CSV or if this CSV is newer than the current latest, update latest_blob
+                    if latest_blob is None or blob.updated > latest_blob.updated:
+                        latest_blob = blob
+                        # Download the CSV file as text.
+                        csv_content = latest_blob.download_as_text(encoding='utf-8')
+                        # Use io.StringIO to create a file-like object for pandas.
+                        top_recommendations_df = pd.read_csv(io.StringIO(csv_content)).head(15).rename(columns={"comp_song":"song_name","latent_space_distance":"ls_distance"})
+
+            
+                        top_recommendations_links_df = top_recommendations_df.merge(links_df[["song_name", "song_links"]], on="song_name", how="left")[["song_name", "song_links"]].reset_index().drop(columns="index").drop_duplicates("song_name")
 
                 
-                            top_recommendations_links_df = top_recommendations_df.merge(links_df[["song_name", "song_links"]], on="song_name", how="left")[["song_name", "song_links"]].reset_index().drop(columns="index").drop_duplicates("song_name")
 
-                    
-
-                    
-                    # st.dataframe(top_recommendations_links_df)
-                    
-                    # Create a dictionary mapping song names to links
-                    song_links_map = dict(zip(top_recommendations_links_df['song_name'], top_recommendations_links_df['song_links']))
-                    
-                    markdown_list_items = []
-                    markdown_list_items_no_links = []
-                    for song in top_recommendations_df['song_name']:
-                        song_len = len(song)
-                        if song_len > 10000:
-                            song_part_1 = ''.join(song.split(" ")[:5])
-                            song_part_2 = ''.join(song.split(" ")[5:15])
-                            song_part_3 = ''.join(song.split(" ")[15:])
-                    
-                    
-                            # Check if the song has a corresponding link
-                            link = song_links_map.get(song)
-                            if pd.notna(link):  # Check if link is not NaN
-                                # If a link exists, format it with a hyperlink icon
-                                if len(song_part_1)>1 and len(song_part_2)>1 and len(song_part_3)>1:
-                                    markdown_list_items.append(f"- {song_part_1} \n {song_part_2} \n {song_part_3} [▶️]({link})\n")
-                                    markdown_list_items_no_links.append(f"- {song_part_1} \n {song_part_2}\n {song_part_3}\n")
-                                elif len(song_part_1)>1 and len(song_part_2)>1 and len(song_part_3)<1:
-                                    markdown_list_items.append(f"- {song_part_1} \n {song_part_2} [▶️]({link})\n")
-                                    markdown_list_items_no_links.append(f"- {song_part_1} \n {song_part_2}\n")
-                    
-                            else:
-                                # If no link exists, just add the song name
-                                markdown_list_items.append(f"- {song_part_1} \n {song_part_2} \n")
-                                markdown_list_items_no_links.append(f"- {song_part_1} \n {song_part_2} \n")
+                
+                # st.dataframe(top_recommendations_links_df)
+                
+                # Create a dictionary mapping song names to links
+                song_links_map = dict(zip(top_recommendations_links_df['song_name'], top_recommendations_links_df['song_links']))
+                
+                markdown_list_items = []
+                markdown_list_items_no_links = []
+                for song in top_recommendations_df['song_name']:
+                    song_len = len(song)
+                    if song_len > 10000:
+                        song_part_1 = ''.join(song.split(" ")[:5])
+                        song_part_2 = ''.join(song.split(" ")[5:15])
+                        song_part_3 = ''.join(song.split(" ")[15:])
+                
+                
+                        # Check if the song has a corresponding link
+                        link = song_links_map.get(song)
+                        if pd.notna(link):  # Check if link is not NaN
+                            # If a link exists, format it with a hyperlink icon
+                            if len(song_part_1)>1 and len(song_part_2)>1 and len(song_part_3)>1:
+                                markdown_list_items.append(f"- {song_part_1} \n {song_part_2} \n {song_part_3} [▶️]({link})\n")
+                                markdown_list_items_no_links.append(f"- {song_part_1} \n {song_part_2}\n {song_part_3}\n")
+                            elif len(song_part_1)>1 and len(song_part_2)>1 and len(song_part_3)<1:
+                                markdown_list_items.append(f"- {song_part_1} \n {song_part_2} [▶️]({link})\n")
+                                markdown_list_items_no_links.append(f"- {song_part_1} \n {song_part_2}\n")
+                
                         else:
-                            # Check if the song has a corresponding link
-                            link = song_links_map.get(song)
-                            if pd.notna(link):  # Check if link is not NaN
-                                # If a link exists, format it with a hyperlink icon
-                                markdown_list_items.append(f"- {song} [▶️]({link})\n")
-                                markdown_list_items_no_links.append(f"- {song}\n")
+                            # If no link exists, just add the song name
+                            markdown_list_items.append(f"- {song_part_1} \n {song_part_2} \n")
+                            markdown_list_items_no_links.append(f"- {song_part_1} \n {song_part_2} \n")
+                    else:
+                        # Check if the song has a corresponding link
+                        link = song_links_map.get(song)
+                        if pd.notna(link):  # Check if link is not NaN
+                            # If a link exists, format it with a hyperlink icon
+                            markdown_list_items.append(f"- {song} [▶️]({link})\n")
+                            markdown_list_items_no_links.append(f"- {song}\n")
+                
+                        else:
+                            # If no link exists, just add the song name
+                            markdown_list_items.append(f"- {song}\n")
+                            markdown_list_items_no_links.append(f"- {song}\n")
+                
+                # Join the list items into a single Markdown string
+                markdown_list = "\n".join(markdown_list_items)
+                markdown_list_no_links = "\n".join(markdown_list_items_no_links)
+                
+
+
+
+
+                st.session_state.show_animation = False 
+
+
+                # Display in Streamlit
+                st.header("Here are your recommendations")
+                
+                #gif_with_text = display_animated_text(gif_path,markdown_list_no_links)
+                
+                st.write_stream(stream_data(markdown_list))
+
+                
+                with st.expander("See how much we think you'll like these based on your uploaded song"): 
+                    starting_value = 0  # Your starting/reference value
+                    values = top_recommendations_df.sort_values("ls_distance", ascending=False).ls_distance  # Individual values to compare
+                    labels = [x for x in top_recommendations_df.sort_values("ls_distance", ascending=False).song_name.values]
+                    #song_names_markdown_list = ""
+                    #st.markdown(labels)
+                
+                    fig, ax = plt.subplots(figsize=(5, 10))
+                
+                    fig.patch.set_facecolor('#2D3250')
+                    ax.set_facecolor('#2D3250')
+                    # Plotting each point with a line to the starting value
+                    for i, value in enumerate(values):
+                        ax.plot([starting_value, value],[labels[i], labels[i]], 'grey')  # Line
+                        ax.plot(value, labels[i] , 'o', color='#F5E8C7')  # Dot
                     
-                            else:
-                                # If no link exists, just add the song name
-                                markdown_list_items.append(f"- {song}\n")
-                                markdown_list_items_no_links.append(f"- {song}\n")
+                    # Highlight the starting value across the chart
+                    #ax.axvline(starting_value, color='red', linestyle='--', label='Chosen song')
                     
-                    # Join the list items into a single Markdown string
-                    markdown_list = "\n".join(markdown_list_items)
-                    markdown_list_no_links = "\n".join(markdown_list_items_no_links)
-                    
+                    #plt.title('Proximity to Starting Value')
+                    # plt.xticks(fontsize=15, rotation=45)
 
+                    # Set x and y axis text color
+                    ax.tick_params(axis='x', colors='#F5E8C7')  # Red color for x-axis text
+                    ax.tick_params(axis='y', colors='#F5E8C7')  # Green color for y-axis text
 
+                    # Set axis labels
+                    ax.set_xlabel('X Axis', color='#2D3250')  # Red label for x-axis
+                    ax.set_ylabel('Y Axis', color='#2D3250')  # Green label for y-axis
 
+                    # Remove x-ticks
+                    plt.xticks([])
 
-                    st.session_state.show_animation = False 
+                    # Remove x-labels
+                    plt.gca().xaxis.set_ticklabels([])
 
+                    # Set the y-tick labels font to sans-serif
+                    for label in ax.get_yticklabels():
+                        label.set_fontname('sans-serif')
 
-                    # Display in Streamlit
-                    st.header("Here are your recommendations")
-                    
-                    #gif_with_text = display_animated_text(gif_path,markdown_list_no_links)
-                    
-                    st.write_stream(stream_data(markdown_list))
-
-                    
-                    with st.expander("See how much we think you'll like these based on your uploaded song"): 
-                        starting_value = 0  # Your starting/reference value
-                        values = top_recommendations_df.sort_values("ls_distance", ascending=False).ls_distance  # Individual values to compare
-                        labels = [x for x in top_recommendations_df.sort_values("ls_distance", ascending=False).song_name.values]
-                        #song_names_markdown_list = ""
-                        #st.markdown(labels)
-                    
-                        fig, ax = plt.subplots(figsize=(5, 10))
-                    
-                        fig.patch.set_facecolor('#2D3250')
-                        ax.set_facecolor('#2D3250')
-                        # Plotting each point with a line to the starting value
-                        for i, value in enumerate(values):
-                            ax.plot([starting_value, value],[labels[i], labels[i]], 'grey')  # Line
-                            ax.plot(value, labels[i] , 'o', color='#F5E8C7')  # Dot
-                        
-                        # Highlight the starting value across the chart
-                        #ax.axvline(starting_value, color='red', linestyle='--', label='Chosen song')
-                        
-                        #plt.title('Proximity to Starting Value')
-                        # plt.xticks(fontsize=15, rotation=45)
-
-                        # Set x and y axis text color
-                        ax.tick_params(axis='x', colors='#F5E8C7')  # Red color for x-axis text
-                        ax.tick_params(axis='y', colors='#F5E8C7')  # Green color for y-axis text
-
-                        # Set axis labels
-                        ax.set_xlabel('X Axis', color='#2D3250')  # Red label for x-axis
-                        ax.set_ylabel('Y Axis', color='#2D3250')  # Green label for y-axis
-
-                        # Remove x-ticks
-                        plt.xticks([])
-
-                        # Remove x-labels
-                        plt.gca().xaxis.set_ticklabels([])
-
-                        # Set the y-tick labels font to sans-serif
-                        for label in ax.get_yticklabels():
-                            label.set_fontname('sans-serif')
-
-                        plt.yticks(fontsize=20)
-                        plt.legend()
-                        sns.despine()
-                        st.pyplot(fig)
+                    plt.yticks(fontsize=20)
+                    plt.legend()
+                    sns.despine()
+                    st.pyplot(fig)
 
 
         with col3:
