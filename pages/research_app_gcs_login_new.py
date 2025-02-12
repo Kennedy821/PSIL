@@ -1720,7 +1720,7 @@ if token:
                 if stateful_button('"Get my last search"', key="get_most_recent_recommendation_button"):
                     # collect the historic recommendations for the user from GCP
                     # get the user's token  
-                    bucket_name_backend = st.secrets["gcp_bucket"]
+                    bucket_name_backend = "psil-app-backend-2"
                     
                     clean_token = user_hash
                     # this makes sure that requests are segregated by each user
