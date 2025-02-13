@@ -1164,39 +1164,304 @@ if token:
                     if stateful_button('Recommend me songs', key="recommendation_button"):
                         pass
                 # if st.button("Recommend me songs"):
-                with st.spinner('Processing your recommendations...this usually takes ~5 minutes.', show_time=True):
-                    
+                    with st.spinner('Processing your recommendations...this usually takes ~5 minutes.', show_time=True):
+                        
 
-                # st.write("Processing your link...")
-
-
-
-                # with st_lottie_spinner(lottie_json, speed=3, height=750,width=750):
+                    # st.write("Processing your link...")
 
 
-                # # Initialize session state for controlling the animation
-                # if "show_animation" not in st.session_state:
-                #     st.session_state.show_animation = True
 
-                # Display the animation if the state is set to True
-                # if st.session_state.show_animation:
+                    # with st_lottie_spinner(lottie_json, speed=3, height=750,width=750):
 
 
-                    # animation_object = st_lottie(lottie_json,speed=2, height=750, width=750)
+                    # # Initialize session state for controlling the animation
+                    # if "show_animation" not in st.session_state:
+                    #     st.session_state.show_animation = True
 
-                    if processing_type=="upload my own audio" and uploaded_file:
-
-                        # Validate file type (basic validation)
-                        if uploaded_file.type != "audio/mpeg":
-                            st.error("Invalid file type. Please upload a valid MP3 file.")
-                            st.stop()
+                    # Display the animation if the state is set to True
+                    # if st.session_state.show_animation:
 
 
-                        else:
-                            # Reset file pointer to the beginning
-                            uploaded_file.seek(0)
-                            # get the details for where the uploaded file is going to go
-                            #-----------------------------------------------------------------------------------------------------
+                        # animation_object = st_lottie(lottie_json,speed=2, height=750, width=750)
+
+                        if processing_type=="upload my own audio" and uploaded_file:
+
+                            # Validate file type (basic validation)
+                            if uploaded_file.type != "audio/mpeg":
+                                st.error("Invalid file type. Please upload a valid MP3 file.")
+                                st.stop()
+
+
+                            else:
+                                # Reset file pointer to the beginning
+                                uploaded_file.seek(0)
+                                # get the details for where the uploaded file is going to go
+                                #-----------------------------------------------------------------------------------------------------
+
+                                # Create credentials object
+                                credentials = service_account.Credentials.from_service_account_info(st.secrets["gcp_service_account"])
+
+                                # Use the credentials to create a client
+                                client = storage.Client(credentials=credentials)
+
+
+                                # The bucket on GCS in which to write the CSV file
+                                bucket = client.bucket('psil-app-backend-2')
+
+                                
+                                #-----------------------------------------------------------------------------------------------------
+
+
+                                # next get the uploaded object ready to be uploaded by renaming it and giving it the correct filepath
+                                # what is the filetype of the uploaded file
+                                uploaded_file_type = uploaded_file.name.split(".")[-1]
+                                blob = bucket.blob(f'user_input_song_{genre_option}.{uploaded_file_type}')
+
+                                # Upload the file
+                                # blob.upload_from_file(uploaded_file, content_type=uploaded_file.type)
+                                blob.upload_from_file(uploaded_file, content_type=".mp3")
+
+
+                                st.markdown("Your song was successfully uploaded.")
+
+                                #-----------------------------------------------------------------------------------------------------
+                                # Reset the file pointer to the beginning
+                                uploaded_file.seek(0)
+                                # logging the user's uploaded song info
+
+                                unique_id = uuid.uuid4()
+                                # clean_token = str(query_params).split("[")[1].split("]")[0].replace("'",'')
+
+                                clean_token = user_hash
+                                # this makes sure that requests are segregated by each user
+                                user_directory = f'users/{clean_token}/'
+
+                                logging_filename = f"{formatted_date}_psil_site_search_{clean_token}_{unique_id}_{search_type_option.replace(' ','_').lower()}.mp3"
+                                full_file_path = f'{user_directory}{logging_filename}'
+
+                                # # logging_df = pd.DataFrame([str(decoded_token),song_link]).T
+
+                                # logging_df = pd.DataFrame([str(decoded_token)])
+                                # logging_df.columns = ["user"]
+                                # logging_df["song_link"] = str(uploaded_file.name)
+
+                                # The name assigned to the CSV file on GCS
+                                blob = bucket.blob(full_file_path)
+                                # Upload the file
+                                blob.upload_from_file(uploaded_file, content_type=uploaded_file.type)
+
+
+                                with tempfile.TemporaryDirectory() as temp_dir:
+
+                                    valid_df = pd.read_parquet("psil_crawler_song_names_mapped_as_valid_songs_or_not.parquet.gzip")
+                                    valid_df = valid_df[valid_df["valid_song"]=='1']
+                                    
+
+                                    
+                                    
+                                    genre_df = pd.read_parquet("majority_genre_for_song.parquet.gzip").rename(columns={"song_name":"target_song"})
+                                    genre_df["target_song"] = genre_df["target_song"].str.split("_spect").str[0]
+                                    # st.markdown(f"the columns in genre_df are: {genre_df.columns}")
+                                    genre_df = genre_df[genre_df[genre_option]>0]
+                                    in_scope_genre_song_names = [x for x in genre_df.target_song.values]
+
+
+                                    
+                                    df_container = []
+                                    for file_ in os.listdir(os.getcwd()):
+                                        if "w_languages_" in file_:
+                                            int_df = pd.read_parquet(file_, engine="pyarrow")
+                                            int_df.iloc[:,1:] = int_df.iloc[:,1:].astype(float)
+                                            int_df = int_df.set_index("song_name")
+                                            # st.dataframe(int_df.head())
+
+                                            df_container.append(int_df)
+                                            del int_df
+
+                                    database_song_names_df = pd.concat(df_container, axis=1).reset_index()[["song_name",language_option.lower()]]
+                                    # st.dataframe(database_song_names_df)
+                                    del df_container
+                                    # database_song_names_df
+
+                                    # song_names_df_path = "psil_crawler_song_names_mapped_to_latest_index_w_languages.parquet.gzip"
+                                    # saved_songs_names_df = pd.read_parquet(song_names_df_path, engine="pyarrow")
+
+                                    # saved_songs_names_df.iloc[:,1:] = saved_songs_names_df.iloc[:,1:].astype(float)
+                                    # saved_songs_names_df
+
+
+                                    # database_song_names_df = saved_songs_names_df
+
+
+                                    old_song_names_in_order = [x for x in database_song_names_df.song_name.values]
+                                    
+
+
+                                    filtered_selection_n = 10
+                                    
+
+                                    master_links_filepath = Path("new_playlist_links_a_to_z.csv")
+
+                                    links_df = pd.read_csv(master_links_filepath)
+                                                                        
+                                    # this is the old version of the search
+                                    # top_recommendations_df = get_top_n_recommendations_gcs_version(filtered_selection_n, clean_token)
+
+                                    # ---------------------------------------------------------------------------------------------------------------------
+                                    # new code block to introduce checkpoints so the user gets some indication of when their recommendations will be ready
+                                    time.sleep(60)
+                                    # Wait for the first checkpoint
+                                    checkpoint_1_completed = wait_for_checkpoint(check_processing_stage_1, clean_token, "Checkpoint 1")
+                                    if not checkpoint_1_completed:
+                                        st.error("Failed to complete Checkpoint 1. Stopping process.")
+                                        st.stop()
+
+                                    time.sleep(30)
+                                    # Wait for the second checkpoint
+                                    checkpoint_2_completed = wait_for_checkpoint(check_processing_stage_2, clean_token, "Checkpoint 2")
+                                    if not checkpoint_2_completed:
+                                        st.error("Failed to complete Checkpoint 2. Stopping process.")
+                                        st.stop()
+                                    
+                                    # ---------------------------------------------------------------------------------------------------------------------
+
+                                    # this is the new version of the search
+                                    top_recommendations_df = get_top_n_recommendations_gcs_version_new(filtered_selection_n, clean_token)
+                                    top_recommendations_links_df = top_recommendations_df.merge(links_df[["song_name", "song_links"]], on="song_name", how="left")[["song_name", "song_links"]].reset_index().drop(columns="index").drop_duplicates("song_name")
+
+                                        
+
+                                    
+                                    # st.dataframe(top_recommendations_links_df)
+                                    
+                                    # Create a dictionary mapping song names to links
+                                    song_links_map = dict(zip(top_recommendations_links_df['song_name'], top_recommendations_links_df['song_links']))
+                                    
+                                    markdown_list_items = []
+                                    markdown_list_items_no_links = []
+                                    for song in top_recommendations_df['song_name']:
+                                        song_len = len(song)
+                                        if song_len > 10000:
+                                            song_part_1 = ''.join(song.split(" ")[:5])
+                                            song_part_2 = ''.join(song.split(" ")[5:15])
+                                            song_part_3 = ''.join(song.split(" ")[15:])
+                                    
+                                    
+                                            # Check if the song has a corresponding link
+                                            link = song_links_map.get(song)
+                                            if pd.notna(link):  # Check if link is not NaN
+                                                # If a link exists, format it with a hyperlink icon
+                                                if len(song_part_1)>1 and len(song_part_2)>1 and len(song_part_3)>1:
+                                                    markdown_list_items.append(f"- {song_part_1} \n {song_part_2} \n {song_part_3} [▶️]({link})\n")
+                                                    markdown_list_items_no_links.append(f"- {song_part_1} \n {song_part_2}\n {song_part_3}\n")
+                                                elif len(song_part_1)>1 and len(song_part_2)>1 and len(song_part_3)<1:
+                                                    markdown_list_items.append(f"- {song_part_1} \n {song_part_2} [▶️]({link})\n")
+                                                    markdown_list_items_no_links.append(f"- {song_part_1} \n {song_part_2}\n")
+                                    
+                                            else:
+                                                # If no link exists, just add the song name
+                                                markdown_list_items.append(f"- {song_part_1} \n {song_part_2} \n")
+                                                markdown_list_items_no_links.append(f"- {song_part_1} \n {song_part_2} \n")
+                                        else:
+                                            # Check if the song has a corresponding link
+                                            link = song_links_map.get(song)
+                                            if pd.notna(link):  # Check if link is not NaN
+                                                # If a link exists, format it with a hyperlink icon
+                                                markdown_list_items.append(f"- {song} [▶️]({link})\n")
+                                                markdown_list_items_no_links.append(f"- {song}\n")
+                                    
+                                            else:
+                                                # If no link exists, just add the song name
+                                                markdown_list_items.append(f"- {song}\n")
+                                                markdown_list_items_no_links.append(f"- {song}\n")
+                                    
+                                    # Join the list items into a single Markdown string
+                                    markdown_list = "\n".join(markdown_list_items)
+                                    markdown_list_no_links = "\n".join(markdown_list_items_no_links)
+                                    
+
+
+
+
+                                    st.session_state.show_animation = False 
+
+
+                                    # Display in Streamlit
+                                    st.header("Here are your recommendations")
+                                    
+                                    #gif_with_text = display_animated_text(gif_path,markdown_list_no_links)
+                                    
+                                    st.write_stream(stream_data(markdown_list))
+
+                                    
+                                    with st.expander("See how much we think you'll like these based on your uploaded song"): 
+                                        starting_value = 0  # Your starting/reference value
+                                        values = top_recommendations_df.sort_values("ls_distance", ascending=False).ls_distance  # Individual values to compare
+                                        labels = [x for x in top_recommendations_df.sort_values("ls_distance", ascending=False).song_name.values]
+                                        #song_names_markdown_list = ""
+                                        #st.markdown(labels)
+                                    
+                                        fig, ax = plt.subplots(figsize=(5, 10))
+                                    
+                                        fig.patch.set_facecolor('#2D3250')
+                                        ax.set_facecolor('#2D3250')
+                                        # Plotting each point with a line to the starting value
+                                        for i, value in enumerate(values):
+                                            ax.plot([starting_value, value],[labels[i], labels[i]], 'grey')  # Line
+                                            ax.plot(value, labels[i] , 'o', color='#F5E8C7')  # Dot
+                                        
+                                        # Highlight the starting value across the chart
+                                        #ax.axvline(starting_value, color='red', linestyle='--', label='Chosen song')
+                                        
+                                        #plt.title('Proximity to Starting Value')
+                                        # plt.xticks(fontsize=15, rotation=45)
+
+                                        # Set x and y axis text color
+                                        ax.tick_params(axis='x', colors='#F5E8C7')  # Red color for x-axis text
+                                        ax.tick_params(axis='y', colors='#F5E8C7')  # Green color for y-axis text
+
+                                        # Set axis labels
+                                        ax.set_xlabel('X Axis', color='#2D3250')  # Red label for x-axis
+                                        ax.set_ylabel('Y Axis', color='#2D3250')  # Green label for y-axis
+
+                                        # Remove x-ticks
+                                        plt.xticks([])
+
+                                        # Remove x-labels
+                                        plt.gca().xaxis.set_ticklabels([])
+
+                                        # Set the y-tick labels font to sans-serif
+                                        for label in ax.get_yticklabels():
+                                            label.set_fontname('sans-serif')
+
+                                        plt.yticks(fontsize=20)
+                                        plt.legend()
+                                        sns.despine()
+                                        st.pyplot(fig)
+                                    
+                                    
+                                
+                                
+                                
+                                
+
+
+
+
+
+
+
+
+
+
+                            
+
+                        if processing_type=="use a link from a website" and song_link:
+                            
+
+                            uploaded_df = pd.DataFrame([song_link])
+
+                            # upload this to gcs as a file called 'user_input_song.csv'
 
                             # Create credentials object
                             credentials = service_account.Credentials.from_service_account_info(st.secrets["gcp_service_account"])
@@ -1207,27 +1472,16 @@ if token:
 
                             # The bucket on GCS in which to write the CSV file
                             bucket = client.bucket('psil-app-backend-2')
+                            # The name assigned to the CSV file on GCS
+                            blob = bucket.blob(f'user_input_song_{genre_option}.csv')
 
-                            
-                            #-----------------------------------------------------------------------------------------------------
+                            # Convert the DataFrame to a CSV string with a specified encoding
+                            csv_string = uploaded_df.to_csv(index=False, encoding='utf-8')
 
+                            # Upload the CSV string to GCS
+                            blob.upload_from_string(csv_string, 'text/csv')
 
-                            # next get the uploaded object ready to be uploaded by renaming it and giving it the correct filepath
-                            # what is the filetype of the uploaded file
-                            uploaded_file_type = uploaded_file.name.split(".")[-1]
-                            blob = bucket.blob(f'user_input_song_{genre_option}.{uploaded_file_type}')
-
-                            # Upload the file
-                            # blob.upload_from_file(uploaded_file, content_type=uploaded_file.type)
-                            blob.upload_from_file(uploaded_file, content_type=".mp3")
-
-
-                            st.markdown("Your song was successfully uploaded.")
-
-                            #-----------------------------------------------------------------------------------------------------
-                            # Reset the file pointer to the beginning
-                            uploaded_file.seek(0)
-                            # logging the user's uploaded song info
+                            # st.markdown("Your song was successfully uploaded.")
 
                             unique_id = uuid.uuid4()
                             # clean_token = str(query_params).split("[")[1].split("]")[0].replace("'",'')
@@ -1236,19 +1490,38 @@ if token:
                             # this makes sure that requests are segregated by each user
                             user_directory = f'users/{clean_token}/'
 
-                            logging_filename = f"{formatted_date}_psil_site_search_{clean_token}_{unique_id}_{search_type_option.replace(' ','_').lower()}.mp3"
+                            logging_filename = f"{formatted_date}_psil_site_search_{clean_token}_{unique_id}_{search_type_option.replace(' ','_').lower()}.csv"
                             full_file_path = f'{user_directory}{logging_filename}'
 
-                            # # logging_df = pd.DataFrame([str(decoded_token),song_link]).T
+                            # logging_df = pd.DataFrame([str(decoded_token),song_link]).T
 
-                            # logging_df = pd.DataFrame([str(decoded_token)])
-                            # logging_df.columns = ["user"]
-                            # logging_df["song_link"] = str(uploaded_file.name)
+                            logging_df = pd.DataFrame([str(decoded_token)])
+                            logging_df.columns = ["user"]
+                            logging_df["song_link"] = str(song_link)
 
+
+                            # logging_df = pd.DataFrame([{'user': decoded_token, 'song_link': song_link}])
+
+                            # logging_df.columns = ["user","song_link"]
+                            # st.dataframe(logging_df)
+
+
+                            
+                            # The bucket on GCS in which to write the CSV file
+                            bucket = client.bucket('psil-app-backend-2')
                             # The name assigned to the CSV file on GCS
                             blob = bucket.blob(full_file_path)
-                            # Upload the file
-                            blob.upload_from_file(uploaded_file, content_type=uploaded_file.type)
+
+                            # Convert the DataFrame to a CSV string with a specified encoding
+                            csv_string = logging_df.to_csv(index=False, encoding='utf-8')
+
+                            # Upload the CSV string to GCS
+                            blob.upload_from_string(csv_string, 'text/csv')
+
+
+
+
+
 
 
                             with tempfile.TemporaryDirectory() as temp_dir:
@@ -1303,20 +1576,20 @@ if token:
                                 master_links_filepath = Path("new_playlist_links_a_to_z.csv")
 
                                 links_df = pd.read_csv(master_links_filepath)
-                                                                    
+                                
                                 # this is the old version of the search
                                 # top_recommendations_df = get_top_n_recommendations_gcs_version(filtered_selection_n, clean_token)
-
+                                
                                 # ---------------------------------------------------------------------------------------------------------------------
                                 # new code block to introduce checkpoints so the user gets some indication of when their recommendations will be ready
                                 time.sleep(60)
+
                                 # Wait for the first checkpoint
                                 checkpoint_1_completed = wait_for_checkpoint(check_processing_stage_1, clean_token, "Checkpoint 1")
                                 if not checkpoint_1_completed:
                                     st.error("Failed to complete Checkpoint 1. Stopping process.")
                                     st.stop()
 
-                                time.sleep(30)
                                 # Wait for the second checkpoint
                                 checkpoint_2_completed = wait_for_checkpoint(check_processing_stage_2, clean_token, "Checkpoint 2")
                                 if not checkpoint_2_completed:
@@ -1329,7 +1602,7 @@ if token:
                                 top_recommendations_df = get_top_n_recommendations_gcs_version_new(filtered_selection_n, clean_token)
                                 top_recommendations_links_df = top_recommendations_df.merge(links_df[["song_name", "song_links"]], on="song_name", how="left")[["song_name", "song_links"]].reset_index().drop(columns="index").drop_duplicates("song_name")
 
-                                    
+                                
 
                                 
                                 # st.dataframe(top_recommendations_links_df)
@@ -1438,287 +1711,14 @@ if token:
                                     plt.legend()
                                     sns.despine()
                                     st.pyplot(fig)
-                                
-                                
-                            
-                            
-                            
-                            
-
-
-
-
-
-
-
-
-
-
-                        
-
-                    if processing_type=="use a link from a website" and song_link:
-                        
-
-                        uploaded_df = pd.DataFrame([song_link])
-
-                        # upload this to gcs as a file called 'user_input_song.csv'
-
-                        # Create credentials object
-                        credentials = service_account.Credentials.from_service_account_info(st.secrets["gcp_service_account"])
-
-                        # Use the credentials to create a client
-                        client = storage.Client(credentials=credentials)
-
-
-                        # The bucket on GCS in which to write the CSV file
-                        bucket = client.bucket('psil-app-backend-2')
-                        # The name assigned to the CSV file on GCS
-                        blob = bucket.blob(f'user_input_song_{genre_option}.csv')
-
-                        # Convert the DataFrame to a CSV string with a specified encoding
-                        csv_string = uploaded_df.to_csv(index=False, encoding='utf-8')
-
-                        # Upload the CSV string to GCS
-                        blob.upload_from_string(csv_string, 'text/csv')
-
-                        # st.markdown("Your song was successfully uploaded.")
-
-                        unique_id = uuid.uuid4()
-                        # clean_token = str(query_params).split("[")[1].split("]")[0].replace("'",'')
-
-                        clean_token = user_hash
-                        # this makes sure that requests are segregated by each user
-                        user_directory = f'users/{clean_token}/'
-
-                        logging_filename = f"{formatted_date}_psil_site_search_{clean_token}_{unique_id}_{search_type_option.replace(' ','_').lower()}.csv"
-                        full_file_path = f'{user_directory}{logging_filename}'
-
-                        # logging_df = pd.DataFrame([str(decoded_token),song_link]).T
-
-                        logging_df = pd.DataFrame([str(decoded_token)])
-                        logging_df.columns = ["user"]
-                        logging_df["song_link"] = str(song_link)
-
-
-                        # logging_df = pd.DataFrame([{'user': decoded_token, 'song_link': song_link}])
-
-                        # logging_df.columns = ["user","song_link"]
-                        # st.dataframe(logging_df)
-
-
-                        
-                        # The bucket on GCS in which to write the CSV file
-                        bucket = client.bucket('psil-app-backend-2')
-                        # The name assigned to the CSV file on GCS
-                        blob = bucket.blob(full_file_path)
-
-                        # Convert the DataFrame to a CSV string with a specified encoding
-                        csv_string = logging_df.to_csv(index=False, encoding='utf-8')
-
-                        # Upload the CSV string to GCS
-                        blob.upload_from_string(csv_string, 'text/csv')
-
-
-
-
-
-
-
-                        with tempfile.TemporaryDirectory() as temp_dir:
-
-                            valid_df = pd.read_parquet("psil_crawler_song_names_mapped_as_valid_songs_or_not.parquet.gzip")
-                            valid_df = valid_df[valid_df["valid_song"]=='1']
-                            
-
-                            
-                            
-                            genre_df = pd.read_parquet("majority_genre_for_song.parquet.gzip").rename(columns={"song_name":"target_song"})
-                            genre_df["target_song"] = genre_df["target_song"].str.split("_spect").str[0]
-                            # st.markdown(f"the columns in genre_df are: {genre_df.columns}")
-                            genre_df = genre_df[genre_df[genre_option]>0]
-                            in_scope_genre_song_names = [x for x in genre_df.target_song.values]
-
-
-                            
-                            df_container = []
-                            for file_ in os.listdir(os.getcwd()):
-                                if "w_languages_" in file_:
-                                    int_df = pd.read_parquet(file_, engine="pyarrow")
-                                    int_df.iloc[:,1:] = int_df.iloc[:,1:].astype(float)
-                                    int_df = int_df.set_index("song_name")
-                                    # st.dataframe(int_df.head())
-
-                                    df_container.append(int_df)
-                                    del int_df
-
-                            database_song_names_df = pd.concat(df_container, axis=1).reset_index()[["song_name",language_option.lower()]]
-                            # st.dataframe(database_song_names_df)
-                            del df_container
-                            # database_song_names_df
-
-                            # song_names_df_path = "psil_crawler_song_names_mapped_to_latest_index_w_languages.parquet.gzip"
-                            # saved_songs_names_df = pd.read_parquet(song_names_df_path, engine="pyarrow")
-
-                            # saved_songs_names_df.iloc[:,1:] = saved_songs_names_df.iloc[:,1:].astype(float)
-                            # saved_songs_names_df
-
-
-                            # database_song_names_df = saved_songs_names_df
-
-
-                            old_song_names_in_order = [x for x in database_song_names_df.song_name.values]
-                            
-
-
-                            filtered_selection_n = 10
-                            
-
-                            master_links_filepath = Path("new_playlist_links_a_to_z.csv")
-
-                            links_df = pd.read_csv(master_links_filepath)
-                            
-                            # this is the old version of the search
-                            # top_recommendations_df = get_top_n_recommendations_gcs_version(filtered_selection_n, clean_token)
-                            
-                            # ---------------------------------------------------------------------------------------------------------------------
-                            # new code block to introduce checkpoints so the user gets some indication of when their recommendations will be ready
-                            time.sleep(60)
-
-                            # Wait for the first checkpoint
-                            checkpoint_1_completed = wait_for_checkpoint(check_processing_stage_1, clean_token, "Checkpoint 1")
-                            if not checkpoint_1_completed:
-                                st.error("Failed to complete Checkpoint 1. Stopping process.")
-                                st.stop()
-
-                            # Wait for the second checkpoint
-                            checkpoint_2_completed = wait_for_checkpoint(check_processing_stage_2, clean_token, "Checkpoint 2")
-                            if not checkpoint_2_completed:
-                                st.error("Failed to complete Checkpoint 2. Stopping process.")
-                                st.stop()
-                            
-                            # ---------------------------------------------------------------------------------------------------------------------
-
-                            # this is the new version of the search
-                            top_recommendations_df = get_top_n_recommendations_gcs_version_new(filtered_selection_n, clean_token)
-                            top_recommendations_links_df = top_recommendations_df.merge(links_df[["song_name", "song_links"]], on="song_name", how="left")[["song_name", "song_links"]].reset_index().drop(columns="index").drop_duplicates("song_name")
-
-                            
-
-                            
-                            # st.dataframe(top_recommendations_links_df)
-                            
-                            # Create a dictionary mapping song names to links
-                            song_links_map = dict(zip(top_recommendations_links_df['song_name'], top_recommendations_links_df['song_links']))
-                            
-                            markdown_list_items = []
-                            markdown_list_items_no_links = []
-                            for song in top_recommendations_df['song_name']:
-                                song_len = len(song)
-                                if song_len > 10000:
-                                    song_part_1 = ''.join(song.split(" ")[:5])
-                                    song_part_2 = ''.join(song.split(" ")[5:15])
-                                    song_part_3 = ''.join(song.split(" ")[15:])
-                            
-                            
-                                    # Check if the song has a corresponding link
-                                    link = song_links_map.get(song)
-                                    if pd.notna(link):  # Check if link is not NaN
-                                        # If a link exists, format it with a hyperlink icon
-                                        if len(song_part_1)>1 and len(song_part_2)>1 and len(song_part_3)>1:
-                                            markdown_list_items.append(f"- {song_part_1} \n {song_part_2} \n {song_part_3} [▶️]({link})\n")
-                                            markdown_list_items_no_links.append(f"- {song_part_1} \n {song_part_2}\n {song_part_3}\n")
-                                        elif len(song_part_1)>1 and len(song_part_2)>1 and len(song_part_3)<1:
-                                            markdown_list_items.append(f"- {song_part_1} \n {song_part_2} [▶️]({link})\n")
-                                            markdown_list_items_no_links.append(f"- {song_part_1} \n {song_part_2}\n")
-                            
-                                    else:
-                                        # If no link exists, just add the song name
-                                        markdown_list_items.append(f"- {song_part_1} \n {song_part_2} \n")
-                                        markdown_list_items_no_links.append(f"- {song_part_1} \n {song_part_2} \n")
-                                else:
-                                    # Check if the song has a corresponding link
-                                    link = song_links_map.get(song)
-                                    if pd.notna(link):  # Check if link is not NaN
-                                        # If a link exists, format it with a hyperlink icon
-                                        markdown_list_items.append(f"- {song} [▶️]({link})\n")
-                                        markdown_list_items_no_links.append(f"- {song}\n")
-                            
-                                    else:
-                                        # If no link exists, just add the song name
-                                        markdown_list_items.append(f"- {song}\n")
-                                        markdown_list_items_no_links.append(f"- {song}\n")
-                            
-                            # Join the list items into a single Markdown string
-                            markdown_list = "\n".join(markdown_list_items)
-                            markdown_list_no_links = "\n".join(markdown_list_items_no_links)
-                            
-
-
-
-
-                            st.session_state.show_animation = False 
-
-
-                            # Display in Streamlit
-                            st.header("Here are your recommendations")
-                            
-                            #gif_with_text = display_animated_text(gif_path,markdown_list_no_links)
-                            
-                            st.write_stream(stream_data(markdown_list))
-
-                            
-                            with st.expander("See how much we think you'll like these based on your uploaded song"): 
-                                starting_value = 0  # Your starting/reference value
-                                values = top_recommendations_df.sort_values("ls_distance", ascending=False).ls_distance  # Individual values to compare
-                                labels = [x for x in top_recommendations_df.sort_values("ls_distance", ascending=False).song_name.values]
-                                #song_names_markdown_list = ""
-                                #st.markdown(labels)
-                            
-                                fig, ax = plt.subplots(figsize=(5, 10))
-                            
-                                fig.patch.set_facecolor('#2D3250')
-                                ax.set_facecolor('#2D3250')
-                                # Plotting each point with a line to the starting value
-                                for i, value in enumerate(values):
-                                    ax.plot([starting_value, value],[labels[i], labels[i]], 'grey')  # Line
-                                    ax.plot(value, labels[i] , 'o', color='#F5E8C7')  # Dot
-                                
-                                # Highlight the starting value across the chart
-                                #ax.axvline(starting_value, color='red', linestyle='--', label='Chosen song')
-                                
-                                #plt.title('Proximity to Starting Value')
-                                # plt.xticks(fontsize=15, rotation=45)
-
-                                # Set x and y axis text color
-                                ax.tick_params(axis='x', colors='#F5E8C7')  # Red color for x-axis text
-                                ax.tick_params(axis='y', colors='#F5E8C7')  # Green color for y-axis text
-
-                                # Set axis labels
-                                ax.set_xlabel('X Axis', color='#2D3250')  # Red label for x-axis
-                                ax.set_ylabel('Y Axis', color='#2D3250')  # Green label for y-axis
-
-                                # Remove x-ticks
-                                plt.xticks([])
-
-                                # Remove x-labels
-                                plt.gca().xaxis.set_ticklabels([])
-
-                                # Set the y-tick labels font to sans-serif
-                                for label in ax.get_yticklabels():
-                                    label.set_fontname('sans-serif')
-
-                                plt.yticks(fontsize=20)
-                                plt.legend()
-                                sns.despine()
-                                st.pyplot(fig)
+                                        
+                                        
+                                    
                                     
                                     
                                 
-                                
-                                
-                            
-                    elif processing_type is None:
-                        st.warning("Please enter the either add your own audio or provide link of the song you'd like to get recommendations for.")
+                        elif processing_type is None:
+                            st.warning("Please enter the either add your own audio or provide link of the song you'd like to get recommendations for.")
 
                 with button_columns_2:
                     previous_recommendations_exist = None
