@@ -1721,6 +1721,7 @@ if token:
                         st.warning("Please enter the either add your own audio or provide link of the song you'd like to get recommendations for.")
 
                 with button_columns_2:
+                    previous_recommendations_exist = None
                     if stateful_button('Get my last search', key="get_most_recent_recommendation_button"):
                         pass
                     
@@ -1756,7 +1757,8 @@ if token:
                                 top_recommendations_links_df = top_recommendations_df.merge(links_df[["song_name", "song_links"]], on="song_name", how="left")[["song_name", "song_links"]].reset_index().drop(columns="index").drop_duplicates("song_name")
                                 previous_recommendations_exist = 1
                 
-                if previous_recommendations_exist:
+                
+                if previous_recommendations_exist is not None:
                 
                     # st.dataframe(top_recommendations_links_df)
                     
