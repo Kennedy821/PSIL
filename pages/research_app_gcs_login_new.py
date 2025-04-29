@@ -36,7 +36,7 @@ from io import StringIO
 import concurrent.futures
 
 current_date = datetime.now()
-formatted_date = current_date.strftime("%d_%m_%Y")
+formatted_date = current_date.strftime("%d_%m_%Y_%H_%M_%S")
 
 
 
