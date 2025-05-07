@@ -1312,26 +1312,35 @@ if token:
                                         # ---------------------------------------------------------------------------------------------------------------------
                                         # new code block to introduce checkpoints so the user gets some indication of when their recommendations will be ready
                                         time.sleep(60)
+                                        progress_placeholder = st.empty()
+
                                         # Wait for the first checkpoint
                                         checkpoint_1_completed = wait_for_checkpoint(check_processing_stage_1, clean_token, "Checkpoint 1")
                                         if not checkpoint_1_completed:
                                             st.error("Failed to complete Checkpoint 1. Stopping process.")
                                             st.stop()
 
-                                        time.sleep(30)
+                                        progress_placeholder.success("Successfully completed stage 1 of 3")
+                                        time.sleep(5)
+                                        progress_placeholder.empty()
+
                                         # Wait for the second checkpoint
                                         checkpoint_2_completed = wait_for_checkpoint(check_processing_stage_2, clean_token, "Checkpoint 2")
                                         if not checkpoint_2_completed:
                                             st.error("Failed to complete Checkpoint 2. Stopping process.")
                                             st.stop()
-                                        
+
+                                        progress_placeholder.success("Successfully completed stage 2 of 3")
+                                        time.sleep(5)
+                                        progress_placeholder.empty()
+
                                         # ---------------------------------------------------------------------------------------------------------------------
 
                                         # this is the new version of the search
                                         top_recommendations_df = get_top_n_recommendations_gcs_version_new(filtered_selection_n, clean_token)
                                         top_recommendations_links_df = top_recommendations_df.merge(links_df[["song_name", "song_links"]], on="song_name", how="left")[["song_name", "song_links"]].reset_index().drop(columns="index").drop_duplicates("song_name")
 
-                                            
+                                        progress_placeholder.success("Successfully completed stage 3 of 3")
 
                                         
                                         # st.dataframe(top_recommendations_links_df)
@@ -1594,7 +1603,7 @@ if token:
                                         st.stop()
 
                                     progress_placeholder.success("Successfully completed stage 1 of 3")
-                                    time.sleep(2)
+                                    time.sleep(5)
                                     progress_placeholder.empty()
 
                                     # Wait for the second checkpoint
@@ -1604,7 +1613,7 @@ if token:
                                         st.stop()
                                     
                                     progress_placeholder.success("Successfully completed stage 2 of 3")
-                                    time.sleep(2)
+                                    time.sleep(5)
                                     progress_placeholder.empty()                                    
                                     # ---------------------------------------------------------------------------------------------------------------------
 
