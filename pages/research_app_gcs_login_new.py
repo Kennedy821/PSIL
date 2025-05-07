@@ -615,7 +615,8 @@ def check_processing_stage_1(chosen_user):
             # st.write(f"{blob.name} found")
 
             # Notify via Streamlit that checkpoint 2 is complete
-            st.write("Checkpoint 1 complete")
+            # st.write("Checkpoint 1 complete")
+            pass
 
 def check_processing_stage_2(chosen_user):
     
@@ -643,7 +644,8 @@ def check_processing_stage_2(chosen_user):
         if not blob.name.endswith('/') and "search_list.csv" in blob.name and chosen_user in blob.name:
             # st.write(f"{blob.name} found")
             # Notify via Streamlit that checkpoint 2 is complete
-            st.write("Checkpoint 2 complete")
+            # st.write("Checkpoint 2 complete")
+            pass
         
 def get_url_for_song(song):
     chosen_url = search_history_df[search_history_df.song_name==song].song_link.values[0]
