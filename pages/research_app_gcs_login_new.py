@@ -683,7 +683,7 @@ def wait_for_checkpoint(checkpoint_function, chosen_user, checkpoint_name, max_a
     while attempts < max_attempts:
         try:
             checkpoint_function(chosen_user)  # Check if the checkpoint is complete
-            st.write(f"{checkpoint_name} completed.")
+            # st.write(f"{checkpoint_name} completed.")
             return True  # If successful, return
         except Exception as e:
             # Log error (optional) and retry after delay
@@ -1583,6 +1583,7 @@ if token:
                                     # ---------------------------------------------------------------------------------------------------------------------
                                     # new code block to introduce checkpoints so the user gets some indication of when their recommendations will be ready
                                     time.sleep(60)
+                                    progress_placeholder = st.empty()
 
                                     # Wait for the first checkpoint
                                     checkpoint_1_completed = wait_for_checkpoint(check_processing_stage_1, clean_token, "Checkpoint 1")
@@ -1590,12 +1591,19 @@ if token:
                                         st.error("Failed to complete Checkpoint 1. Stopping process.")
                                         st.stop()
 
+                                    progress_placeholder.success("Successfully completed stage 1 of 3")
+                                    time.sleep(2)
+                                    progress_placeholder.empty()
+
                                     # Wait for the second checkpoint
                                     checkpoint_2_completed = wait_for_checkpoint(check_processing_stage_2, clean_token, "Checkpoint 2")
                                     if not checkpoint_2_completed:
                                         st.error("Failed to complete Checkpoint 2. Stopping process.")
                                         st.stop()
                                     
+                                    progress_placeholder.success("Successfully completed stage 2 of 3")
+                                    time.sleep(2)
+                                    progress_placeholder.empty()                                    
                                     # ---------------------------------------------------------------------------------------------------------------------
 
                                     # this is the new version of the search
@@ -1603,6 +1611,11 @@ if token:
                                     top_recommendations_links_df = top_recommendations_df.merge(links_df[["song_name", "song_links"]], on="song_name", how="left")[["song_name", "song_links"]].reset_index().drop(columns="index").drop_duplicates("song_name")
 
                                     
+                                    progress_placeholder.success("Successfully completed stage 3 of 3")
+                                    time.sleep(2)
+                                    progress_placeholder.empty()
+
+                                    # ---------------------------------------------------------------------------------------------------------------------
 
                                     
                                     # st.dataframe(top_recommendations_links_df)
