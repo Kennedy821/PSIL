@@ -797,27 +797,17 @@ if user_input_text:
         output_df = pd.DataFrame([artist_names_list,song_names_list,song_links_list]).T
         output_df.columns = ["artist","song","song_link"]
 
-        # now create the output structure
-        for value in range(num_results):
-            if value==0:
-                row_obj = st.columns(3)
-            else:
-                row_obj += st.columns(3)
+        for _, row in output_df.iterrows():      # one loop → one row on screen
+            col_artist, col_song, col_link = st.columns(3)
 
-        counter = 0
-        # no we output the results 
-        for col in row_obj:
-            if counter % 1 == 0 and counter % 2 != 0 and counter % 3 != 0:
-                tile = col.container(height=120)
-                tile.markdown(f"## {output_df[output_df.index==counter].artist}")
-            elif counter % 1 != 0 and counter % 2 == 0 and counter % 3 != 0:
-                tile = col.container(height=120)
-                tile.markdown(f"## {output_df[output_df.index==counter].song}")
-            elif counter % 1 != 0 and counter % 2 != 0 and counter % 3 == 0:
-                tile = col.container(height=120)
-                tile.markdown(f"## {output_df[output_df.index==counter].song_link}")
-            else:
-                pass
-            counter += 1
+            with col_artist:
+                st.markdown(f"### {row.artist}")
+
+            with col_song:
+                st.markdown(f"### {row.song}")
+
+            with col_link:
+                # Markdown renders the link as a button-style anchor
+                st.markdown(f"[▶ Play]({row.song_link})")
 
         output_df
