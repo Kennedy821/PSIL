@@ -760,6 +760,44 @@ def fetch_recommendations(user_input_text: str) -> pd.DataFrame:
 
         return output_df
     else:
+        # it looks like there as an error now we're going to try get artist level recommendations
+        response = requests.post(
+                                st.secrets["general"]["API_URL2"],
+                                json={"text":user_input_text}
+                                )
+        if response.status_code==200:
+            resp_json = json.loads(response.json())
+
+            num_results = len(resp_json["orig"])
+            print(num_results)
+        
+            # iterate through each result to unpack the json object
+            # first we'll get the recommended songs
+            recommended_songs_list = []
+            song_links_list = []
+            artist_names_list = []
+            song_names_list = []
+            image_urls_list = []
+            for idx in range(num_results):
+                recommended_songs_list.append(resp_json["recommendation_songs"][str(idx)])
+            # next get the links to play the songs
+            for idx in range(num_results):
+                song_links_list.append(resp_json["r_song_external_url"][str(idx)])
+            # next get the artist names
+            for idx in range(num_results):
+                artist_names_list.append(resp_json["artist"][str(idx)])
+            # next get the song names
+            for idx in range(num_results):
+                song_names_list.append(resp_json["song_name"][str(idx)])
+            for idx in range(num_results):
+                image_urls_list.append(resp_json["img_urls"][str(idx)])
+            output_df = pd.DataFrame([artist_names_list,song_names_list,song_links_list,image_urls_list]).T
+            output_df.columns = ["artist","song","song_link","img_urls"]
+            if len(output_df)>0:
+                return output_df
+            else:
+                st.error("No recommendations found")
+                return None
         return None
 
 # ---------- initialise session_state slots ----------------------------------
