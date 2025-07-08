@@ -848,7 +848,7 @@ if token:
 
 # allow the user to type in what they are looking for 
 
-st.text_input("Type in what you're looking for",
+st.text_area("Type in what you're looking for",
                                 key="query", placeholder="e.g. I'm looking for something like Adele's Hello song")
 
 # ‣ Nicely centred run/clear row (Run is primary, Clear secondary)
