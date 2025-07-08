@@ -718,6 +718,48 @@ def get_album_art_images():
         "https://f4.bcbits.com/img/0028797410_10.jpg",
     ]
 
+@st.cache_data(show_spinner=False)        # optional: memoise identical calls
+def fetch_recommendations(user_input_text: str) -> pd.DataFrame:
+    """Return a dataframe with artist / song / song_link (+ artwork)."""
+    # testing out the API itself
+    response = requests.post(
+        st.secrets["general"]["API_URL"],
+        json={"text":user_input_text}
+    )
+    if response.status_code==200:
+        resp_json = json.loads(response.json())
+
+        num_results = len(resp_json["orig"])
+        print(num_results)
+    
+        # iterate through each result to unpack the json object
+        # first we'll get the recommended songs
+        recommended_songs_list = []
+        song_links_list = []
+        artist_names_list = []
+        song_names_list = []
+        for idx in range(num_results):
+            recommended_songs_list.append(resp_json["recommendation_songs"][str(idx)])
+        # next get the links to play the songs
+        for idx in range(num_results):
+            song_links_list.append(resp_json["r_song_external_url"][str(idx)])
+        # next get the artist names
+        for idx in range(num_results):
+            artist_names_list.append(resp_json["artist"][str(idx)])
+        # next get the song names
+        for idx in range(num_results):
+            song_names_list.append(resp_json["song_name"][str(idx)])
+        output_df = pd.DataFrame([artist_names_list,song_names_list,song_links_list]).T
+        output_df.columns = ["artist","song","song_link"]
+
+        return output_df
+    else:
+        return None
+
+# ---------- initialise session_state slots ----------------------------------
+for k, v in {"query": "", "df": None}.items():
+    st.session_state.setdefault(k, v)
+
 # along the same lines we're going to cache the user selected variables as the sometimes the page reloads and the user has to reselect the language and genre
 
 # Initialize session state variables
@@ -762,113 +804,103 @@ if token:
 
 # allow the user to type in what they are looking for 
 
-user_input_text = st.text_input("Type in what you're looking for")
-if user_input_text:
+st.text_input("Type in what you're looking for",
+                                key="query", placeholder="e.g. I'm looking for something like Adele's Hello song")
+
+col_run, col_clear = st.columns([1, 1])
+
+# --- Run button -------------------------------------------------------------
+if col_run.button(" ▶  Run", type="primary"):          # nicer label
+    if st.session_state.query.strip():
+        with st.spinner("Finding tunes…"):
+            st.session_state.df = fetch_recommendations(st.session_state.query)
+    else:
+        st.warning("Please enter something first!")
+
+# --- Clear button -----------------------------------------------------------
+if col_clear.button("⟲ Clear"):
+    st.session_state.query = ""
+    st.session_state.df = None
+    st.experimental_rerun()                 # immediately refresh the page
+
+# ---------- render cards only if we have data -------------------------------
+if st.session_state.df is not None:
+    df = st.session_state.df
 
 
-    # testing out the API itself
-    response = requests.post(
-        st.secrets["general"]["API_URL"],
-        json={"text":user_input_text}
+
+
+    # ---------------------------------------------------------------------------
+    #  CSS – tweaked grid layout + nicer hover
+    # ---------------------------------------------------------------------------
+    st.markdown(
+    """
+    <style>
+    .row-card{
+        display:grid;
+        /* avatar 56px | text grows | icon 48px  */
+        grid-template-columns:56px 1fr 48px;
+        align-items:center;
+        gap:1rem;
+        padding:.8rem 1rem;
+        margin-bottom:.65rem;
+        border-radius:12px;
+        background:rgba(255,255,255,.06);
+    }
+    .avatar{
+        width:56px;height:56px;border-radius:50%;
+        background:#545454;color:#fff;font:700 1.25rem/56px sans-serif;
+        text-align:center;overflow:hidden;
+    }
+    .meta{display:flex;flex-direction:column;}
+    .meta .artist{margin:0;font-weight:600;font-size:1.05rem;}
+    .meta .track {margin:0;opacity:.85;font-size:.95rem;}
+    .wave-btn{
+        width:48px;height:48px;border-radius:10px;
+        display:flex;align-items:center;justify-content:center;
+        transition:background .2s ease;
+    }
+    .wave-btn:hover{background:rgba(255,255,255,.10);}
+    .wave-btn svg rect{fill:#fff;}       /* make bars white – matches dark bg   */
+    </style>
+    """,
+    unsafe_allow_html=True
     )
-    if response.status_code==200:
-        resp_json = json.loads(response.json())
 
-        num_results = len(resp_json["orig"])
-        print(num_results)
-    
-        # iterate through each result to unpack the json object
-        # first we'll get the recommended songs
-        recommended_songs_list = []
-        song_links_list = []
-        artist_names_list = []
-        song_names_list = []
-        for idx in range(num_results):
-            recommended_songs_list.append(resp_json["recommendation_songs"][str(idx)])
-        # next get the links to play the songs
-        for idx in range(num_results):
-            song_links_list.append(resp_json["r_song_external_url"][str(idx)])
-        # next get the artist names
-        for idx in range(num_results):
-            artist_names_list.append(resp_json["artist"][str(idx)])
-        # next get the song names
-        for idx in range(num_results):
-            song_names_list.append(resp_json["song_name"][str(idx)])
-        output_df = pd.DataFrame([artist_names_list,song_names_list,song_links_list]).T
-        output_df.columns = ["artist","song","song_link"]
+    # crisp inline SVG
+    wave_svg = """
+                <svg width="28" height="20" viewBox="0 0 32 20" xmlns="http://www.w3.org/2000/svg">
+                <!-- centre-line is at y = 10, bars extend equally up & down -->
+                <rect x="0"  y="2"  width="3" height="16" rx="1.5"/>
+                <rect x="6"  y="5"  width="3" height="10" rx="1.5"/>
+                <rect x="12" y="2"  width="3" height="16" rx="1.5"/>
+                <rect x="18" y="7"  width="3" height="6"  rx="1.5"/>
+                <rect x="24" y="3"  width="3" height="14" rx="1.5"/>
+                <rect x="30" y="6"  width="3" height="8"  rx="1.5"/>
+                </svg>
+                """
 
-
-        # ---------------------------------------------------------------------------
-        #  CSS – tweaked grid layout + nicer hover
-        # ---------------------------------------------------------------------------
-        st.markdown(
-        """
-        <style>
-        .row-card{
-            display:grid;
-            /* avatar 56px | text grows | icon 48px  */
-            grid-template-columns:56px 1fr 48px;
-            align-items:center;
-            gap:1rem;
-            padding:.8rem 1rem;
-            margin-bottom:.65rem;
-            border-radius:12px;
-            background:rgba(255,255,255,.06);
-        }
-        .avatar{
-            width:56px;height:56px;border-radius:50%;
-            background:#545454;color:#fff;font:700 1.25rem/56px sans-serif;
-            text-align:center;overflow:hidden;
-        }
-        .meta{display:flex;flex-direction:column;}
-        .meta .artist{margin:0;font-weight:600;font-size:1.05rem;}
-        .meta .track {margin:0;opacity:.85;font-size:.95rem;}
-        .wave-btn{
-            width:48px;height:48px;border-radius:10px;
-            display:flex;align-items:center;justify-content:center;
-            transition:background .2s ease;
-        }
-        .wave-btn:hover{background:rgba(255,255,255,.10);}
-        .wave-btn svg rect{fill:#fff;}       /* make bars white – matches dark bg   */
-        </style>
-        """,
-        unsafe_allow_html=True
+    # ---------------------------------------------------------------------------
+    #  Render each recommendation
+    # ---------------------------------------------------------------------------
+    for _, row in output_df.iterrows():
+        # real artwork if you’ve got it, otherwise first initial
+        avatar = (
+            f"<img src='{row.get('artwork','')}' class='avatar'>"
+            if row.get("artwork") else f"<div class='avatar'>{row.artist[0]}</div>"
         )
 
-        # crisp inline SVG
-        wave_svg = """
-                    <svg width="28" height="20" viewBox="0 0 32 20" xmlns="http://www.w3.org/2000/svg">
-                    <!-- centre-line is at y = 10, bars extend equally up & down -->
-                    <rect x="0"  y="2"  width="3" height="16" rx="1.5"/>
-                    <rect x="6"  y="5"  width="3" height="10" rx="1.5"/>
-                    <rect x="12" y="2"  width="3" height="16" rx="1.5"/>
-                    <rect x="18" y="7"  width="3" height="6"  rx="1.5"/>
-                    <rect x="24" y="3"  width="3" height="14" rx="1.5"/>
-                    <rect x="30" y="6"  width="3" height="8"  rx="1.5"/>
-                    </svg>
-                    """
+        # one-liner keeps Markdown from re-indenting
+        card_html = (
+            f"<div class='row-card'>"
+            f"{avatar}"
+            f"<div class='meta'><p class='artist'>{row.artist}</p>"
+            f"<p class='track'>{row.song}</p></div>"
+            f"<a class='wave-btn' href='{row.song_link}' target='_blank' title='Play'>{wave_svg}</a>"
+            f"</div>"
+        )
 
-        # ---------------------------------------------------------------------------
-        #  Render each recommendation
-        # ---------------------------------------------------------------------------
-        for _, row in output_df.iterrows():
-            # real artwork if you’ve got it, otherwise first initial
-            avatar = (
-                f"<img src='{row.get('artwork','')}' class='avatar'>"
-                if row.get("artwork") else f"<div class='avatar'>{row.artist[0]}</div>"
-            )
-
-            # one-liner keeps Markdown from re-indenting
-            card_html = (
-                f"<div class='row-card'>"
-                f"{avatar}"
-                f"<div class='meta'><p class='artist'>{row.artist}</p>"
-                f"<p class='track'>{row.song}</p></div>"
-                f"<a class='wave-btn' href='{row.song_link}' target='_blank' title='Play'>{wave_svg}</a>"
-                f"</div>"
-            )
-
-            st.markdown(card_html, unsafe_allow_html=True)
+        st.markdown(card_html, unsafe_allow_html=True)
 
 
         # for _, row in output_df.iterrows():      # one loop → one row on screen
@@ -884,4 +916,3 @@ if user_input_text:
         #         # Markdown renders the link as a button-style anchor
         #         st.markdown(f"[▶ Play]({row.song_link})")
 
-        output_df
