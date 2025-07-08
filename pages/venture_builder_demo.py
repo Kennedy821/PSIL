@@ -797,17 +797,108 @@ if user_input_text:
         output_df = pd.DataFrame([artist_names_list,song_names_list,song_links_list]).T
         output_df.columns = ["artist","song","song_link"]
 
-        for _, row in output_df.iterrows():      # one loop → one row on screen
-            col_artist, col_song, col_link = st.columns(3)
 
-            with col_artist:
-                st.markdown(f"### {row.artist}")
 
-            with col_song:
-                st.markdown(f"### {row.song}")
 
-            with col_link:
-                # Markdown renders the link as a button-style anchor
-                st.markdown(f"[▶ Play]({row.song_link})")
+        # --- some CSS helpers -------------------------------------------------------
+        st.markdown(
+            """
+            <style>
+            .row-card {
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+                padding: .6rem 1rem;
+                border-radius: 10px;
+                background: rgba(255,255,255,0.06);
+                margin-bottom: .5rem;
+            }
+            .avatar {
+                flex: 0 0 54px;
+                height: 54px;
+                width: 54px;
+                border-radius: 50%;
+                background: #555;
+                color: white;
+                font-weight: 700;
+                font-size: 1.2rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                overflow: hidden;
+            }
+            .meta {
+                flex: 1 1 auto;
+                display: flex;
+                flex-direction: column;
+            }
+            .meta .artist {
+                font-weight: 600;
+                font-size: 1.05rem;
+                line-height: 1.2;
+                margin: 0;
+            }
+            .meta .track  {
+                margin: 0;
+                line-height: 1.2;
+                font-size: .95rem;
+                opacity: .85;
+            }
+            .wave-btn {
+                flex: 0 0 48px;
+                text-align: right;
+                font-size: 1.65rem;
+                text-decoration: none;
+                transition: opacity .2s;
+            }
+            .wave-btn:hover { opacity: .6; }
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
+
+        # --- render each row --------------------------------------------------------
+        for _, row in output_df.iterrows():
+            col = st.container()        # keeps the rows stacked evenly
+            with col:
+                # choose an avatar image if you already have one, otherwise first letter
+                avatar_html = (
+                    f"<img src='{row.get('artwork', '')}' class='avatar'>"
+                    if row.get("artwork")
+                    else f"<div class='avatar'>{row.artist[0]}</div>"
+                )
+
+                # waveform icon (▂▃▅▇) is pure text so it works everywhere
+                card_html = f"""
+                <div class='row-card'>
+                    {avatar_html}
+
+                    <div class='meta'>
+                        <p class='artist'>{row.artist}</p>
+                        <p class='track'>{row.song}</p>
+                    </div>
+
+                    <a class='wave-btn' href='{row.song_link}' target='_blank'
+                    title='Play on Spotify/Apple Music'>
+                    ▂▃▅▇
+                    </a>
+                </div>
+                """
+
+                st.markdown(card_html, unsafe_allow_html=True)
+
+
+        # for _, row in output_df.iterrows():      # one loop → one row on screen
+        #     col_artist, col_song, col_link = st.columns(3)
+
+        #     with col_artist:
+        #         st.markdown(f"### {row.artist}")
+
+        #     with col_song:
+        #         st.markdown(f"### {row.song}")
+
+        #     with col_link:
+        #         # Markdown renders the link as a button-style anchor
+        #         st.markdown(f"[▶ Play]({row.song_link})")
 
         output_df
