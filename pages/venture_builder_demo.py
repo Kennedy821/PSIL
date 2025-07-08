@@ -825,7 +825,7 @@ if col_clear.button("⟲ Clear"):
 
 # ---------- render cards only if we have data -------------------------------
 if st.session_state.df is not None:
-    df = st.session_state.df
+    output_df = st.session_state.df
 
 
 
