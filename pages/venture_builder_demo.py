@@ -796,4 +796,21 @@ if user_input_text:
             song_names_list.append(resp_json["song_name"][str(idx)])
         output_df = pd.DataFrame([artist_names_list,song_names_list,song_links_list]).T
         output_df.columns = ["artist","song","song_link"]
+
+        counter = 0
+        # no we output the results 
+        for col in 3 + num_results:
+            if counter % 1 == 0 and counter % 2 != 0 and counter % 3 != 0:
+                tile = col.container(height=120)
+                tile.markdown(f"## {output_df.iloc[col].artist}")
+            elif counter % 1 != 0 and counter % 2 == 0 and counter % 3 != 0:
+                tile = col.container(height=120)
+                tile.markdown(f"## {output_df.iloc[col].song}")
+            elif counter % 1 != 0 and counter % 2 != 0 and counter % 3 == 0:
+                tile = col.container(height=120)
+                tile.markdown(f"## {output_df.iloc[col].song_link}")
+            else:
+                pass
+            counter += 1
+
         output_df
