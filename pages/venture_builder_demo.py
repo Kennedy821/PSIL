@@ -809,13 +809,13 @@ if user_input_text:
         for col in row_obj:
             if counter % 1 == 0 and counter % 2 != 0 and counter % 3 != 0:
                 tile = col.container(height=120)
-                tile.markdown(f"## {output_df.iloc[col].artist}")
+                tile.markdown(f"## {output_df[output_df.index==col].artist}")
             elif counter % 1 != 0 and counter % 2 == 0 and counter % 3 != 0:
                 tile = col.container(height=120)
-                tile.markdown(f"## {output_df.iloc[col].song}")
+                tile.markdown(f"## {output_df[output_df.index==col].song}")
             elif counter % 1 != 0 and counter % 2 != 0 and counter % 3 == 0:
                 tile = col.container(height=120)
-                tile.markdown(f"## {output_df.iloc[col].song_link}")
+                tile.markdown(f"## {output_df[output_df.index==col].song_link}")
             else:
                 pass
             counter += 1
