@@ -853,7 +853,7 @@ def convert_to_text(audio):
 
 
 
-    
+
 # ---------- initialise session_state slots ----------------------------------
 for k, v in {"query": "", "df": None}.items():
     st.session_state.setdefault(k, v)
@@ -912,6 +912,7 @@ elif selected_search_type == "Say what you're looking for":
 
         # convert the audio to text
         speakers_audio = convert_to_text(audio)
+        st.write(speakers_audio)
         st.session_state["query"] = speakers_audio
 
 
