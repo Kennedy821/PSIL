@@ -828,27 +828,32 @@ def convert_to_text(audio):
         return None
     
 def convert_to_text(audio):
+    """
+    recording : the object returned by st.audio_input
+    returns   : transcript string or None
+    """
     if audio is None:
         return None
 
-    # 1️⃣ raw bytes → base64
-    audio_bytes = audio.getvalue()
-    b64_audio   = base64.b64encode(audio_bytes).decode("utf-8")
+    # ① raw bytes → base-64 string (NO “data:audio/…;base64,” prefix)
+    b64_audio = base64.b64encode(audio.getvalue()).decode("utf-8")
 
-    # 2️⃣ JSON payload
-    # -- keep *only* the base64 string unless you KNOW the server strips the “data:” prefix.
+    # ② JSON payload – exactly what the Flask code checks for
     payload = {"audio": b64_audio}
 
-    try:
-        resp = requests.post(st.secrets["general"]["API_URL3"], json=payload, timeout=120)
-        resp.raise_for_status()                 # raises if ≥400
-    except requests.RequestException as e:
-        st.error(f"❌ Request failed: {e}")
+    # ③ Fire the request
+    r = requests.post(st.secrets["general"]["API_URL3"], json=payload, timeout=120)
+    if r.ok:
+        return r.json().get("text")          # transcript
+    else:
+        st.error(f"{r.status_code} {r.text}")  # show server’s complaint
         return None
+    
 
-    # 3️⃣ parse once (response.json already returns a dict)
-    resp_json = resp.json()
-    return resp_json.get("text")
+
+
+
+    
 # ---------- initialise session_state slots ----------------------------------
 for k, v in {"query": "", "df": None}.items():
     st.session_state.setdefault(k, v)
