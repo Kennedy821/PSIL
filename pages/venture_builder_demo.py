@@ -836,17 +836,17 @@ if user_input_text:
         )
 
         # crisp inline SVG
-        wave_svg = (
-            "<svg width='28' height='16' viewBox='0 0 32 18' "
-            "xmlns='http://www.w3.org/2000/svg'>"
-            "<rect width='3' height='18' rx='1.5'/>"
-            "<rect x='6'  width='3' height='12' rx='1.5'/>"
-            "<rect x='12' width='3' height='18' rx='1.5'/>"
-            "<rect x='18' width='3' height='8'  rx='1.5'/>"
-            "<rect x='24' width='3' height='14' rx='1.5'/>"
-            "<rect x='30' width='3' height='10' rx='1.5'/>"
-            "</svg>"
-        )
+        wave_svg = """
+                    <svg width="28" height="20" viewBox="0 0 32 20" xmlns="http://www.w3.org/2000/svg">
+                    <!-- centre-line is at y = 10, bars extend equally up & down -->
+                    <rect x="0"  y="2"  width="3" height="16" rx="1.5"/>
+                    <rect x="6"  y="5"  width="3" height="10" rx="1.5"/>
+                    <rect x="12" y="2"  width="3" height="16" rx="1.5"/>
+                    <rect x="18" y="7"  width="3" height="6"  rx="1.5"/>
+                    <rect x="24" y="3"  width="3" height="14" rx="1.5"/>
+                    <rect x="30" y="6"  width="3" height="8"  rx="1.5"/>
+                    </svg>
+                    """
 
         # ---------------------------------------------------------------------------
         #  Render each recommendation
