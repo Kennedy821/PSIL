@@ -821,10 +821,8 @@ if col_run.button(" ▶  Run", type="primary"):          # nicer label
         st.warning("Please enter something first!")
 
 # --- Clear button -----------------------------------------------------------
-if col_clear.button("⟲ Clear", on_click=clear_inputs):
-    st.session_state.query = ""
-    st.session_state.df = None
-    st.experimental_rerun()              # immediately refresh the page
+if col_clear.button("⟲ Clear"):
+    clear_inputs()            # immediately refresh the page
 
 # ---------- render cards only if we have data -------------------------------
 if st.session_state.df is not None:
