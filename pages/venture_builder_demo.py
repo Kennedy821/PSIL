@@ -873,7 +873,7 @@ if token:
 
 # allow the user to type in what they are looking for 
 
-selected_search_type = st.selectbox("Select the type of search you want to do", ["Type in what you're looking for", "Say what you're looking for"])
+selected_search_type = st.selectbox("Select the type of search you want to do", ["","Type in what you're looking for", "Say what you're looking for"])
 if selected_search_type == "Type in what you're looking for":
     st.text_area("Type in what you're looking for",
                                 key="query", placeholder="e.g. I'm looking for something like Adele's Hello song")
