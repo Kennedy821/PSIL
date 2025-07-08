@@ -741,6 +741,7 @@ def fetch_recommendations(user_input_text: str) -> pd.DataFrame:
         song_links_list = []
         artist_names_list = []
         song_names_list = []
+        image_urls_list = []
         for idx in range(num_results):
             recommended_songs_list.append(resp_json["recommendation_songs"][str(idx)])
         # next get the links to play the songs
@@ -752,8 +753,10 @@ def fetch_recommendations(user_input_text: str) -> pd.DataFrame:
         # next get the song names
         for idx in range(num_results):
             song_names_list.append(resp_json["song_name"][str(idx)])
-        output_df = pd.DataFrame([artist_names_list,song_names_list,song_links_list]).T
-        output_df.columns = ["artist","song","song_link"]
+        for idx in range(num_results):
+            image_urls_list.append(resp_json["img_urls"][str(idx)])
+        output_df = pd.DataFrame([artist_names_list,song_names_list,song_links_list,image_urls_list]).T
+        output_df.columns = ["artist","song","song_link","img_urls"]
 
         return output_df
     else:
@@ -889,8 +892,8 @@ if st.session_state.df is not None:
     for _, row in output_df.iterrows():
         # real artwork if you’ve got it, otherwise first initial
         avatar = (
-            f"<img src='{row.get('artwork','')}' class='avatar'>"
-            if row.get("artwork") else f"<div class='avatar'>{row.artist[0]}</div>"
+            f"<img src='{row.get('img_urls','')}' class='avatar'>"
+            if row.get("img_urls") else f"<div class='avatar'>{row.artist[0]}</div>"
         )
 
         # one-liner keeps Markdown from re-indenting
