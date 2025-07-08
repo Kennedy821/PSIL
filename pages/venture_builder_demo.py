@@ -798,69 +798,75 @@ if user_input_text:
         output_df.columns = ["artist","song","song_link"]
 
 
-        import textwrap
-        
         # ---------------------------------------------------------------------------
-        #  Tiny bit of CSS (unchanged, but dedented too)
+        #  CSS – tweaked grid layout + nicer hover
         # ---------------------------------------------------------------------------
         st.markdown(
-            textwrap.dedent("""
-            <style>
-            .row-card{
-                display:flex;align-items:center;gap:1rem;
-                padding:.6rem 1rem;margin-bottom:.5rem;
-                border-radius:10px;background:rgba(255,255,255,.06);
-            }
-            .avatar{
-                flex:0 0 54px;height:54px;width:54px;border-radius:50%;
-                background:#555;color:#fff;font:700 1.2rem/54px sans-serif;
-                text-align:center;
-                overflow:hidden;
-            }
-            .meta{flex:1 1 auto;display:flex;flex-direction:column;}
-            .artist{margin:0;font-weight:600;font-size:1.05rem;line-height:1.2;}
-            .track{margin:0;font-size:.95rem;line-height:1.2;opacity:.85;}
-            .wave-btn{flex:0 0 48px;text-align:right;transition:opacity .2s;}
-            .wave-btn:hover{opacity:.6;}
-            </style>
-            """),
-            unsafe_allow_html=True
+        """
+        <style>
+        .row-card{
+            display:grid;
+            /* avatar 56px | text grows | icon 48px  */
+            grid-template-columns:56px 1fr 48px;
+            align-items:center;
+            gap:1rem;
+            padding:.8rem 1rem;
+            margin-bottom:.65rem;
+            border-radius:12px;
+            background:rgba(255,255,255,.06);
+        }
+        .avatar{
+            width:56px;height:56px;border-radius:50%;
+            background:#545454;color:#fff;font:700 1.25rem/56px sans-serif;
+            text-align:center;overflow:hidden;
+        }
+        .meta{display:flex;flex-direction:column;}
+        .meta .artist{margin:0;font-weight:600;font-size:1.05rem;}
+        .meta .track {margin:0;opacity:.85;font-size:.95rem;}
+        .wave-btn{
+            width:48px;height:48px;border-radius:10px;
+            display:flex;align-items:center;justify-content:center;
+            transition:background .2s ease;
+        }
+        .wave-btn:hover{background:rgba(255,255,255,.10);}
+        .wave-btn svg rect{fill:#fff;}       /* make bars white – matches dark bg   */
+        </style>
+        """,
+        unsafe_allow_html=True
         )
 
-        # SVG waveform icon (lightweight, looks sharper than text glyphs)
-        wave_svg = """
-        <svg width="32" height="18" viewBox="0 0 32 18" xmlns="http://www.w3.org/2000/svg">
-        <rect width="3" height="18" rx="1.5"/>
-        <rect x="6" width="3" height="12" rx="1.5"/>
-        <rect x="12" width="3" height="18" rx="1.5"/>
-        <rect x="18" width="3" height="8"  rx="1.5"/>
-        <rect x="24" width="3" height="14" rx="1.5"/>
-        <rect x="30" width="3" height="10" rx="1.5"/>
-        </svg>
-        """
+        # crisp inline SVG
+        wave_svg = (
+            "<svg width='28' height='16' viewBox='0 0 32 18' "
+            "xmlns='http://www.w3.org/2000/svg'>"
+            "<rect width='3' height='18' rx='1.5'/>"
+            "<rect x='6'  width='3' height='12' rx='1.5'/>"
+            "<rect x='12' width='3' height='18' rx='1.5'/>"
+            "<rect x='18' width='3' height='8'  rx='1.5'/>"
+            "<rect x='24' width='3' height='14' rx='1.5'/>"
+            "<rect x='30' width='3' height='10' rx='1.5'/>"
+            "</svg>"
+        )
 
         # ---------------------------------------------------------------------------
         #  Render each recommendation
         # ---------------------------------------------------------------------------
         for _, row in output_df.iterrows():
-            avatar_html = (
+            # real artwork if you’ve got it, otherwise first initial
+            avatar = (
                 f"<img src='{row.get('artwork','')}' class='avatar'>"
-                if row.get("artwork")
-                else f"<div class='avatar'>{row.artist[0]}</div>"
+                if row.get("artwork") else f"<div class='avatar'>{row.artist[0]}</div>"
             )
 
-            card_html = textwrap.dedent(f"""
-            <div class='row-card'>
-            {avatar_html}
-            <div class='meta'>
-                <p class='artist'>{row.artist}</p>
-                <p class='track'>{row.song}</p>
-            </div>
-            <a class='wave-btn' href='{row.song_link}' target='_blank' title='Play'>
-                {wave_svg}
-            </a>
-            </div>
-            """)
+            # one-liner keeps Markdown from re-indenting
+            card_html = (
+                f"<div class='row-card'>"
+                f"{avatar}"
+                f"<div class='meta'><p class='artist'>{row.artist}</p>"
+                f"<p class='track'>{row.song}</p></div>"
+                f"<a class='wave-btn' href='{row.song_link}' target='_blank' title='Play'>{wave_svg}</a>"
+                f"</div>"
+            )
 
             st.markdown(card_html, unsafe_allow_html=True)
 
