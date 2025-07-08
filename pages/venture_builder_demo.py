@@ -798,94 +798,71 @@ if user_input_text:
         output_df.columns = ["artist","song","song_link"]
 
 
-
-
-        # --- some CSS helpers -------------------------------------------------------
+        import textwrap
+        
+        # ---------------------------------------------------------------------------
+        #  Tiny bit of CSS (unchanged, but dedented too)
+        # ---------------------------------------------------------------------------
         st.markdown(
-            """
+            textwrap.dedent("""
             <style>
-            .row-card {
-                display: flex;
-                align-items: center;
-                gap: 1rem;
-                padding: .6rem 1rem;
-                border-radius: 10px;
-                background: rgba(255,255,255,0.06);
-                margin-bottom: .5rem;
+            .row-card{
+                display:flex;align-items:center;gap:1rem;
+                padding:.6rem 1rem;margin-bottom:.5rem;
+                border-radius:10px;background:rgba(255,255,255,.06);
             }
-            .avatar {
-                flex: 0 0 54px;
-                height: 54px;
-                width: 54px;
-                border-radius: 50%;
-                background: #555;
-                color: white;
-                font-weight: 700;
-                font-size: 1.2rem;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                overflow: hidden;
+            .avatar{
+                flex:0 0 54px;height:54px;width:54px;border-radius:50%;
+                background:#555;color:#fff;font:700 1.2rem/54px sans-serif;
+                text-align:center;
+                overflow:hidden;
             }
-            .meta {
-                flex: 1 1 auto;
-                display: flex;
-                flex-direction: column;
-            }
-            .meta .artist {
-                font-weight: 600;
-                font-size: 1.05rem;
-                line-height: 1.2;
-                margin: 0;
-            }
-            .meta .track  {
-                margin: 0;
-                line-height: 1.2;
-                font-size: .95rem;
-                opacity: .85;
-            }
-            .wave-btn {
-                flex: 0 0 48px;
-                text-align: right;
-                font-size: 1.65rem;
-                text-decoration: none;
-                transition: opacity .2s;
-            }
-            .wave-btn:hover { opacity: .6; }
+            .meta{flex:1 1 auto;display:flex;flex-direction:column;}
+            .artist{margin:0;font-weight:600;font-size:1.05rem;line-height:1.2;}
+            .track{margin:0;font-size:.95rem;line-height:1.2;opacity:.85;}
+            .wave-btn{flex:0 0 48px;text-align:right;transition:opacity .2s;}
+            .wave-btn:hover{opacity:.6;}
             </style>
-            """,
+            """),
             unsafe_allow_html=True
         )
 
-        # --- render each row --------------------------------------------------------
+        # SVG waveform icon (lightweight, looks sharper than text glyphs)
+        wave_svg = """
+        <svg width="32" height="18" viewBox="0 0 32 18" xmlns="http://www.w3.org/2000/svg">
+        <rect width="3" height="18" rx="1.5"/>
+        <rect x="6" width="3" height="12" rx="1.5"/>
+        <rect x="12" width="3" height="18" rx="1.5"/>
+        <rect x="18" width="3" height="8"  rx="1.5"/>
+        <rect x="24" width="3" height="14" rx="1.5"/>
+        <rect x="30" width="3" height="10" rx="1.5"/>
+        </svg>
+        """
+
+        # ---------------------------------------------------------------------------
+        #  Render each recommendation
+        # ---------------------------------------------------------------------------
         for _, row in output_df.iterrows():
-            col = st.container()        # keeps the rows stacked evenly
-            with col:
-                # choose an avatar image if you already have one, otherwise first letter
-                avatar_html = (
-                    f"<img src='{row.get('artwork', '')}' class='avatar'>"
-                    if row.get("artwork")
-                    else f"<div class='avatar'>{row.artist[0]}</div>"
-                )
+            avatar_html = (
+                f"<img src='{row.get('artwork','')}' class='avatar'>"
+                if row.get("artwork")
+                else f"<div class='avatar'>{row.artist[0]}</div>"
+            )
 
-                # waveform icon (▂▃▅▇) is pure text so it works everywhere
-                card_html = f"""
-                <div class='row-card'>
-                    {avatar_html}
+            card_html = textwrap.dedent(f"""
+            <div class='row-card'>
+            {avatar_html}
+            <div class='meta'>
+                <p class='artist'>{row.artist}</p>
+                <p class='track'>{row.song}</p>
+            </div>
+            <a class='wave-btn' href='{row.song_link}' target='_blank' title='Play'>
+                {wave_svg}
+            </a>
+            </div>
+            """)
 
-                    <div class='meta'>
-                        <p class='artist'>{row.artist}</p>
-                        <p class='track'>{row.song}</p>
-                    </div>
-
-                    <a class='wave-btn' href='{row.song_link}' target='_blank'
-                    title='Play on Spotify/Apple Music'>
-                    ▂▃▅▇
-                    </a>
-                </div>
-                """
-
-                st.markdown(card_html, unsafe_allow_html=True)
+            st.markdown(card_html, unsafe_allow_html=True)
 
 
         # for _, row in output_df.iterrows():      # one loop → one row on screen
