@@ -822,7 +822,8 @@ if col_run.button(" ▶  Run", type="primary"):          # nicer label
 
 # --- Clear button -----------------------------------------------------------
 if col_clear.button("⟲ Clear"):
-    clear_inputs()            # immediately refresh the page
+    st.session_state.clear()  # This clears all session state variables
+    st.rerun()  # This reruns the entire app          # immediately refresh the page
 
 # ---------- render cards only if we have data -------------------------------
 if st.session_state.df is not None:
