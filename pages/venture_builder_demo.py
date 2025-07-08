@@ -800,6 +800,31 @@ def fetch_recommendations(user_input_text: str) -> pd.DataFrame:
                 return None
         return None
 
+def convert_to_text(audio):
+    # Extract raw bytes & MIME type
+    audio_bytes = audio.getvalue()
+    mime_type   = audio.type or "audio/wav"      # fallback if unknown
+    
+    # 2️⃣  Encode as Base-64 Data-URI
+    b64_audio   = base64.b64encode(audio_bytes).decode("utf-8")
+    json_payload = {
+        "audio": f"data:{mime_type};base64,{b64_audio}"
+    }
+
+    # it looks like there as an error now we're going to try get artist level recommendations
+    response = requests.post(
+                            st.secrets["general"]["API_URL3"],
+                            json=json_payload
+                            )
+    if response.status_code==200:
+        resp_json = json.loads(response.json())
+        text = resp_json["text"]
+        return text
+
+    else:
+        text = "Error converting audio to text"
+        st.error(text)
+        return None
 # ---------- initialise session_state slots ----------------------------------
 for k, v in {"query": "", "df": None}.items():
     st.session_state.setdefault(k, v)
@@ -848,8 +873,19 @@ if token:
 
 # allow the user to type in what they are looking for 
 
-st.text_area("Type in what you're looking for",
+selected_search_type = st.selectbox("Select the type of search you want to do", ["Type in what you're looking for", "Say what you're looking for"])
+if selected_search_type == "Type in what you're looking for":
+    st.text_area("Type in what you're looking for",
                                 key="query", placeholder="e.g. I'm looking for something like Adele's Hello song")
+elif selected_search_type == "Say what you're looking for":
+    audio = st.audio_input()
+    if audio:
+
+        # convert the audio to text
+        speakers_audio = convert_to_text(audio)
+        st.session_state.query = speakers_audio
+
+
 
 # ‣ Nicely centred run/clear row (Run is primary, Clear secondary)
 col_l, col_run, col_clear, col_r = st.columns([3, 1, 1, 3])
