@@ -840,7 +840,7 @@ def convert_to_text(audio):
     payload = {"audio": b64_audio}
 
     try:
-        resp = requests.post(API_URL, json=payload, timeout=120)
+        resp = requests.post(st.secrets["general"]["API_URL3"], json=payload, timeout=120)
         resp.raise_for_status()                 # raises if ≥400
     except requests.RequestException as e:
         st.error(f"❌ Request failed: {e}")
