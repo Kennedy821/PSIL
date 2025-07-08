@@ -810,7 +810,8 @@ if token:
 st.text_input("Type in what you're looking for",
                                 key="query", placeholder="e.g. I'm looking for something like Adele's Hello song")
 
-col_run, col_clear = st.columns([1, 1])
+# ‣ Nicely centred run/clear row (Run is primary, Clear secondary)
+col_l, col_run, col_clear, col_r = st.columns([3, 1, 1, 3])
 
 # --- Run button -------------------------------------------------------------
 if col_run.button(" ▶  Run", type="primary"):          # nicer label
