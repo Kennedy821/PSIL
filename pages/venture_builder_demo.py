@@ -701,8 +701,7 @@ def clear_inputs() -> None:
     """Reset the text box and forget the previous results."""
     st.session_state["query"] = ""      # resets <input>
     st.session_state["df"] = None       # hides the cards
-    del audio
-
+    st.session_state["mic_audio"] = None
 
 
 # create some cached versions of the functions that may reload repeatedly
@@ -908,11 +907,12 @@ if selected_search_type == "Type in what you're looking for":
     st.text_area("Type in what you're looking for",
                                 key="query", placeholder="e.g. I'm looking for something like Adele's Hello song")
 elif selected_search_type == "Say what you're looking for":
-    audio = st.audio_input("Say what you're looking for")
-    if audio:
+    audio_bytes = st.audio_input("Say what you're looking for",
+                         key="mic_audio")
+    if audio_bytes:
 
         # convert the audio to text
-        speakers_audio = convert_to_text(audio)
+        speakers_audio = convert_to_text(audio_bytes)
         st.write(speakers_audio)
         st.session_state["query"] = speakers_audio
 
