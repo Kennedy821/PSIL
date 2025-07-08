@@ -797,6 +797,10 @@ if user_input_text:
         output_df = pd.DataFrame([artist_names_list,song_names_list,song_links_list]).T
         output_df.columns = ["artist","song","song_link"]
 
+        # now create the output structure
+        output_structure = None
+        for value in range(num_results):
+            output_structure + st.columns(3)
         counter = 0
         # no we output the results 
         for col in 3 + num_results:
