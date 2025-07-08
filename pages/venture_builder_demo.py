@@ -878,7 +878,7 @@ if selected_search_type == "Type in what you're looking for":
     st.text_area("Type in what you're looking for",
                                 key="query", placeholder="e.g. I'm looking for something like Adele's Hello song")
 elif selected_search_type == "Say what you're looking for":
-    audio = st.audio_input()
+    audio = st.audio_input("Say what you're looking for")
     if audio:
 
         # convert the audio to text
