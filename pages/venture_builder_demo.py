@@ -762,7 +762,7 @@ if token:
 
 # allow the user to type in what they are looking for 
 
-user_input_text = st.text_input()
+user_input_text = st.text_input("Type in what you're looking for")
 if user_input_text:
 
 
