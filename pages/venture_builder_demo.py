@@ -34,6 +34,7 @@ import uuid
 from datetime import datetime
 from io import StringIO
 import concurrent.futures
+import base64
 
 current_date = datetime.now()
 formatted_date = current_date.strftime("%d_%m_%Y_%H_%M_%S")
