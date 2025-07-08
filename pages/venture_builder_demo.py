@@ -701,6 +701,7 @@ def clear_inputs() -> None:
     """Reset the text box and forget the previous results."""
     st.session_state["query"] = ""      # resets <input>
     st.session_state["df"] = None       # hides the cards
+    del audio
 
 
 
