@@ -872,7 +872,7 @@ if 'genre_option' not in st.session_state:
 # if 'uploaded_file' not in st.session_state:
 #     st.session_state.uploaded_file = None
 if 'search_type_option' not in st.session_state:
-    st.session_state.genre_option = ""
+    st.session_state.search_type_option = ""
 # Step 1: Retrieve the token from the URL query parameters
 # query_params = st.experimental_get_query_params()
 
@@ -903,10 +903,11 @@ if token:
 # allow the user to type in what they are looking for 
 
 selected_search_type = st.selectbox("Select the type of search you want to do", ["","Type in what you're looking for", "Say what you're looking for"])
-if selected_search_type == "Type in what you're looking for":
+st.session_state.search_type_option = selected_search_type
+if st.session_state.search_type_option == "Type in what you're looking for":
     st.text_area("Type in what you're looking for",
                                 key="query", placeholder="e.g. I'm looking for something like Adele's Hello song")
-elif selected_search_type == "Say what you're looking for":
+elif st.session_state.search_type_option == "Say what you're looking for":
     audio_bytes = st.audio_input("Say what you're looking for",
                          key="mic_audio")
     if audio_bytes:
