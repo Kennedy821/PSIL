@@ -798,12 +798,15 @@ if user_input_text:
         output_df.columns = ["artist","song","song_link"]
 
         # now create the output structure
-        output_structure = []
         for value in range(num_results):
-            output_structure.append(st.columns(3))
+            if value==0:
+                row_obj = st.columns(3)
+            else:
+                row_obj += st.columns(3)
+
         counter = 0
         # no we output the results 
-        for col in output_structure:
+        for col in row_obj:
             if counter % 1 == 0 and counter % 2 != 0 and counter % 3 != 0:
                 tile = col.container(height=120)
                 tile.markdown(f"## {output_df.iloc[col].artist}")
