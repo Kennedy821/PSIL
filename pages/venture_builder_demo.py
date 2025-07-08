@@ -826,6 +826,29 @@ def convert_to_text(audio):
         text = "Error converting audio to text"
         st.error(text)
         return None
+    
+def convert_to_text(audio):
+    if audio is None:
+        return None
+
+    # 1️⃣ raw bytes → base64
+    audio_bytes = audio.getvalue()
+    b64_audio   = base64.b64encode(audio_bytes).decode("utf-8")
+
+    # 2️⃣ JSON payload
+    # -- keep *only* the base64 string unless you KNOW the server strips the “data:” prefix.
+    payload = {"audio": b64_audio}
+
+    try:
+        resp = requests.post(API_URL, json=payload, timeout=120)
+        resp.raise_for_status()                 # raises if ≥400
+    except requests.RequestException as e:
+        st.error(f"❌ Request failed: {e}")
+        return None
+
+    # 3️⃣ parse once (response.json already returns a dict)
+    resp_json = resp.json()
+    return resp_json.get("text")
 # ---------- initialise session_state slots ----------------------------------
 for k, v in {"query": "", "df": None}.items():
     st.session_state.setdefault(k, v)
@@ -884,7 +907,7 @@ elif selected_search_type == "Say what you're looking for":
 
         # convert the audio to text
         speakers_audio = convert_to_text(audio)
-        st.session_state.query = speakers_audio
+        st.session_state["query"] = speakers_audio
 
 
 
