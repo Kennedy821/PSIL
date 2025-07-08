@@ -938,8 +938,8 @@ if st.session_state.df is not None:
         card_html = (
             f"<div class='row-card'>"
             f"{avatar}"
-            f"<div class='meta'><p class='artist'>{row.artist}</p>"
-            f"<p class='track'>{row.song}</p></div>"
+            f"<div class='meta'><p class='artist'>{row.song}</p>"
+            f"<p class='track'>{row.artist}</p></div>"
             f"<a class='wave-btn' href='{row.song_link}' target='_blank' title='Play'>{wave_svg}</a>"
             f"</div>"
         )
