@@ -696,7 +696,10 @@ def wait_for_checkpoint(checkpoint_function, chosen_user, checkpoint_name, max_a
     st.error(f"{checkpoint_name} not completed within the timeout period.")
     return False  # Return False if checkpoint not completed
 
-
+def clear_inputs() -> None:
+    """Reset the text box and forget the previous results."""
+    st.session_state["query"] = ""      # resets <input>
+    st.session_state["df"] = None       # hides the cards
 
 
 
@@ -818,10 +821,10 @@ if col_run.button(" ▶  Run", type="primary"):          # nicer label
         st.warning("Please enter something first!")
 
 # --- Clear button -----------------------------------------------------------
-if col_clear.button("⟲ Clear"):
+if col_clear.button("⟲ Clear", on_click=clear_inputs):
     st.session_state.query = ""
     st.session_state.df = None
-    st.experimental_rerun()                 # immediately refresh the page
+    st.experimental_rerun()              # immediately refresh the page
 
 # ---------- render cards only if we have data -------------------------------
 if st.session_state.df is not None:
