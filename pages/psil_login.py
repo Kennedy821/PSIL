@@ -94,11 +94,12 @@ if st.button("Login"):
                 payload = {"website": "psil",
                         "email": email,
                         "pw":password}
-                base_api_web_address = "https://cd38ae4972e0.ngrok-free.app"
+                base_api_web_address = st.secrets["general"]["base_api_web_address"]
                 r = requests.post(base_api_web_address+"/get_login_verification_for_user", json=payload, timeout=120)
                 if r.ok:
                     redirect_url = [r.json()["redirect_url"]]
                     print(redirect_url)
+                    time.sleep(5)
 
 
                 # credentials_df = pd.DataFrame([email,password]).T
@@ -127,10 +128,10 @@ if st.button("Login"):
                 # # wait for the valid url to appear in the bucket
                 # redirect_url = []
                 # get_login_credentials_for_valid_user()
-                time.sleep(5)
-                if len(redirect_url)>0:
-                    # st.markdown(redirect_url)
-                    redirect_url = str(redirect_url[0]).split(" ")[1]
+                # time.sleep(5)
+                # if len(redirect_url)>0:
+                #     # st.markdown(redirect_url)
+                #     redirect_url = str(redirect_url[0]).split(" ")[1]
                     # st.markdown(redirect_url)
 
 
