@@ -100,6 +100,7 @@ if st.button("Login"):
                     redirect_url = [r.json()["redirect_url"]]
                     # print(redirect_url)
                     redirect_url = str(redirect_url[0]).split(" ")[1]
+                    st.markdown(redirect_url)
 
                     time.sleep(5)
 
