@@ -7,6 +7,7 @@ from google.cloud import storage
 import pandas as pd
 import time
 import tempfile
+import requests
 
 print(jwt.__version__)
 SECRET_KEY = st.secrets["general"]["SECRET_KEY"]
@@ -48,11 +49,11 @@ def get_login_credentials_for_valid_user():
             time.sleep(1)
 
 
-# Simulate user authentication
-def authenticate_user(email, password):
-    if email == "test@test.com" and password == "password123":
-        return True
-    return False
+# # Simulate user authentication
+# def authenticate_user(email, password):
+#     if email == "test@test.com" and password == "password123":
+#         return True
+#     return False
 
 # Generate JWT token after login
 def generate_token(email):
@@ -90,33 +91,42 @@ if st.button("Login"):
         try:
 
             with tempfile.TemporaryDirectory() as temp_dir:
-
-                credentials_df = pd.DataFrame([email,password]).T
-                credentials_df.columns = ["email","pw"]
-
-
-                # Create credentials object
-                credentials = service_account.Credentials.from_service_account_info(st.secrets["gcp_service_account"])
-
-                # Use the credentials to create a client
-                client = storage.Client(credentials=credentials)
+                payload = {"website": "psil",
+                        "email": email,
+                        "pw":password}
+                base_api_web_address = "https://cd38ae4972e0.ngrok-free.app"
+                r = requests.post(base_api_web_address+"/get_login_verification_for_user", json=payload, timeout=120)
+                if r.ok:
+                    redirect_url = [r.json()["redirect_url"]]
+                    print(redirect_url)
 
 
-                # The bucket on GCS in which to write the CSV file
-                bucket = client.bucket('psil-app-backend-2')
-                # The name assigned to the CSV file on GCS
-                blob = bucket.blob('user_login_request.csv')
-
-                # Convert the DataFrame to a CSV string with a specified encoding
-                csv_string = credentials_df.to_csv(index=False, encoding='utf-8')
-
-                # Upload the CSV string to GCS
-                blob.upload_from_string(csv_string, 'text/csv')
+                # credentials_df = pd.DataFrame([email,password]).T
+                # credentials_df.columns = ["email","pw"]
 
 
-                # wait for the valid url to appear in the bucket
-                redirect_url = []
-                get_login_credentials_for_valid_user()
+                # # Create credentials object
+                # credentials = service_account.Credentials.from_service_account_info(st.secrets["gcp_service_account"])
+
+                # # Use the credentials to create a client
+                # client = storage.Client(credentials=credentials)
+
+
+                # # The bucket on GCS in which to write the CSV file
+                # bucket = client.bucket('psil-app-backend-2')
+                # # The name assigned to the CSV file on GCS
+                # blob = bucket.blob('user_login_request.csv')
+
+                # # Convert the DataFrame to a CSV string with a specified encoding
+                # csv_string = credentials_df.to_csv(index=False, encoding='utf-8')
+
+                # # Upload the CSV string to GCS
+                # blob.upload_from_string(csv_string, 'text/csv')
+
+
+                # # wait for the valid url to appear in the bucket
+                # redirect_url = []
+                # get_login_credentials_for_valid_user()
                 time.sleep(5)
                 if len(redirect_url)>0:
                     # st.markdown(redirect_url)
