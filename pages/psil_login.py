@@ -98,44 +98,9 @@ if st.button("Login"):
                 r = requests.post(base_api_web_address+"/get_login_verification_for_user", json=payload, timeout=120)
                 if r.ok:
                     redirect_url = r.json()["redirect_url"]
-                    # print(redirect_url)
-                    # redirect_url = str(redirect_url[0]).split(" ")[1]
-                    st.markdown(redirect_url)
+
 
                     time.sleep(5)
-
-
-                # credentials_df = pd.DataFrame([email,password]).T
-                # credentials_df.columns = ["email","pw"]
-
-
-                # # Create credentials object
-                # credentials = service_account.Credentials.from_service_account_info(st.secrets["gcp_service_account"])
-
-                # # Use the credentials to create a client
-                # client = storage.Client(credentials=credentials)
-
-
-                # # The bucket on GCS in which to write the CSV file
-                # bucket = client.bucket('psil-app-backend-2')
-                # # The name assigned to the CSV file on GCS
-                # blob = bucket.blob('user_login_request.csv')
-
-                # # Convert the DataFrame to a CSV string with a specified encoding
-                # csv_string = credentials_df.to_csv(index=False, encoding='utf-8')
-
-                # # Upload the CSV string to GCS
-                # blob.upload_from_string(csv_string, 'text/csv')
-
-
-                # # wait for the valid url to appear in the bucket
-                # redirect_url = []
-                # get_login_credentials_for_valid_user()
-                # time.sleep(5)
-                # if len(redirect_url)>0:
-                #     # st.markdown(redirect_url)
-                    # redirect_url = str(redirect_url[0]).split(" ")[1]
-                    # st.markdown(redirect_url)
 
 
 
