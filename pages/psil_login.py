@@ -98,7 +98,9 @@ if st.button("Login"):
                 r = requests.post(base_api_web_address+"/get_login_verification_for_user", json=payload, timeout=120)
                 if r.ok:
                     redirect_url = [r.json()["redirect_url"]]
-                    print(redirect_url)
+                    # print(redirect_url)
+                    redirect_url = redirect_url.split(" ")[1]
+
                     time.sleep(5)
 
 
@@ -131,7 +133,7 @@ if st.button("Login"):
                 # time.sleep(5)
                 # if len(redirect_url)>0:
                 #     # st.markdown(redirect_url)
-                #     redirect_url = str(redirect_url[0]).split(" ")[1]
+                    # redirect_url = str(redirect_url[0]).split(" ")[1]
                     # st.markdown(redirect_url)
 
 
